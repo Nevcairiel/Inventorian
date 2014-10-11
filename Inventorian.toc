@@ -1,0 +1,15 @@
+## Interface: 50400
+
+## Title: Inventorian
+## Notes: One large inventory.
+## Author: Nevcairiel
+## Version: @project-version@
+
+## OptionalDeps: Ace3
+
+## SavedVariables: InventorianDB
+
+Frame.xml
+
+Inventorian.lua
+Frame.lua
