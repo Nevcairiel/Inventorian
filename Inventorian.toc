@@ -1,4 +1,4 @@
-## Interface: 50400
+## Interface: 60000
 
 ## Title: Inventorian
 ## Notes: One large inventory.
@@ -12,6 +12,7 @@
 Frame.xml
 
 Inventorian.lua
+Events.lua
 
 Frame.lua
 ItemContainer.lua

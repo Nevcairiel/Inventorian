@@ -3,6 +3,8 @@ local _, Inventorian = ...
 local ItemContainer = CreateFrame("Frame")
 local ItemContainer_MT = {__index = ItemContainer}
 
+local Events = Inventorian:GetModule("Events")
+
 Inventorian.ItemContainer = {}
 Inventorian.ItemContainer.defaults = {}
 Inventorian.ItemContainer.prototype = ItemContainer
@@ -32,16 +34,73 @@ end
 function ItemContainer:OnShow()
 	self:GenerateItemButtons()
 	
-	-- todo: subscribe for update events
+	Events.Register(self, "ITEM_SLOT_ADD", "ITEM_SLOT_UPDATE")
+	Events.Register(self, "ITEM_SLOT_UPDATE")
+	Events.Register(self, "ITEM_SLOT_REMOVE")
+	Events.Register(self, "ITEM_SLOT_UPDATE_COOLDOWN")
+
+	Events.Register(self, "ITEM_LOCK_CHANGED")
 end
 
 function ItemContainer:OnHide()
-	-- todo: unsubscribe events
+	Events.UnregisterAll(self)
+end
+
+function ItemContainer:ITEM_SLOT_UPDATE(event, bag, slot)
+	if self:UpdateSlot(bag, slot) then
+		self:Layout()
+	end
+end
+
+function ItemContainer:ITEM_SLOT_REMOVE(event, bag, slot)
+	if self:RemoveSlot(bag, slot) then
+		self:Layout()
+	end
+end
+
+function ItemContainer:ITEM_SLOT_UPDATE_COOLDOWN(event, bag, slot)
+	local item = self.items[ToIndex(bag, slot)]
+	if item then
+		item:UpdateCooldown()
+	end
+end
+
+function ItemContainer:ITEM_LOCK_CHANGED(event, bag, slot)
+	if not slot then return end
+
+	local item = self.items[ToIndex(bag, slot)]
+	if item then
+		item:UpdateLocked()
+	end
+end
+
+function ItemContainer:RemoveAllItems()
+	local items = self.items
+	for i, item in pairs(items) do
+		item:Free()
+		items[i] = nil
+	end
+	self.itemCount = 0
 end
 
 function ItemContainer:ItemFilter(bag, slot, link)
+	-- check for the bag
+	local hasBag = false
+	for _, bagID in pairs(self.bags) do
+		if bag == bagID then
+			hasBag = true
+			break
+		end
+	end
+	if not hasBag then return false end
+
 	-- TODO: possible item filtering
 	return true
+end
+
+function ItemContainer:UpdateBags()
+	self:RemoveAllItems()
+	self:GenerateItemButtons()
 end
 
 function ItemContainer:UpdateSlot(bag, slot)

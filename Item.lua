@@ -59,9 +59,9 @@ function Inventorian.Item:CreateItemPool()
 end
 
 function Item:Free()
-	item:SetParent(nil)
-	item:SetID(0)
-	item:ClearAllPoints()
+	self:SetParent(nil)
+	self:SetID(0)
+	self:ClearAllPoints()
 
 	Inventorian.Item.pool[self] = true
 end
@@ -103,7 +103,7 @@ function Item:Update()
 	self:UpdateBorder(quality)
 
 	if GameTooltip:IsOwned(self) then
-		self:UpdateTooltip()
+		--self:UpdateTooltip()
 	end
 end
 
@@ -125,6 +125,15 @@ end
 
 function Item:SetLocked(locked)
 	SetItemButtonDesaturated(self, locked)
+end
+
+function Item:UpdateLocked()
+	self:SetLocked(self:IsLocked())
+end
+
+-- returns true if the slot is locked, and false otherwise
+function Item:IsLocked()
+	return select(3, self:GetInfo())
 end
 
 function Item:SetReadable(readable)
