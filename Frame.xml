@@ -4,6 +4,9 @@
 	       topLevel="true" frameStrata="HIGH" parent="UIParent" hidden="true"
 	       inherits="ButtonFrameTemplate" virtual="true">
 		<Size x="300" y="400"/>
+		<ResizeBounds>
+			<minResize x="300" y="400"/>
+		</ResizeBounds>
 
 		<HitRectInsets>
 			<AbsInset left="0" right="35" top="0" bottom="75"/>
@@ -107,13 +110,8 @@
 
 		<Scripts>
 			<OnLoad>
-				self:SetMinResize(self:GetWidth(), self:GetHeight())
-				self:RegisterUnitEvent("UNIT_PORTRAIT_UPDATE", "player")
 				SetPortraitTexture(self.portrait, "player")
 			</OnLoad>
-			<OnEvent>
-				SetPortraitTexture(self.portrait, (...))
-			</OnEvent>
 		</Scripts>
 	</Frame>
 </Ui>

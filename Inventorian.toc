@@ -12,4 +12,7 @@
 Frame.xml
 
 Inventorian.lua
+
 Frame.lua
+ItemContainer.lua
+Item.lua

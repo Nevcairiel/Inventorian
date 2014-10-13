@@ -1,4 +1,5 @@
-local Inventorian = LibStub("AceAddon-3.0"):NewAddon("Inventorian", "AceEvent-3.0")
+local _, Inventorian = ...
+Inventorian = LibStub("AceAddon-3.0"):NewAddon(Inventorian, "Inventorian", "AceEvent-3.0")
 
 local db
 local defaults = {
@@ -20,6 +21,6 @@ function Inventorian:OnInitialize()
 end
 
 function Inventorian:OnEnable()
-	self.bag = self:CreateFrame("InventorianBagFrame", "Bag", db.bag)
+	self.bag = Inventorian.Frame:Create("InventorianBagFrame", "Bag", db.bag, {0, 1, 2, 3, 4})
 	self.bag:Show()
 end
