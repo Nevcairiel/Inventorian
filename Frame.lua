@@ -62,6 +62,17 @@ function Frame.OnTabClick(tab)
 
 	PanelTemplates_SetTab(frame, tabID)
 	frame.itemContainer:SetBags(frame.config[tabID].bags)
+
+	-- hack for the reagent bank to behave properly when right-clicking inventory items
+	if frame:IsBank() and frame:AtBank() then
+		if tabID == 2 then
+			BankFrame:Show()
+			BankFrame.selectedTab = 2
+		else
+			BankFrame:Hide()
+			BankFrame.selectedTab = 1
+		end
+	end
 end
 
 function Frame:CreateTabs()
@@ -94,13 +105,22 @@ end
 function Frame:OnShow()
 	PlaySound("igBackPackOpen")
 	SetPortraitTexture(self.portrait, "player")
+
+	if self:IsBank() and self:AtBank() then
+		if self.selectedTab == 2 then
+			BankFrame:Show()
+		end
+	end
 end
 
 function Frame:OnHide()
 	PlaySound("igBackPackClose")
 
-	if self:IsBank() and self:AtBank() then
-		CloseBankFrame()
+	if self:IsBank() then
+		if self:AtBank() then
+			CloseBankFrame()
+		end
+		BankFrame:Hide()
 	end
 end
 

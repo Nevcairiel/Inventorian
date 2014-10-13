@@ -78,6 +78,9 @@ function Inventorian:AutoHideBank()
 end
 
 function Inventorian:SetupBagHooks()
+	self.UIHider = CreateFrame("Frame")
+	self.UIHider:Hide()
+
 	-- auto magic display code
 	self:RawHook("OpenBackpack", "AutoShowInventory", true)
 	self:SecureHook("CloseBackpack", "AutoHideInventory")
@@ -91,6 +94,8 @@ function Inventorian:SetupBagHooks()
 	self:SecureHook("CloseAllBags")
 
 	BankFrame:UnregisterAllEvents()
+	BankFrame:SetScript("OnShow", nil)
+	BankFrame:SetParent(self.UIHider)
 
 	local Events = self:GetModule("Events")
 	Events.Register(self, "BANK_OPENED", function()
