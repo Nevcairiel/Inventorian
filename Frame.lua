@@ -4,6 +4,7 @@ local Frame = CreateFrame("Frame")
 local Frame_MT = {__index = Frame}
 
 local LibWindow = LibStub("LibWindow-1.1")
+local Events = Inventorian:GetModule("Events")
 
 local ITEM_CONTAINER_OFFSET_W = -22
 local ITEM_CONTAINER_OFFSET_H = -95
@@ -11,10 +12,11 @@ local ITEM_CONTAINER_OFFSET_H = -95
 Inventorian.Frame = {}
 Inventorian.Frame.defaults = {}
 Inventorian.Frame.prototype = Frame
-function Inventorian.Frame:Create(name, titleText, settings, bags)
+function Inventorian.Frame:Create(name, titleText, settings, bags, isBank)
 	local frame = setmetatable(CreateFrame("Frame", name, UIParent, "InventorianFrameTemplate"), Frame_MT)
 
 	-- settings
+	frame.isBank = isBank
 	frame.bags = bags
 	frame.settings = settings
 	frame.titleText = titleText
@@ -49,14 +51,14 @@ end
 function Frame:OnShow()
 	PlaySound("igBackPackOpen")
 	SetPortraitTexture(self.portrait, "player")
-
-	-- todo: register update events
 end
 
 function Frame:OnHide()
 	PlaySound("igBackPackClose")
 
-	-- todo: unregister update events
+	if self:IsBank() and self:AtBank() then
+		CloseBankFrame()
+	end
 end
 
 function Frame:OnEvent(event, ...)
@@ -98,9 +100,41 @@ function Frame:UpdateItemContainer(force)
 	end
 end
 
+function Frame:ToggleFrame(auto)
+	if self:IsShown() then
+		self:HideFrame(auto)
+	else
+		self:ShowFrame(auto)
+	end
+end
+
+function Frame:ShowFrame(auto)
+	if not self:IsShown() then
+		self:Show()
+		self.autoShown = auto or nil
+	end
+end
+
+function Frame:HideFrame(auto)
+	if self:IsShown() then
+		if not auto or self.autoShown then
+			self:Hide()
+			self.autoShown = nil
+		end
+	end
+end
+
 -----------------------------------------------------------------------
 -- Various information getters
 
 function Frame:GetPlayerName()
 	return UnitName("player")
+end
+
+function Frame:IsBank()
+	return self.isBank
+end
+
+function Frame:AtBank()
+	return Events.atBank
 end

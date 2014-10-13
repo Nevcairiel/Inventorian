@@ -176,7 +176,6 @@ function Events:BANKFRAME_OPENED()
 		self.firstVisit = nil
 
 		self:UpdateBagSize(BANK_CONTAINER)
-		self:UpdateBagTypes()
 		self:UpdateBagSizes()
 	end
 
