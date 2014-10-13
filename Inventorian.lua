@@ -23,9 +23,29 @@ function Inventorian:OnInitialize()
 	db = self.db.profile
 end
 
+local BAG_CONFIG =
+{
+	{
+		title = "Bag",
+		bags = { BACKPACK_CONTAINER, 1, 2, 3, 4 }
+	}
+}
+
+local BANK_CONFIG =
+{
+	{
+		title = "Bank",
+		bags = { BANK_CONTAINER, 5, 6, 7, 8, 9, 10, 11 }
+	},
+	{
+		title = "Reagents",
+		bags = { REAGENTBANK_CONTAINER }
+	}
+}
+
 function Inventorian:OnEnable()
-	self.bag = Inventorian.Frame:Create("InventorianBagFrame", "Bag", db.bag, {0, 1, 2, 3, 4})
-	self.bank = Inventorian.Frame:Create("InventorianBankFrame", "Bank", db.bank, {-1, 5, 6, 7, 8, 9, 10, 11}, true)
+	self.bag = Inventorian.Frame:Create("InventorianBagFrame", "Bag", db.bag, BAG_CONFIG)
+	self.bank = Inventorian.Frame:Create("InventorianBankFrame", "Bank", db.bank, BANK_CONFIG, true)
 	self:SetupBagHooks()
 end
 

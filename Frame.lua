@@ -12,19 +12,22 @@ local ITEM_CONTAINER_OFFSET_H = -95
 Inventorian.Frame = {}
 Inventorian.Frame.defaults = {}
 Inventorian.Frame.prototype = Frame
-function Inventorian.Frame:Create(name, titleText, settings, bags, isBank)
+function Inventorian.Frame:Create(name, titleText, settings, config, isBank)
 	local frame = setmetatable(CreateFrame("Frame", name, UIParent, "InventorianFrameTemplate"), Frame_MT)
 
 	-- settings
 	frame.isBank = isBank
-	frame.bags = bags
+	frame.config = config
 	frame.settings = settings
 	frame.titleText = titleText
 
 	-- components
 	frame.itemContainer = Inventorian.ItemContainer:Create(frame)
 	frame.itemContainer:SetPoint("TOPLEFT", 10, -64)
+	frame.itemContainer:SetBags(config[1].bags)
 	frame.itemContainer:Show()
+
+	frame:CreateTabs()
 
 	-- scripts
 	frame:SetScript("OnShow", frame.OnShow)
@@ -45,7 +48,47 @@ function Inventorian.Frame:Create(name, titleText, settings, bags, isBank)
 	frame:UpdateTitleText()
 	frame:UpdateBags()
 
+	tinsert(UISpecialFrames, name)
+
 	return frame
+end
+
+function Frame.OnTabClick(tab)
+	local frame = tab:GetParent()
+	local tabID = tab:GetID()
+	if frame.selectedTab ~= tabID then
+		PlaySound("igCharacterInfoTab")
+	end
+
+	PanelTemplates_SetTab(frame, tabID)
+	frame.itemContainer:SetBags(frame.config[tabID].bags)
+end
+
+function Frame:CreateTabs()
+	local numConfigs = #self.config
+	if numConfigs <= 1 then return end
+
+	self.tabs = {}
+	for i = 1, numConfigs do
+		local tab = CreateFrame("Button", self:GetName() .. "Tab" .. i, self, "InventorianFrameTabButtonTemplate")
+		tab:SetScript("OnClick", self.OnTabClick)
+		tab:SetID(i)
+		tab:SetText(self.config[i].title)
+
+		if i > 1 then
+			tab:SetPoint("LEFT", self.tabs[i-1], "RIGHT", -16, 0)
+		else
+			tab:SetPoint("CENTER", self, "BOTTOMLEFT", 50, -14)
+		end
+
+		PanelTemplates_TabResize(tab, 0)
+		tab:GetHighlightTexture():SetWidth(tab:GetTextWidth() + 30)
+
+		self.tabs[i] = tab
+	end
+
+	PanelTemplates_SetNumTabs(self, numConfigs)
+	PanelTemplates_SetTab(self, 1)
 end
 
 function Frame:OnShow()

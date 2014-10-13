@@ -30,9 +30,10 @@ function Inventorian.Item:WrapItemButton(item)
 
 	-- scripts
 	item:SetScript("OnEvent", nil)
-	--item:SetScript("OnEnter", item.OnEnter)
-	--item:SetScript("OnLeave", item.OnLeave)
+	item:SetScript("OnEnter", item.OnEnter)
+	item:SetScript("OnLeave", item.OnLeave)
 	item:SetScript("OnShow", item.OnShow)
+	item.UpdateTooltip = nil
 	
 	-- elements
 	local name = item:GetName()
@@ -62,6 +63,7 @@ function Item:Free()
 	self:SetParent(nil)
 	self:SetID(0)
 	self:ClearAllPoints()
+	self:Hide()
 
 	Inventorian.Item.pool[self] = true
 end
@@ -103,7 +105,7 @@ function Item:Update()
 	self:UpdateBorder(quality)
 
 	if GameTooltip:IsOwned(self) then
-		--self:UpdateTooltip()
+		self:UpdateTooltip()
 	end
 end
 
@@ -206,6 +208,36 @@ function Item:UpdateBorder(quality)
 	end
 end
 
+function Item:OnEnter()
+	if self:IsBank() or self:IsReagentBank() then
+		if self:GetItem() then
+			local id = self:IsBank() and BankButtonIDToInvSlotID(self:GetID()) or ReagentBankButtonIDToInvSlotID(self:GetID())
+			self:AnchorTooltip()
+			GameTooltip:SetInventoryItem("player", id)
+			GameTooltip:Show()
+			CursorUpdate(self)
+		end
+	else
+		ContainerFrameItemButton_OnEnter(self)
+	end
+end
+
+function Item:OnLeave()
+	GameTooltip:Hide()
+	BattlePetTooltip:Hide()
+	ResetCursor()
+end
+
+Item.UpdateTooltip = Item.OnEnter
+
+function Item:AnchorTooltip()
+	if self:GetRight() >= (GetScreenWidth() / 2) then
+		GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+	else
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+	end
+end
+
 -----------------------------------------------------------------------
 -- Utility
 
@@ -245,4 +277,12 @@ end
 
 function Item:IsNew()
 	return C_NewItems.IsNewItem(self.bag, self.slot), IsBattlePayItem(self.bag, self.slot)
+end
+
+function Item:IsBank()
+	return self.bag == BANK_CONTAINER
+end
+
+function Item:IsReagentBank()
+	return self.bag == REAGENTBANK_CONTAINER
 end

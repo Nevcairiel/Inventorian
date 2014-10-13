@@ -14,7 +14,6 @@ function Inventorian.ItemContainer:Create(parent)
 	-- settings
 	frame.items = {}
 	frame.itemCount = 0
-	frame.bags = parent.bags
 
 	-- scripts
 	frame:SetScript("OnShow", frame.OnShow)
@@ -29,6 +28,11 @@ end
 
 local function ToBag(index)
 	return (index > 0 and floor(index / 100)) or ceil(index / 100)
+end
+
+function ItemContainer:SetBags(bags)
+	self.bags = bags
+	self:UpdateBags()
 end
 
 function ItemContainer:OnShow()
