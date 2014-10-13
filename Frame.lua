@@ -73,6 +73,20 @@ function Frame.OnTabClick(tab)
 			BankFrame.selectedTab = 1
 		end
 	end
+
+	if frame:IsBank() and tabID == 2 and not IsReagentBankUnlocked() then
+		local UnlockInfo = ReagentBankFrameUnlockInfo
+		UnlockInfo:SetParent(frame.itemContainer)
+		UnlockInfo:SetFrameLevel(frame.itemContainer:GetFrameLevel() + 10)
+		UnlockInfo:ClearAllPoints()
+		UnlockInfo:SetPoint("TOPLEFT", -8, 1)
+		UnlockInfo:SetPoint("BOTTOMRIGHT", 8, -1)
+		UnlockInfo:Show()
+
+		MoneyFrame_Update(UnlockInfo.CostMoneyFrame, GetReagentBankCost())
+	else
+		ReagentBankFrameUnlockInfo:Hide()
+	end
 end
 
 function Frame:CreateTabs()
