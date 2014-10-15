@@ -10,10 +10,12 @@ local defaults = {
 			point = "CENTER",
 			width = 384,
 			height = 512,
+			showBags = false,
 		},
 		bank = {
 			width = 512,
 			height = 512,
+			showBags = false,
 		},
 	}
 }

@@ -132,6 +132,61 @@
 				<PushedTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Down" setAllPoints="true"/>
 				<HighlightTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Highlight" alphaMode="ADD" setAllPoints="true"/>
 			</Button>
+
+			<Button name="$pargenBagToggle">
+				<Size x="32" y="32"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset x="-10" y="-27"/>
+					</Anchor>
+				</Anchors>
+
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Icon" name="$parentIcon" file="Interface\Buttons\Button-Backpack-Up">
+							<Size x="20" y="20"/>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset x="7" y="-6"/>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.075" right="0.925" top="0.075" bottom="0.925"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Border" name="$parentBorder" file="Interface\Minimap\MiniMap-TrackingBorder">
+							<Size x="54" y="54"/>
+
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForClicks("anyUp")
+						self.Border:SetDesaturated(true)
+						self.Border:SetAlpha(0.6)
+					</OnLoad>
+					<OnClick>
+						self:GetParent():OnBagToggleClick(self, button)
+					</OnClick>
+					<OnMouseDown>
+						self.Icon:SetTexCoord(0,1,0,1)
+					</OnMouseDown>
+					<OnMouseUp>
+						self.Icon:SetTexCoord(0.075,0.925,0.075,0.925)
+					</OnMouseUp>
+					<OnEnter>
+						self:GetParent():OnBagToggleEnter(self)
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide()
+					</OnLeave>
+				</Scripts>
+				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+			</Button>
 		</Frames>
 
 		<Scripts>

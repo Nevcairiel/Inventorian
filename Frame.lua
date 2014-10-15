@@ -20,6 +20,8 @@ function Inventorian.Frame:Create(name, titleText, settings, config, isBank)
 	frame.config = config
 	frame.settings = settings
 	frame.titleText = titleText
+	frame.currentConfig = config[1]
+	frame.bagButtons = {}
 
 	-- components
 	frame.itemContainer = Inventorian.ItemContainer:Create(frame)
@@ -61,7 +63,10 @@ function Frame.OnTabClick(tab)
 	end
 
 	PanelTemplates_SetTab(frame, tabID)
-	frame.itemContainer:SetBags(frame.config[tabID].bags)
+	frame.currentConfig = frame.config[tabID]
+	frame.itemContainer:SetBags(frame.currentConfig.bags)
+
+	frame:UpdateBags()
 
 	-- hack for the reagent bank to behave properly when right-clicking inventory items
 	if frame:IsBank() and frame:AtBank() then
@@ -138,6 +143,20 @@ function Frame:OnHide()
 	end
 end
 
+function Frame:OnBagToggleClick(toggle, button)
+	if button == "LeftButton" then
+		_G[toggle:GetName() .. "Icon"]:SetTexCoord(0.075, 0.925, 0.075, 0.925)
+		self:ToggleBagFrame()
+	end
+end
+
+function Frame:OnBagToggleEnter(toggle)
+	GameTooltip:SetOwner(toggle, 'ANCHOR_LEFT')
+	GameTooltip:SetText("Bags", 1, 1, 1)
+	GameTooltip:AddLine("<Left-Click> to toggle the bag display")
+	GameTooltip:Show()
+end
+
 function Frame:OnEvent(event, ...)
 	if event == "UNIT_PORTRAIT_UPDATE" and self:IsShown() then
 		SetPortraitTexture(self.portrait, "player")
@@ -156,9 +175,34 @@ function Frame:UpdateTitleText()
 	self.Title:SetFormattedText(self.titleText, self:GetPlayerName())
 end
 
-function Frame:UpdateBags()
-	if self.settings.showBags then
+function Frame:ToggleBagFrame()
+	self.settings.showBags = not self.settings.showBags
+	--self:UpdateBagToggleHighlight()
+	self:UpdateBags()
+end
 
+function Frame:UpdateBags()
+	for i, bag in pairs(self.bagButtons) do
+		self.bagButtons[i] = nil
+		bag:Free()
+	end
+
+	if self.settings.showBags then
+		for _, bagID in ipairs(self.currentConfig.bags) do
+			local bag = Inventorian.Bag:Create()
+			bag:Set(self, bagID)
+			tinsert(self.bagButtons, bag)
+		end
+
+		for i, bag in ipairs(self.bagButtons) do
+			bag:ClearAllPoints()
+			if i > 1 then
+				bag:SetPoint("TOP", self.bagButtons[i-1], "BOTTOM", 0, -2)
+			else
+				bag:SetPoint("TOPRIGHT", -12, -66)
+			end
+			bag:Show()
+		end
 	end
 	self:UpdateItemContainer()
 end

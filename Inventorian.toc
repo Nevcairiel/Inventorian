@@ -17,3 +17,4 @@ Events.lua
 Frame.lua
 ItemContainer.lua
 Item.lua
+Bag.lua

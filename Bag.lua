@@ -1,0 +1,341 @@
+local _, Inventorian = ...
+
+local Bag = CreateFrame("Button")
+local Bag_MT = {__index = Bag}
+
+Inventorian.Bag = {}
+Inventorian.Bag.pool = {}
+Inventorian.Bag.prototype = Bag
+
+local BagID = 1
+function Inventorian.Bag:Create()
+	local item = next(self.pool)
+	if item then
+		self.pool[item] = nil
+		return item
+	end
+	local name = ("InventorianBag%d"):format(BagID)
+	local bag = setmetatable(CreateFrame("Button", name), Bag_MT)
+	
+	bag:SetSize(30, 30)
+	
+	local icon = bag:CreateTexture(name .. "IconTexture", "BORDER")
+	icon:SetAllPoints(bag)
+	
+	bag.count = bag:CreateFontString(name .. "Count", 'OVERLAY')
+	bag.count:SetFontObject("NumberFontNormalSmall")
+	bag.count:SetJustifyH("RIGHT")
+	bag.count:SetPoint("BOTTOMRIGHT", -2, 2)
+	
+	local nt = bag:CreateTexture(name .. "NormalTexture")
+	nt:SetTexture([[Interface\Buttons\UI-Quickslot2]])
+	nt:SetWidth(64 * (5/6))
+	nt:SetHeight(64 * (5/6))
+	nt:SetPoint("CENTER", 0, -1)
+	bag:SetNormalTexture(nt)
+
+	local pt = bag:CreateTexture()
+	pt:SetTexture([[Interface\Buttons\UI-Quickslot-Depress]])
+	pt:SetAllPoints(bag)
+	bag:SetPushedTexture(pt)
+
+	local ht = bag:CreateTexture()
+	ht:SetTexture([[Interface\Buttons\ButtonHilight-Square]])
+	ht:SetAllPoints(bag)
+	bag:SetHighlightTexture(ht)
+
+	bag:RegisterForClicks("AnyUp")
+	bag:RegisterForDrag("LeftButton")
+
+	bag:SetScript("OnEnter", bag.OnEnter)
+	bag:SetScript("OnShow", bag.OnShow)
+	bag:SetScript("OnLeave", bag.OnLeave)
+	bag:SetScript("OnClick", bag.OnClick)
+	bag:SetScript("OnDragStart", bag.OnDrag)
+	bag:SetScript("OnReceiveDrag", bag.OnClick)
+	bag:SetScript("OnEvent", bag.OnEvent)
+	
+	BagID = BagID + 1
+	return bag
+end
+
+function Bag:Free()
+	Inventorian.Bag.pool[self] = true
+	self:SetParent(nil)
+	self:Hide()
+	self:UnregisterAllEvents()
+end
+
+function Bag:Set(parent, id)
+	self:SetID(id)
+	self:SetParent(parent)
+	
+	if self:IsBank() or self:IsReagentBank() or self:IsBackpack() then
+		SetItemButtonTexture(self, [[Interface\Buttons\Button-Backpack-Up]])
+		SetItemButtonTextureVertexColor(self, 1, 1, 1)
+	else
+		self:Update()
+
+		self:RegisterEvent("ITEM_LOCK_CHANGED")
+		self:RegisterEvent("CURSOR_UPDATE")
+		self:RegisterEvent("BAG_UPDATE")
+		self:RegisterEvent("PLAYERBANKSLOTS_CHANGED")
+
+		if self:IsBankBag() then
+			self:RegisterEvent("BANKFRAME_OPENED")
+			self:RegisterEvent("BANKFRAME_CLOSED")
+			self:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED")
+		end
+	end
+end
+
+function Bag:OnEvent(event, ...)
+	if event == "BANKFRAME_OPENED" or event == "BANKFRAME_CLOSED" then
+		self:Update()
+	else --if not self:IsCached() then
+		if event == "ITEM_LOCK_CHANGED" then
+			self:UpdateLock()
+		elseif event == "CURSOR_UPDATE" then
+			self:UpdateCursor()
+		elseif event == "BAG_UPDATE" or event == "PLAYERBANKSLOTS_CHANGED" then
+			self:Update()
+		elseif event == "PLAYERBANKBAGSLOTS_CHANGED" then
+			self:Update()
+		end
+	end
+end
+
+function Bag:OnClick(button)
+	local link = self:GetInfo()
+	if link and HandleModifiedItemClick(link) then
+		return
+	end
+
+--	if self:IsCached() then
+--		return
+--	end
+
+	if self:IsPurchasable()then
+		self:PurchaseSlot()
+	elseif CursorHasItem() then
+		if self:IsBackpack() then
+			PutItemInBackpack()
+		else
+			PutItemInBag(self:GetInventorySlot())
+		end
+	elseif not(self:IsBackpack() or self:IsBank()) then
+		self:Pickup()
+	end
+end
+
+function Bag:OnDrag()
+	self:Pickup()
+end
+
+function Bag:OnEnter()
+	if self:GetRight() > (GetScreenWidth() / 2) then
+		GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+	else
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+	end
+
+	self:UpdateTooltip()
+	self:HighlightItems()
+end
+
+function Bag:OnLeave()
+	if GameTooltip:IsOwned(self) then
+		GameTooltip:Hide()
+	end
+	self:ClearHighlightItems()
+end
+
+function Bag:OnShow()
+	self:Update()
+end
+
+function Bag:Update()
+	if not self:IsVisible() then return end
+
+	self:UpdateLock()
+	self:UpdateSlotInfo()
+	self:UpdateCursor()
+end
+
+function Bag:UpdateLock()
+	if self:IsCustomSlot() then
+		SetItemButtonDesaturated(self, self:IsLocked())
+	end
+end
+
+function Bag:UpdateCursor()
+	if not self:IsCustomSlot() then return end
+
+	if CursorCanGoInSlot(self:GetInventorySlot()) then
+		self:LockHighlight()
+	else
+		self:UnlockHighlight()
+	end
+end
+
+function Bag:UpdateSlotInfo()
+	if not self:IsCustomSlot() then return end
+
+	local link, count, texture = self:GetInfo()
+	if link then
+		self.hasItem = link
+
+		SetItemButtonTexture(self, texture or GetItemIcon(link))
+		SetItemButtonTextureVertexColor(self, 1, 1, 1)
+	else
+		self.hasItem = nil
+
+		SetItemButtonTexture(self, [[Interface\PaperDoll\UI-PaperDoll-Slot-Bag]])
+
+		--color red if the bag can be purchased
+		if self:IsPurchasable() then
+			SetItemButtonTextureVertexColor(self, 1, 0.1, 0.1)
+		else
+			SetItemButtonTextureVertexColor(self, 1, 1, 1)
+		end
+	end
+	self:SetCount(count)
+end
+
+function Bag:SetCount(count)
+	local count = count or 0
+
+	if count > 1 then
+		if count > 999 then
+			self.count:SetFormattedText('%.1fk', count/1000)
+		else
+			self.count:SetText(count)
+		end
+		self.count:Show()
+	else
+		self.count:Hide()
+	end
+end
+
+function Bag:Pickup()
+	PlaySound('BAGMENUBUTTONPRESS')
+	PickupBagFromSlot(self:GetInventorySlot())
+end
+
+function Bag:HighlightItems()
+	--self:GetParent().itemFrame:HighlightBag(self:GetID())
+end
+
+function Bag:ClearHighlightItems()
+	--self:GetParent().itemFrame:HighlightBag(nil)
+end
+
+--show the purchase slot dialog
+function Bag:PurchaseSlot()
+	if not StaticPopupDialogs['CONFIRM_BUY_BANK_SLOT_INVENTORIAN'] then
+		StaticPopupDialogs['CONFIRM_BUY_BANK_SLOT_INVENTORIAN'] = {
+			text = TEXT(CONFIRM_BUY_BANK_SLOT),
+			button1 = TEXT(YES),
+			button2 = TEXT(NO),
+
+			OnAccept = function(self) 
+				PurchaseSlot() 
+			end,
+
+			OnShow = function(self) 
+				MoneyFrame_Update(self:GetName().. 'MoneyFrame', GetBankSlotCost(GetNumBankSlots())) 
+			end,
+
+			hasMoneyFrame = 1,
+			timeout = 0,
+			hideOnEscape = 1,
+			preferredIndex = STATICPOPUP_NUMDIALOGS,
+		}
+	end
+
+	PlaySound('igMainMenuOption')
+	StaticPopup_Show('CONFIRM_BUY_BANK_SLOT_INVENTORIAN')
+end
+
+function Bag:UpdateTooltip()
+	GameTooltip:ClearLines()
+
+	if self:IsBackpack() then
+		GameTooltip:SetText(BACKPACK_TOOLTIP, 1, 1, 1)
+	elseif self:IsBank() then
+		GameTooltip:SetText("Bank", 1, 1, 1)
+	elseif self:IsReagentBank() then
+		GameTooltip:SetText("Reagent Bank", 1, 1, 1)
+	else
+		self:UpdateBagTooltip()
+	end
+
+	GameTooltip:Show()
+end
+
+function Bag:UpdateBagTooltip()
+	if not GameTooltip:SetInventoryItem("player", self:GetInventorySlot()) then
+		if self:IsPurchasable() then
+			GameTooltip:SetText(BANK_BAG_PURCHASE, 1, 1, 1)
+			GameTooltip:AddLine("Click to purchase")
+			SetTooltipMoney(GameTooltip, GetBankSlotCost(GetNumBankSlots()))
+		else
+			GameTooltip:SetText(EQUIP_CONTAINER, 1, 1, 1)
+		end
+	end
+end
+
+-----------------------------------------------------------------------
+-- Various information getters
+
+function Bag:GetPlayer()
+	return UnitName("player")
+end
+
+function Bag:IsBackpack()
+	return (self:GetID() == BACKPACK_CONTAINER)
+end
+
+function Bag:IsBank()
+	return (self:GetID() == BANK_CONTAINER)
+end
+
+function Bag:IsReagentBank()
+	return (self:GetID() == REAGENTBANK_CONTAINER)
+end
+
+function Bag:IsBackpackBag()
+	return (self:GetID() > 0 and self:GetID() <= NUM_BAG_SLOTS)
+end
+
+function Bag:IsBankBag()
+	return (self:GetID() > NUM_BAG_SLOTS and self:GetID() <= (NUM_BAG_SLOTS + NUM_BANKBAGSLOTS))
+end
+
+function Bag:IsCustomSlot()
+	return self:IsBackpackBag() or self:IsBankBag()
+end
+
+function Bag:IsPurchasable()
+	return (self:GetID() - NUM_BAG_SLOTS) > GetNumBankSlots()
+end
+
+function Bag:GetInventorySlot()
+	return self:IsCustomSlot() and ContainerIDToInventoryID(self:GetID()) or nil
+end
+
+function Bag:GetInfo()
+	local slot = self:GetInventorySlot()
+	if slot then
+		return GetInventoryItemLink("player", slot), GetInventoryItemCount("player", slot), GetInventoryItemTexture("player", slot)
+	end
+	return nil
+end
+
+function Bag:IsLocked()
+	local slot = self:GetInventorySlot()
+	if slot then
+		return IsInventoryItemLocked(slot)
+	end
+	return false
+end
