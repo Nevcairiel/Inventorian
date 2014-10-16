@@ -187,6 +187,11 @@
 				</Scripts>
 				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 			</Button>
+			<Frame parentKey="Money" name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="-6" y="9"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 
 		<Scripts>
