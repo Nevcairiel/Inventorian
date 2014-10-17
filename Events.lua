@@ -37,6 +37,7 @@ function Events:OnEnable()
 
 	self:RegisterEvent("BAG_UPDATE")
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN")
+	self:RegisterEvent("BAG_NEW_ITEMS_UPDATED")
 	self:RegisterEvent("PLAYERBANKSLOTS_CHANGED")
 	self:RegisterEvent("PLAYERREAGENTBANKSLOTS_CHANGED")
 	self:RegisterEvent("BANKFRAME_OPENED")
@@ -162,6 +163,12 @@ end
 function Events:BAG_UPDATE(event, bag)
 	self:UpdateBagSizes()
 	self:UpdateItems(bag)
+end
+
+function Events:BAG_NEW_ITEMS_UPDATED(event)
+	for bag = 0, NUM_BAG_SLOTS do
+		self:UpdateItems(bag)
+	end
 end
 
 function Events:PLAYERBANKSLOTS_CHANGED()

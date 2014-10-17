@@ -97,6 +97,11 @@ function Bag:Set(parent, id)
 			self:RegisterEvent("BANKFRAME_OPENED")
 			self:RegisterEvent("BANKFRAME_CLOSED")
 			self:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED")
+			self:RegisterEvent("BANK_BAG_SLOT_FLAGS_UPDATED")
+		end
+
+		if self:IsBackpackBag() then
+			self:RegisterEvent("BAG_SLOT_FLAGS_UPDATED")
 		end
 	end
 end
@@ -112,6 +117,8 @@ function Bag:OnEvent(event, ...)
 		elseif event == "BAG_UPDATE" or event == "PLAYERBANKSLOTS_CHANGED" then
 			self:Update()
 		elseif event == "PLAYERBANKBAGSLOTS_CHANGED" then
+			self:Update()
+		elseif event == "BAG_SLOT_FLAGS_UPDATED" or event == "BANK_BAG_SLOT_FLAGS_UPDATED" then
 			self:Update()
 		end
 	end
