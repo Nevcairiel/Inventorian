@@ -28,6 +28,7 @@ libs\LibWindow-1.1\LibWindow-1.1.lua
 
 Frame.xml
 
+Localization.lua
 Inventorian.lua
 Events.lua
 

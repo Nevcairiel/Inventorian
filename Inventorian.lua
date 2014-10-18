@@ -1,5 +1,6 @@
 local _, Inventorian = ...
 Inventorian = LibStub("AceAddon-3.0"):NewAddon(Inventorian, "Inventorian", "AceEvent-3.0", "AceHook-3.0")
+local L = LibStub("AceLocale-3.0"):GetLocale("Inventorian")
 
 local db
 local defaults = {
@@ -28,7 +29,7 @@ end
 local BAG_CONFIG =
 {
 	{
-		title = "Bag",
+		title = BAGSLOT,
 		bags = { BACKPACK_CONTAINER, 1, 2, 3, 4 }
 	}
 }
@@ -36,18 +37,18 @@ local BAG_CONFIG =
 local BANK_CONFIG =
 {
 	{
-		title = "Bank",
+		title = BANK,
 		bags = { BANK_CONTAINER, 5, 6, 7, 8, 9, 10, 11 }
 	},
 	{
-		title = "Reagents",
+		title = L["Reagents"],
 		bags = { REAGENTBANK_CONTAINER }
 	}
 }
 
 function Inventorian:OnEnable()
-	self.bag = Inventorian.Frame:Create("InventorianBagFrame", "Bag", db.bag, BAG_CONFIG)
-	self.bank = Inventorian.Frame:Create("InventorianBankFrame", "Bank", db.bank, BANK_CONFIG, true)
+	self.bag = Inventorian.Frame:Create("InventorianBagFrame", L["%s's Inventory"], db.bag, BAG_CONFIG)
+	self.bank = Inventorian.Frame:Create("InventorianBankFrame", L["%s's Bank"], db.bank, BANK_CONFIG, true)
 	self:SetupBagHooks()
 end
 

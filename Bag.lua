@@ -1,4 +1,5 @@
 local _, Inventorian = ...
+local L = LibStub("AceLocale-3.0"):GetLocale("Inventorian")
 
 local Bag = CreateFrame("Button")
 local Bag_MT = {__index = Bag}
@@ -307,9 +308,9 @@ function Bag:UpdateTooltip()
 	if self:IsBackpack() then
 		GameTooltip:SetText(BACKPACK_TOOLTIP, 1, 1, 1)
 	elseif self:IsBank() then
-		GameTooltip:SetText("Bank", 1, 1, 1)
+		GameTooltip:SetText(BANK, 1, 1, 1)
 	elseif self:IsReagentBank() then
-		GameTooltip:SetText("Reagent Bank", 1, 1, 1)
+		GameTooltip:SetText(REAGENT_BANK, 1, 1, 1)
 	else
 		self:UpdateBagTooltip()
 	end
@@ -321,7 +322,7 @@ function Bag:UpdateBagTooltip()
 	if not GameTooltip:SetInventoryItem("player", self:GetInventorySlot()) then
 		if self:IsPurchasable() then
 			GameTooltip:SetText(BANK_BAG_PURCHASE, 1, 1, 1)
-			GameTooltip:AddLine("Click to purchase")
+			GameTooltip:AddLine(L["Click to purchase"])
 			SetTooltipMoney(GameTooltip, GetBankSlotCost(GetNumBankSlots()))
 		else
 			GameTooltip:SetText(EQUIP_CONTAINER, 1, 1, 1)

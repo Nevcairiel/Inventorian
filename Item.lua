@@ -1,4 +1,5 @@
 local _, Inventorian = ...
+local L = LibStub("AceLocale-3.0"):GetLocale("Inventorian")
 
 local Item = CreateFrame("Button")
 local Item_MT = {__index = Item}

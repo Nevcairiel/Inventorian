@@ -1,4 +1,5 @@
 local _, Inventorian = ...
+local L = LibStub("AceLocale-3.0"):GetLocale("Inventorian")
 
 local Frame = CreateFrame("Frame")
 local Frame_MT = {__index = Frame}
@@ -152,8 +153,8 @@ end
 
 function Frame:OnBagToggleEnter(toggle)
 	GameTooltip:SetOwner(toggle, 'ANCHOR_LEFT')
-	GameTooltip:SetText("Bags", 1, 1, 1)
-	GameTooltip:AddLine("<Left-Click> to toggle the bag display")
+	GameTooltip:SetText(L["Bags"], 1, 1, 1)
+	GameTooltip:AddLine(L["<Left-Click> to toggle the bag display"])
 	GameTooltip:Show()
 end
 
