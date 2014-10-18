@@ -152,7 +152,7 @@ function Frame:OnBagToggleClick(toggle, button)
 end
 
 function Frame:OnBagToggleEnter(toggle)
-	GameTooltip:SetOwner(toggle, 'ANCHOR_LEFT')
+	GameTooltip:SetOwner(toggle, "ANCHOR_LEFT")
 	GameTooltip:SetText(L["Bags"], 1, 1, 1)
 	GameTooltip:AddLine(L["<Left-Click> to toggle the bag display"])
 	GameTooltip:Show()

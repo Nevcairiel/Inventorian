@@ -87,8 +87,8 @@
 				<Size x="262" y="14"/>
 				<Scripts>
 					<OnLoad>
-						self:RegisterForDrag('LeftButton')
-						self:SetPoint('TOP', self:GetParent().TitleText)
+						self:RegisterForDrag("LeftButton")
+						self:SetPoint("TOP", self:GetParent().TitleText)
 					</OnLoad>
 					<OnMouseDown>
 						self.moving = true

@@ -249,7 +249,7 @@ function Item:GetBagContainer(container, bag)
 	if not bagContainers then
 		bagContainers = setmetatable({}, {
 			__index = function(t, k)
-				local f = CreateFrame('Frame', nil, container)
+				local f = CreateFrame("Frame", nil, container)
 				f:SetID(k)
 				t[k] = f
 				return f

@@ -23,7 +23,7 @@ function Inventorian.Bag:Create()
 	local icon = bag:CreateTexture(name .. "IconTexture", "BORDER")
 	icon:SetAllPoints(bag)
 	
-	bag.count = bag:CreateFontString(name .. "Count", 'OVERLAY')
+	bag.count = bag:CreateFontString(name .. "Count", "OVERLAY")
 	bag.count:SetFontObject("NumberFontNormalSmall")
 	bag.count:SetJustifyH("RIGHT")
 	bag.count:SetPoint("BOTTOMRIGHT", -2, 2)
@@ -252,7 +252,7 @@ function Bag:SetCount(count)
 
 	if count > 1 then
 		if count > 999 then
-			self.count:SetFormattedText('%.1fk', count/1000)
+			self.count:SetFormattedText("%.1fk", count/1000)
 		else
 			self.count:SetText(count)
 		end
@@ -263,7 +263,7 @@ function Bag:SetCount(count)
 end
 
 function Bag:Pickup()
-	PlaySound('BAGMENUBUTTONPRESS')
+	PlaySound("BAGMENUBUTTONPRESS")
 	PickupBagFromSlot(self:GetInventorySlot())
 end
 
@@ -277,8 +277,8 @@ end
 
 --show the purchase slot dialog
 function Bag:PurchaseSlot()
-	if not StaticPopupDialogs['CONFIRM_BUY_BANK_SLOT_INVENTORIAN'] then
-		StaticPopupDialogs['CONFIRM_BUY_BANK_SLOT_INVENTORIAN'] = {
+	if not StaticPopupDialogs["CONFIRM_BUY_BANK_SLOT_INVENTORIAN"] then
+		StaticPopupDialogs["CONFIRM_BUY_BANK_SLOT_INVENTORIAN"] = {
 			text = TEXT(CONFIRM_BUY_BANK_SLOT),
 			button1 = TEXT(YES),
 			button2 = TEXT(NO),
@@ -288,7 +288,7 @@ function Bag:PurchaseSlot()
 			end,
 
 			OnShow = function(self) 
-				MoneyFrame_Update(self:GetName().. 'MoneyFrame', GetBankSlotCost(GetNumBankSlots())) 
+				MoneyFrame_Update(self:GetName().. "MoneyFrame", GetBankSlotCost(GetNumBankSlots()))
 			end,
 
 			hasMoneyFrame = 1,
@@ -298,8 +298,8 @@ function Bag:PurchaseSlot()
 		}
 	end
 
-	PlaySound('igMainMenuOption')
-	StaticPopup_Show('CONFIRM_BUY_BANK_SLOT_INVENTORIAN')
+	PlaySound("igMainMenuOption")
+	StaticPopup_Show("CONFIRM_BUY_BANK_SLOT_INVENTORIAN")
 end
 
 function Bag:UpdateTooltip()
