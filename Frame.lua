@@ -30,6 +30,13 @@ function Inventorian.Frame:Create(name, titleText, settings, config, isBank)
 	frame.itemContainer:SetBags(config[1].bags)
 	frame.itemContainer:Show()
 
+	frame.DepositButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+	frame.DepositButton:SetText(REAGENTBANK_DEPOSIT)
+	frame.DepositButton:SetSize(256, 24)
+	frame.DepositButton:SetPoint("BOTTOM", 0, 31)
+	frame.DepositButton:SetScript("OnClick", frame.OnDepositClick)
+	frame.DepositButton:Hide()
+
 	frame:CreateTabs()
 
 	-- scripts
@@ -67,8 +74,6 @@ function Frame.OnTabClick(tab)
 	frame.currentConfig = frame.config[tabID]
 	frame.itemContainer:SetBags(frame.currentConfig.bags)
 
-	frame:UpdateBags()
-
 	-- hack for the reagent bank to behave properly when right-clicking inventory items
 	if frame:IsBank() and frame:AtBank() then
 		if tabID == 2 then
@@ -80,19 +85,25 @@ function Frame.OnTabClick(tab)
 		end
 	end
 
-	if frame:IsBank() and tabID == 2 and not IsReagentBankUnlocked() then
-		local UnlockInfo = ReagentBankFrameUnlockInfo
-		UnlockInfo:SetParent(frame.itemContainer)
-		UnlockInfo:SetFrameLevel(frame.itemContainer:GetFrameLevel() + 10)
-		UnlockInfo:ClearAllPoints()
-		UnlockInfo:SetPoint("TOPLEFT", -8, 1)
-		UnlockInfo:SetPoint("BOTTOMRIGHT", 8, -1)
-		UnlockInfo:Show()
+	ReagentBankFrameUnlockInfo:Hide()
+	frame.DepositButton:Hide()
+	if frame:IsBank() and tabID == 2 then
+		if not IsReagentBankUnlocked() then
+			local UnlockInfo = ReagentBankFrameUnlockInfo
+			UnlockInfo:SetParent(frame.itemContainer)
+			UnlockInfo:SetFrameLevel(frame.itemContainer:GetFrameLevel() + 10)
+			UnlockInfo:ClearAllPoints()
+			UnlockInfo:SetPoint("TOPLEFT", -8, 1)
+			UnlockInfo:SetPoint("BOTTOMRIGHT", 8, -1)
+			UnlockInfo:Show()
 
-		MoneyFrame_Update(UnlockInfo.CostMoneyFrame, GetReagentBankCost())
-	else
-		ReagentBankFrameUnlockInfo:Hide()
+			MoneyFrame_Update(UnlockInfo.CostMoneyFrame, GetReagentBankCost())
+		end
+
+		frame.DepositButton:Show()
 	end
+
+	frame:UpdateBags()
 end
 
 function Frame:CreateTabs()
@@ -158,6 +169,11 @@ function Frame:OnBagToggleEnter(toggle)
 	GameTooltip:Show()
 end
 
+function Frame.OnDepositClick(button)
+	PlaySound("igMainMenuOption")
+	DepositReagentBank()
+end
+
 function Frame:OnEvent(event, ...)
 	if event == "UNIT_PORTRAIT_UPDATE" and self:IsShown() then
 		SetPortraitTexture(self.portrait, "player")
@@ -213,6 +229,10 @@ function Frame:UpdateItemContainer(force)
 	local height = self:GetHeight() + ITEM_CONTAINER_OFFSET_H
 	if self.settings.showBags then
 		width = width - 36
+	end
+
+	if self.DepositButton:IsShown() then
+		height = height - 26
 	end
 
 	if width ~= self.itemContainer:GetWidth() or height ~= self.itemContainer:GetHeight() then
