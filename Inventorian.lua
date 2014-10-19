@@ -6,14 +6,17 @@ local db
 local defaults = {
 	profile = {
 		bag = {
-			x = 0,
-			y = 0,
-			point = "CENTER",
+			x = -20,
+			y = -80,
+			point = "RIGHT",
 			width = 384,
 			height = 512,
 			showBags = false,
 		},
 		bank = {
+			x = 220,
+			y = 120,
+			point = "LEFT",
 			width = 512,
 			height = 512,
 			showBags = false,
