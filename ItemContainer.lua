@@ -103,6 +103,18 @@ function ItemContainer:ItemFilter(bag, slot, link)
 	return true
 end
 
+function ItemContainer:Search(text)
+	if text == "" then text = nil end
+	self.searchText = text
+	self:UpdateSearch()
+end
+
+function ItemContainer:UpdateSearch()
+	for idx, item in pairs(self.items) do
+		item:UpdateSearch(self.searchText)
+	end
+end
+
 function ItemContainer:UpdateBags()
 	self:RemoveAllItems()
 	self:GenerateItemButtons()

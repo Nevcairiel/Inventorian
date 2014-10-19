@@ -133,6 +133,24 @@
 				<HighlightTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Highlight" alphaMode="ADD" setAllPoints="true"/>
 			</Button>
 
+			<EditBox name="$parentSearchBox" parentKey="SearchBox" inherits="SearchBoxTemplate">
+				<Size y="18"/>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="75" y="-32"/>
+					</Anchor>
+					<Anchor point="TOPRIGHT">
+						<Offset x="-75" y="-32"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnTextChanged>
+						SearchBoxTemplate_OnTextChanged(self)
+						self:GetParent():OnSearchTextChanged()
+					</OnTextChanged>
+				</Scripts>
+			</EditBox>
+
 			<Button name="$pargenBagToggle">
 				<Size x="32" y="32"/>
 				<Anchors>

@@ -41,6 +41,11 @@ function Inventorian.Item:WrapItemButton(item)
 	item.IconQuestTexture = _G[name .. "IconQuestTexture"]
 	item.Cooldown = _G[name .. "Cooldown"]
 
+	-- re-size search overlay to cover the item quality border as well
+	item.searchOverlay:ClearAllPoints()
+	item.searchOverlay:SetSize(39, 39)
+	item.searchOverlay:SetPoint("CENTER")
+
 	return item
 end
 
@@ -104,6 +109,7 @@ function Item:Update()
 	self:SetReadable(readable)
 	self:UpdateCooldown()
 	self:UpdateBorder(quality)
+	self:UpdateSearch(self.container.searchText)
 
 	if GameTooltip:IsOwned(self) then
 		self:UpdateTooltip()
@@ -206,6 +212,27 @@ function Item:UpdateBorder(quality)
 				self:SetBorderColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b)
 			end
 		end
+	end
+end
+
+function Item:UpdateSearch(text)
+	local found = false
+	-- TODO: smarter search
+	if text and self.hasItem then
+		text = string.lower(text)
+		local name = GetItemInfo(self.hasItem)
+		if name then
+			name = string.lower(name)
+			if string.find(name, text) then
+				found = true
+			end
+		end
+	end
+
+	if not text or found then
+		self.searchOverlay:Hide()
+	else
+		self.searchOverlay:Show()
 	end
 end
 

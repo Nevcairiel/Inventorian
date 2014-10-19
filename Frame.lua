@@ -153,6 +153,9 @@ function Frame:OnHide()
 		end
 		BankFrame:Hide()
 	end
+
+	-- clear search on hide
+	self.SearchBox.clearButton:Click()
 end
 
 function Frame:OnBagToggleClick(toggle, button)
@@ -186,6 +189,10 @@ function Frame:OnSizeChanged(width, height)
 	LibWindow.SavePosition(self)
 
 	self:UpdateItemContainer()
+end
+
+function Frame:OnSearchTextChanged()
+	self.itemContainer:Search(self.SearchBox:GetText())
 end
 
 function Frame:UpdateTitleText()
