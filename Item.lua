@@ -231,8 +231,16 @@ function Item:UpdateSearch(text)
 
 	if not text or found then
 		self.searchOverlay:Hide()
+		local isNewItem = self:IsNew()
+		if isNewItem and not self.newitemglowAnim:IsPlaying() then
+			self.newitemglowAnim:Play()
+		end
 	else
 		self.searchOverlay:Show()
+		if self.flashAnim:IsPlaying() or self.newitemglowAnim:IsPlaying() then
+			self.flashAnim:Stop()
+			self.newitemglowAnim:Stop()
+		end
 	end
 end
 
