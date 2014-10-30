@@ -66,6 +66,7 @@ function Events:AddItem(bag, slot)
 	data[2] = count
 	data[3] = locked
 	data[4] = onCooldown
+	data[5] = start
 
 	self:Fire("ITEM_SLOT_ADD", bag, slot, link, count, locked, onCooldown)
 end
@@ -97,6 +98,7 @@ function Events:UpdateItem(bag, slot)
 			data[2] = count
 			data[3] = locked
 			data[4] = onCooldown
+			data[5] = start
 
 			self:Fire("ITEM_SLOT_UPDATE", bag, slot, link, count, locked, onCooldown)
 		end
@@ -117,8 +119,9 @@ function Events:UpdateCooldown(bag, slot)
 		local start, duration, enable = GetContainerItemCooldown(bag, slot)
 		local onCooldown = (start > 0 and duration > 0 and enable > 0)
 
-		if data[4] ~= onCooldown then
+		if data[4] ~= onCooldown or (onCooldown and data[5] ~= start) then
 			data[4] = onCooldown
+			data[5] = start
 			self:Fire("ITEM_SLOT_UPDATE_COOLDOWN", bag, slot, onCooldown)
 		end
 	end
