@@ -115,6 +115,13 @@ function ItemContainer:UpdateSearch()
 	end
 end
 
+function ItemContainer:HighlightBag(bag)
+	self.highlightBag = bag
+	for _, item in pairs(self.items) do
+		item:Highlight(item:GetBag() == bag)
+	end
+end
+
 function ItemContainer:UpdateBags()
 	self:RemoveAllItems()
 	self:GenerateItemButtons()

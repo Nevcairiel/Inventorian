@@ -70,6 +70,7 @@ function Item:Free()
 	self:SetID(0)
 	self:ClearAllPoints()
 	self:Hide()
+	self:UnlockHighlight()
 
 	Inventorian.Item.pool[self] = true
 end
@@ -244,6 +245,14 @@ function Item:UpdateSearch(text)
 	end
 end
 
+function Item:Highlight(enable)
+	if enable then
+		self:LockHighlight()
+	else
+		self:UnlockHighlight()
+	end
+end
+
 function Item:OnEnter()
 	if self:IsBank() or self:IsReagentBank() then
 		if self:GetItem() then
@@ -297,6 +306,10 @@ end
 
 -----------------------------------------------------------------------
 -- Various information getters
+
+function Item:GetBag()
+	return self.bag
+end
 
 function Item:GetInfo()
 	local icon, count, locked, quality, readable, lootable, link = GetContainerItemInfo(self.bag, self.slot)

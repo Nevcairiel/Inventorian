@@ -268,11 +268,11 @@ function Bag:Pickup()
 end
 
 function Bag:HighlightItems()
-	--self:GetParent().itemFrame:HighlightBag(self:GetID())
+	self:GetParent().itemContainer:HighlightBag(self:GetID())
 end
 
 function Bag:ClearHighlightItems()
-	--self:GetParent().itemFrame:HighlightBag(nil)
+	self:GetParent().itemContainer:HighlightBag(nil)
 end
 
 --show the purchase slot dialog
