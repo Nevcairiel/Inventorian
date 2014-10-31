@@ -151,6 +151,34 @@
 				</Scripts>
 			</EditBox>
 
+			<Button name="$parentAutoSortButton">
+				<Size x="25" y="23"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset x="-44" y="-31"/>
+					</Anchor>
+				</Anchors>
+				<NormalTexture atlas="bags-button-autosort-up"/>
+				<PushedTexture atlas="bags-button-autosort-down"/>
+				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
+					<Size x="21" y="20"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0" />
+					</Anchors>
+				</HighlightTexture>
+				<Scripts>
+					<OnClick>
+						self:GetParent():OnSortClick()
+					</OnClick>
+					<OnEnter>
+						GameTooltip:SetOwner(self)
+						GameTooltip:SetText(BAG_CLEANUP_BAGS)
+						GameTooltip:Show()
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+
 			<Button name="$pargenBagToggle">
 				<Size x="32" y="32"/>
 				<Anchors>

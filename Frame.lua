@@ -164,6 +164,17 @@ function Frame:OnBagToggleClick(toggle, button)
 	end
 end
 
+function Frame:OnSortClick()
+	PlaySound("UI_BagSorting_01")
+	if self:IsReagentBank() then
+		SortReagentBankBags()
+	elseif self:IsBank() then
+		SortBankBags()
+	else
+		SortBags()
+	end
+end
+
 function Frame:OnBagToggleEnter(toggle)
 	GameTooltip:SetOwner(toggle, "ANCHOR_LEFT")
 	GameTooltip:SetText(L["Bags"], 1, 1, 1)
