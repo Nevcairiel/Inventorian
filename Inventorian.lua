@@ -41,17 +41,20 @@ local BANK_CONFIG =
 {
 	{
 		title = BANK,
-		bags = { BANK_CONTAINER, 5, 6, 7, 8, 9, 10, 11 }
+		bags = { BANK_CONTAINER, 5, 6, 7, 8, 9, 10, 11 },
+		isBank = true,
 	},
 	{
 		title = L["Reagents"],
-		bags = { REAGENTBANK_CONTAINER }
+		bags = { REAGENTBANK_CONTAINER },
+		isBank = true,
+		isReagentBank = true,
 	}
 }
 
 function Inventorian:OnEnable()
 	self.bag = Inventorian.Frame:Create("InventorianBagFrame", L["%s's Inventory"], db.bag, BAG_CONFIG)
-	self.bank = Inventorian.Frame:Create("InventorianBankFrame", L["%s's Bank"], db.bank, BANK_CONFIG, true)
+	self.bank = Inventorian.Frame:Create("InventorianBankFrame", L["%s's Bank"], db.bank, BANK_CONFIG)
 	self:SetupBagHooks()
 end
 

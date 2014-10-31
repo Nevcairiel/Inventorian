@@ -13,11 +13,10 @@ local ITEM_CONTAINER_OFFSET_H = -95
 Inventorian.Frame = {}
 Inventorian.Frame.defaults = {}
 Inventorian.Frame.prototype = Frame
-function Inventorian.Frame:Create(name, titleText, settings, config, isBank)
+function Inventorian.Frame:Create(name, titleText, settings, config)
 	local frame = setmetatable(CreateFrame("Frame", name, UIParent, "InventorianFrameTemplate"), Frame_MT)
 
 	-- settings
-	frame.isBank = isBank
 	frame.config = config
 	frame.settings = settings
 	frame.titleText = titleText
@@ -87,7 +86,7 @@ function Frame.OnTabClick(tab)
 
 	ReagentBankFrameUnlockInfo:Hide()
 	frame.DepositButton:Hide()
-	if frame:IsBank() and tabID == 2 then
+	if frame:IsReagentBank() then
 		if not IsReagentBankUnlocked() then
 			local UnlockInfo = ReagentBankFrameUnlockInfo
 			UnlockInfo:SetParent(frame.itemContainer)
@@ -281,7 +280,11 @@ function Frame:GetPlayerName()
 end
 
 function Frame:IsBank()
-	return self.isBank
+	return self.currentConfig.isBank
+end
+
+function Frame:IsReagentBank()
+	return self.currentConfig.isReagentBank
 end
 
 function Frame:AtBank()
