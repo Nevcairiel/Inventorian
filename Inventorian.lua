@@ -98,6 +98,7 @@ function Inventorian:SetupBagHooks()
 	self:RawHook("ToggleBackpack", true)
 	self:RawHook("ToggleAllBags", "ToggleBackpack", true)
 	self:RawHook("OpenAllBags", true)
+	self:RawHook("OpenBag", "OpenAllBags", true)
 
 	--closing the game menu triggers this function, and can be done in combat,
 	self:SecureHook("CloseAllBags")
