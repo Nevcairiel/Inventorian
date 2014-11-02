@@ -113,6 +113,9 @@ function Item:Update()
 	self:UpdateSearch(self.container.searchText)
 
 	if GameTooltip:IsOwned(self) then
+		if not self:GetItem() then
+			self:OnLeave()
+		end
 		self:UpdateTooltip()
 	end
 end
