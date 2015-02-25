@@ -159,6 +159,7 @@ function Item:UpdateCooldown()
 	else
 		CooldownFrame_SetTimer(self.Cooldown, 0, 0, 0)
 		SetItemButtonTextureVertexColor(self, 1, 1, 1)
+		self.Cooldown:Hide()
 	end
 end
 
