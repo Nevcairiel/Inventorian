@@ -237,6 +237,13 @@
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="-6" y="9"/>
 				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "PLAYER");
+						MoneyFrame_SetMaxDisplayWidth(self, 168);
+					</OnLoad>
+				</Scripts>
 			</Frame>
 		</Frames>
 
