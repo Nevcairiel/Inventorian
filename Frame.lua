@@ -132,6 +132,21 @@ function Frame:CreateTabs()
 	PanelTemplates_SetTab(self, 1)
 end
 
+function Inventorian.Frame.ManageBackpackTokenFrame(backpack)
+	if not backpack then
+		BackpackTokenFrame:Hide()
+		return
+	end
+	if BackpackTokenFrame_IsShown() then
+		BackpackTokenFrame:SetParent(backpack)
+		BackpackTokenFrame:ClearAllPoints()
+		BackpackTokenFrame:SetPoint("TOPRIGHT", InventorianBagFrame, "BOTTOMRIGHT", 4, 6)
+		BackpackTokenFrame:Show()
+	else
+		BackpackTokenFrame:Hide()
+	end
+end
+
 function Frame:OnShow()
 	PlaySound("igBackPackOpen")
 	SetPortraitTexture(self.portrait, "player")
@@ -139,6 +154,13 @@ function Frame:OnShow()
 	if self:IsBank() and self:AtBank() then
 		if self.selectedTab == 2 then
 			BankFrame:Show()
+		end
+	end
+
+	if not self:IsBank() then
+		if BackpackTokenFrame_Update then
+			BackpackTokenFrame_Update()
+			ManageBackpackTokenFrame(self)
 		end
 	end
 end
@@ -151,6 +173,10 @@ function Frame:OnHide()
 			CloseBankFrame()
 		end
 		BankFrame:Hide()
+	else
+		if BackpackTokenFrame then
+			BackpackTokenFrame:Hide()
+		end
 	end
 
 	-- clear search on hide
