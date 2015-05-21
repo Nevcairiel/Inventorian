@@ -140,7 +140,7 @@ function Inventorian.Frame.ManageBackpackTokenFrame(backpack)
 	if BackpackTokenFrame_IsShown() then
 		BackpackTokenFrame:SetParent(backpack)
 		BackpackTokenFrame:ClearAllPoints()
-		BackpackTokenFrame:SetPoint("TOPRIGHT", InventorianBagFrame, "BOTTOMRIGHT", 4, 6)
+		BackpackTokenFrame:SetPoint("TOPRIGHT", InventorianBagFrame, "BOTTOMRIGHT", 4, 5)
 		BackpackTokenFrame:Show()
 	else
 		BackpackTokenFrame:Hide()
