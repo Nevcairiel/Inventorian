@@ -34,10 +34,6 @@
 			<minResize x="300" y="400"/>
 		</ResizeBounds>
 
-		<HitRectInsets>
-			<AbsInset left="0" right="35" top="0" bottom="75"/>
-		</HitRectInsets>
-
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture inherits="UI-Frame-BtnDivMiddle"> <!-- Separator -->
