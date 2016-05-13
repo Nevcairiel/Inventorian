@@ -102,14 +102,14 @@ function Item:Update()
 		return
 	end
 
-	local icon, count, locked, quality, readable, lootable, link = self:GetInfo()
+	local icon, count, locked, quality, readable, lootable, link, noValue, itemID = self:GetInfo()
 	self:SetItem(link)
 	self:SetTexture(icon)
 	self:SetCount(count)
 	self:SetLocked(locked)
 	self:SetReadable(readable)
 	self:UpdateCooldown()
-	self:UpdateBorder(quality)
+	self:UpdateBorder(quality, itemID, noValue)
 	self:UpdateSearch(self.container.searchText)
 
 	if GameTooltip:IsOwned(self) then
@@ -179,7 +179,7 @@ function Item:HideBorder()
 	end
 end
 
-function Item:UpdateBorder(quality)
+function Item:UpdateBorder(quality, itemID, noValue)
 	local item = self:GetItem()
 	self:HideBorder()
 	
@@ -210,12 +210,9 @@ function Item:UpdateBorder(quality)
 				self.newitemglowAnim:Play()
 			end
 		end
-		
-		if quality then
-			if quality >= LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality] then
-				self:SetBorderColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b)
-			end
-		end
+
+		SetItemButtonQuality(self, quality, itemID)
+		self.JunkIcon:SetShown(quality == LE_ITEM_QUALITY_POOR and not noValue and MerchantFrame:IsShown());
 	end
 end
 
@@ -315,12 +312,12 @@ function Item:GetBag()
 end
 
 function Item:GetInfo()
-	local icon, count, locked, quality, readable, lootable, link = GetContainerItemInfo(self.bag, self.slot)
+	local icon, count, locked, quality, readable, lootable, link, _, noValue, itemID = GetContainerItemInfo(self.bag, self.slot)
 	if link and quality < 0 then
 		quality = select(3, GetItemInfo(link)) 
 	end
 
-	return icon, count, locked, quality, readable, lootable, link
+	return icon, count, locked, quality, readable, lootable, link, noValue, itemID
 end
 
 function Item:GetQuestInfo()
