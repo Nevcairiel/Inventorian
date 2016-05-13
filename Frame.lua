@@ -285,6 +285,10 @@ function Frame:UpdateItemContainer(force)
 	end
 end
 
+function Frame:Update()
+	self.itemContainer:GenerateItemButtons()
+end
+
 function Frame:ToggleFrame(auto)
 	if self:IsShown() then
 		self:HideFrame(auto)

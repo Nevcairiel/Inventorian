@@ -86,6 +86,11 @@ function Inventorian:AutoHideBank()
 	self.bank:HideFrame(true)
 end
 
+function Inventorian:UpdateBag()
+	self.bag:Update()
+	self.bank:Update()
+end
+
 function Inventorian:SetupBagHooks()
 	self.UIHider = CreateFrame("Frame")
 	self.UIHider:Hide()
@@ -134,4 +139,6 @@ function Inventorian:SetupBagHooks()
 	self:RegisterEvent("TRADE_SKILL_CLOSE", "AutoHideInventory")
 	self:RegisterEvent("AUCTION_HOUSE_SHOW", "AutoShowInventory")
 	self:RegisterEvent("AUCTION_HOUSE_CLOSED", "AutoHideInventory")
+
+	self:SecureHook("ContainerFrame_UpdateAll", "UpdateBag")
 end
