@@ -1,6 +1,8 @@
 local _, Inventorian = ...
 local L = LibStub("AceLocale-3.0"):GetLocale("Inventorian")
 
+local ItemSearch = LibStub("LibItemSearch-Inventorian-1.0")
+
 local Item = CreateFrame("Button")
 local Item_MT = {__index = Item}
 
@@ -219,16 +221,8 @@ end
 
 function Item:UpdateSearch(text)
 	local found = false
-	-- TODO: smarter search
 	if text and self.hasItem then
-		text = string.lower(text)
-		local name = GetItemInfo(self.hasItem)
-		if name then
-			name = string.lower(name)
-			if string.find(name, text) then
-				found = true
-			end
-		end
+		found = ItemSearch:Find(self.hasItem, text)
 	end
 
 	if not text or found then
