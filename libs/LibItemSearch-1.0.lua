@@ -281,6 +281,17 @@ local tooltipCache = setmetatable({}, {__index = function(t, k) local v = {} t[k
 local tooltipScanner = _G['LibItemSearchTooltipScanner'] or CreateFrame('GameTooltip', 'LibItemSearchTooltipScanner', UIParent, 'GameTooltipTemplate')
 tooltipScanner:SetOwner(UIParent, 'ANCHOR_NONE')
 
+local function stripColor(text)
+	if not text or type(text) ~= "string" then return nil end
+
+	local cleanText = text:match("|c[ %x]%x[ %x]%x[ %x]%x[ %x]%x(.+)|r")
+	if cleanText then
+		return cleanText
+	end
+
+	return text
+end
+
 local function link_FindSearchInTooltip(itemLink, search)
 	--look in the cache for the result
 	local itemID = itemLink:match('item:(%d+)')
@@ -293,9 +304,9 @@ local function link_FindSearchInTooltip(itemLink, search)
 	tooltipScanner:SetHyperlink(itemLink)
 
 	local result = false
-	if tooltipScanner:NumLines() > 1 and _G[tooltipScanner:GetName() .. 'TextLeft2']:GetText() == search then
+	if tooltipScanner:NumLines() > 1 and stripColor(_G[tooltipScanner:GetName() .. 'TextLeft2']:GetText()) == search then
 		result = true
-	elseif tooltipScanner:NumLines() > 2 and _G[tooltipScanner:GetName() .. 'TextLeft3']:GetText() == search then
+	elseif tooltipScanner:NumLines() > 2 and stripColor(_G[tooltipScanner:GetName() .. 'TextLeft3']:GetText()) == search then
 		result = true
 	end
 
@@ -323,6 +334,29 @@ Lib:RegisterTypedSearch{
 		['bou'] = ITEM_BIND_ON_USE,
 		['quest'] = ITEM_BIND_QUEST,
 		['boa'] = ITEM_BIND_TO_BNETACCOUNT
+	}
+}
+
+Lib:RegisterTypedSearch{
+	id = 'itemDescription',
+
+	canSearch = function(self, _, search)
+		return self.keywords[search]
+	end,
+
+	findItem = function(self, itemLink, _, search)
+		return search and link_FindSearchInTooltip(itemLink, search)
+	end,
+
+	-- TODO: localization might be nice
+	keywords = {
+		['ap'] = 'Artifact Power',
+		['artifact power'] = 'Artifact Power',
+		['equipment'] = 'Champion Equipment',
+		['champion equipment'] = 'Champion Equipment',
+		['crafting'] = 'Crafting Reagent',
+		['reagents'] = 'Crafting Reagent',
+		['crafting reagent'] = 'Crafting Reagent',
 	}
 }
 
