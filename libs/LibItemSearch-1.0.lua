@@ -336,7 +336,8 @@ Lib:RegisterTypedSearch{
 		['bop'] = ITEM_BIND_ON_PICKUP,
 		['bou'] = ITEM_BIND_ON_USE,
 		['quest'] = ITEM_BIND_QUEST,
-		['boa'] = ITEM_BIND_TO_BNETACCOUNT
+		['boa'] = ITEM_BIND_TO_BNETACCOUNT,
+		['unique'] = ITEM_UNIQUE,
 	}
 }
 
