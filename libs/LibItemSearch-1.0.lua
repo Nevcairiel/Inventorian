@@ -308,6 +308,8 @@ local function link_FindSearchInTooltip(itemLink, search)
 		result = true
 	elseif tooltipScanner:NumLines() > 2 and stripColor(_G[tooltipScanner:GetName() .. 'TextLeft3']:GetText()) == search then
 		result = true
+	elseif tooltipScanner:NumLines() > 3 and stripColor(_G[tooltipScanner:GetName() .. 'TextLeft4']:GetText()) == search then
+		result = true
 	end
 
 	tooltipCache[search][itemID] = result
@@ -357,6 +359,7 @@ Lib:RegisterTypedSearch{
 		['crafting'] = 'Crafting Reagent',
 		['reagents'] = 'Crafting Reagent',
 		['crafting reagent'] = 'Crafting Reagent',
+		['toy'] = 'Toy',
 	}
 }
 
