@@ -304,12 +304,13 @@ local function link_FindSearchInTooltip(itemLink, search)
 	tooltipScanner:SetHyperlink(itemLink)
 
 	local result = false
-	if tooltipScanner:NumLines() > 1 and stripColor(_G[tooltipScanner:GetName() .. 'TextLeft2']:GetText()) == search then
-		result = true
-	elseif tooltipScanner:NumLines() > 2 and stripColor(_G[tooltipScanner:GetName() .. 'TextLeft3']:GetText()) == search then
-		result = true
-	elseif tooltipScanner:NumLines() > 3 and stripColor(_G[tooltipScanner:GetName() .. 'TextLeft4']:GetText()) == search then
-		result = true
+	local maxLines = math.min(4, tooltipScanner:NumLines())
+	for i = 2, maxLines do
+		local text = stripColor(_G[tooltipScanner:GetName() .. 'TextLeft' .. i]:GetText())
+		if text == search then
+			result = true
+			break
+		end
 	end
 
 	tooltipCache[search][itemID] = result
