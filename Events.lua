@@ -24,6 +24,8 @@ local _, Inventorian = ...
 local Events = Inventorian:NewModule("Events", "AceEvent-3.0")
 Events.Fire = LibStub("CallbackHandler-1.0"):New(Events, "Register", "Unregister", "UnregisterAll").Fire
 
+local ItemCache = LibStub("LibItemCache-1.1")
+
 local function ToIndex(bag, slot)
 	return (bag < 0 and bag * 100 - slot) or (bag * 100 + slot)
 end
@@ -185,6 +187,7 @@ end
 
 function Events:BANKFRAME_OPENED()
 	self.atBank = true
+	ItemCache.AtBank = true
 
 	if self.firstVisit then
 		self.firstVisit = nil
@@ -199,6 +202,7 @@ end
 
 function Events:BANKFRAME_CLOSED()
 	self.atBank = false
+	ItemCache.AtBank = false
 	self:Fire("BANK_CLOSED")
 end
 

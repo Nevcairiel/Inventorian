@@ -5,7 +5,7 @@
 ## Author: Nevcairiel
 ## Version: @project-version@
 
-## OptionalDeps: Ace3, LibWindow-1.1
+## OptionalDeps: Ace3, LibWindow-1.1, BagBrother
 
 ## SavedVariables: InventorianDB
 
@@ -22,6 +22,7 @@ libs\AceLocale-3.0\AceLocale-3.0.xml
 libs\LibWindow-1.1\LibWindow-1.1.lua
 #@end-no-lib-strip@
 
+libs\LibItemCache-1.1\LibItemCache-1.1.xml
 libs\LibItemSearch-1.0.lua
 
 Frame.xml

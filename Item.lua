@@ -1,6 +1,7 @@
 local _, Inventorian = ...
 local L = LibStub("AceLocale-3.0"):GetLocale("Inventorian")
 
+local ItemCache = LibStub("LibItemCache-1.1")
 local ItemSearch = LibStub("LibItemSearch-Inventorian-1.0")
 
 local Item = CreateFrame("Button")
@@ -249,16 +250,24 @@ function Item:Highlight(enable)
 end
 
 function Item:OnEnter()
-	if self:IsBank() or self:IsReagentBank() then
-		if self:GetItem() then
-			local id = self:IsBank() and BankButtonIDToInvSlotID(self:GetID()) or ReagentBankButtonIDToInvSlotID(self:GetID())
-			self:AnchorTooltip()
-			GameTooltip:SetInventoryItem("player", id)
-			GameTooltip:Show()
-			CursorUpdate(self)
+	if not self:IsCached() then
+		if self:IsBank() or self:IsReagentBank() then
+			if self:GetItem() then
+				local id = self:IsBank() and BankButtonIDToInvSlotID(self:GetID()) or ReagentBankButtonIDToInvSlotID(self:GetID())
+				self:AnchorTooltip()
+				GameTooltip:SetInventoryItem("player", id)
+				GameTooltip:Show()
+				CursorUpdate(self)
+			end
+		else
+			ContainerFrameItemButton_OnEnter(self)
 		end
 	else
-		ContainerFrameItemButton_OnEnter(self)
+		if self:GetItem() then
+			self:AnchorTooltip()
+			GameTooltip:SetHyperlink(self:GetItem())
+			GameTooltip:Show()
+		end
 	end
 end
 
@@ -302,25 +311,39 @@ end
 -----------------------------------------------------------------------
 -- Various information getters
 
+function Item:IsCached()
+	return self.container:GetParent():IsCached()
+end
+
 function Item:GetBag()
 	return self.bag
 end
 
 function Item:GetInfo()
-	local icon, count, locked, quality, readable, lootable, link, _, noValue, itemID = GetContainerItemInfo(self.bag, self.slot)
-	if link and quality < 0 then
-		quality = select(3, GetItemInfo(link)) 
-	end
+	local player = self.container:GetParent():GetPlayerName()
+	if self:IsCached() then
+		return ItemCache:GetItemInfo(player, self.bag, self.slot)
+	else
+		-- LibItemCache doesn't provide noValue or itemID, so fallback to base API
+		local icon, count, locked, quality, readable, lootable, link, _, noValue, itemID = GetContainerItemInfo(self.bag, self.slot)
+		if link and quality < 0 then
+			quality = select(3, GetItemInfo(link))
+		end
 
-	return icon, count, locked, quality, readable, lootable, link, noValue, itemID
+		return icon, count, locked, quality, readable, lootable, link, noValue, itemID
+	end
 end
 
 function Item:GetQuestInfo()
-	return GetContainerItemQuestInfo(self.bag, self.slot)
+	if not self:IsCached() then
+		return GetContainerItemQuestInfo(self.bag, self.slot)
+	end
 end
 
 function Item:IsNew()
-	return C_NewItems.IsNewItem(self.bag, self.slot), IsBattlePayItem(self.bag, self.slot)
+	if not self:IsCached() then
+		return C_NewItems.IsNewItem(self.bag, self.slot), IsBattlePayItem(self.bag, self.slot)
+	end
 end
 
 function Item:IsBank()

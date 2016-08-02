@@ -1,6 +1,8 @@
 local _, Inventorian = ...
 local L = LibStub("AceLocale-3.0"):GetLocale("Inventorian")
 
+local ItemCache = LibStub("LibItemCache-1.1")
+
 local Bag = CreateFrame("Button")
 local Bag_MT = {__index = Bag}
 
@@ -110,7 +112,7 @@ end
 function Bag:OnEvent(event, ...)
 	if event == "BANKFRAME_OPENED" or event == "BANKFRAME_CLOSED" then
 		self:Update()
-	else --if not self:IsCached() then
+	elseif not self:IsCached() then
 		if event == "ITEM_LOCK_CHANGED" then
 			self:UpdateLock()
 		elseif event == "CURSOR_UPDATE" then
@@ -131,9 +133,9 @@ function Bag:OnClick(button)
 		return
 	end
 
---	if self:IsCached() then
---		return
---	end
+	if self:IsCached() then
+		return
+	end
 
 	if button == "RightButton" then
 		PlaySound("igMainMenuOptionCheckBoxOn");
@@ -195,7 +197,7 @@ end
 function Bag:UpdateCursor()
 	if not self:IsCustomSlot() then return end
 
-	if CursorCanGoInSlot(self:GetInventorySlot()) then
+	if not self:IsCached() and CursorCanGoInSlot(self:GetInventorySlot()) then
 		self:LockHighlight()
 	else
 		self:UnlockHighlight()
@@ -230,7 +232,7 @@ function Bag:UpdateFilterIcon()
 	local id = self:GetID()
 
 	self.FilterIcon:Hide()
-	if id > 0 then
+	if id > 0 and not self:IsCached() then
 		for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
 			local active = false
 			if id > NUM_BAG_SLOTS then
@@ -334,7 +336,11 @@ end
 -- Various information getters
 
 function Bag:GetPlayer()
-	return UnitName("player")
+	return self:GetParent():GetPlayerName()
+end
+
+function Bag:IsCached()
+	return self:GetParent():IsCached()
 end
 
 function Bag:IsBackpack()
@@ -362,7 +368,7 @@ function Bag:IsCustomSlot()
 end
 
 function Bag:IsPurchasable()
-	return (self:GetID() - NUM_BAG_SLOTS) > GetNumBankSlots()
+	return not self:IsCached() and (self:GetID() - NUM_BAG_SLOTS) > GetNumBankSlots()
 end
 
 function Bag:GetInventorySlot()
@@ -370,14 +376,14 @@ function Bag:GetInventorySlot()
 end
 
 function Bag:GetInfo()
-	local slot = self:GetInventorySlot()
-	if slot then
-		return GetInventoryItemLink("player", slot), GetInventoryItemCount("player", slot), GetInventoryItemTexture("player", slot)
-	end
-	return nil
+	local link, freeSlots, icon, slot, numSlots = ItemCache:GetBagInfo(self:GetPlayer(), self:GetID())
+	return link, 0, icon
 end
 
 function Bag:IsLocked()
+	if self:IsCached() then
+		return false
+	end
 	local slot = self:GetInventorySlot()
 	if slot then
 		return IsInventoryItemLocked(slot)

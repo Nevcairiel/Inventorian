@@ -1,6 +1,8 @@
 local _, Inventorian = ...
 local L = LibStub("AceLocale-3.0"):GetLocale("Inventorian")
 
+local ItemCache = LibStub("LibItemCache-1.1")
+
 local ItemContainer = CreateFrame("Frame")
 local ItemContainer_MT = {__index = ItemContainer}
 
@@ -218,5 +220,6 @@ end
 -- Various information getters
 
 function ItemContainer:GetBagSize(bag)
-	return GetContainerNumSlots(bag)
+	local link, numFreeSlots, icon, slot, numSlots = ItemCache:GetBagInfo(self:GetParent():GetPlayerName(), bag)
+	return numSlots
 end

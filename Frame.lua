@@ -1,6 +1,8 @@
 local _, Inventorian = ...
 local L = LibStub("AceLocale-3.0"):GetLocale("Inventorian")
 
+local ItemCache = LibStub("LibItemCache-1.1")
+
 local Frame = CreateFrame("Frame")
 local Frame_MT = {__index = Frame}
 
@@ -265,6 +267,12 @@ function Frame:UpdateBags()
 		end
 	end
 	self:UpdateItemContainer()
+
+	if self:IsCached() then
+		self.DepositButton:Disable()
+	else
+		self.DepositButton:Enable()
+	end
 end
 
 function Frame:UpdateItemContainer(force)
@@ -286,6 +294,7 @@ function Frame:UpdateItemContainer(force)
 end
 
 function Frame:Update()
+	self:UpdateBags()
 	self.itemContainer:GenerateItemButtons()
 end
 
@@ -302,6 +311,7 @@ function Frame:ShowFrame(auto)
 		self:Show()
 		self.autoShown = auto or nil
 	end
+	self:Update()
 end
 
 function Frame:HideFrame(auto)
@@ -309,6 +319,8 @@ function Frame:HideFrame(auto)
 		if not auto or self.autoShown then
 			self:Hide()
 			self.autoShown = nil
+		else
+			self:Update()
 		end
 	end
 end
@@ -318,6 +330,10 @@ end
 
 function Frame:GetPlayerName()
 	return UnitName("player")
+end
+
+function Frame:IsCached()
+	return ItemCache:IsPlayerCached(self:GetPlayerName()) or ((self:IsBank() or self:IsReagentBank()) and not self:AtBank())
 end
 
 function Frame:IsBank()
