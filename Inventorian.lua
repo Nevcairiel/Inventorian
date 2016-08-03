@@ -1,5 +1,5 @@
 local _, Inventorian = ...
-Inventorian = LibStub("AceAddon-3.0"):NewAddon(Inventorian, "Inventorian", "AceEvent-3.0", "AceHook-3.0")
+Inventorian = LibStub("AceAddon-3.0"):NewAddon(Inventorian, "Inventorian", "AceEvent-3.0", "AceHook-3.0", "AceConsole-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Inventorian")
 
 local db
@@ -56,6 +56,17 @@ function Inventorian:OnEnable()
 	self.bag = Inventorian.Frame:Create("InventorianBagFrame", L["%s's Inventory"], db.bag, BAG_CONFIG)
 	self.bank = Inventorian.Frame:Create("InventorianBankFrame", L["%s's Bank"], db.bank, BANK_CONFIG)
 	self:SetupBagHooks()
+
+	self:RegisterChatCommand("inventorian", "HandleSlash")
+end
+
+function Inventorian:HandleSlash(cmd)
+	if strtrim(cmd) == "bank" then
+		self.bank:ShowFrame()
+	else
+		self:Print("Available Commands:")
+		self:Print(" /inventorian bank: Show the current characters bank")
+	end
 end
 
 function Inventorian:AutoShowInventory()
