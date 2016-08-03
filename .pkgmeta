@@ -9,3 +9,11 @@ externals:
     libs/CallbackHandler-1.0: svn://svn.wowace.com/wow/callbackhandler/mainline/trunk/CallbackHandler-1.0
     libs/LibStub: svn://svn.wowace.com/wow/libstub/mainline/tags/1.0
     libs/LibWindow-1.1: svn://svn.wowace.com/wow/libwindow-1-1/mainline/trunk/LibWindow-1.1
+    BagBrother: https://github.com/Jaliborc/BagBrother.git
+
+move-folders:
+    Inventorian/BagBrother: BagBrother
+
+ignore:
+    - BagBrother/Ignore.manifest
+    - BagBrother/Tests.lua
