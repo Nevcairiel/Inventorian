@@ -157,7 +157,7 @@ function Item:SetReadable(readable)
 end
 
 function Item:UpdateCooldown()
-	if self:GetItem() then
+	if self:GetItem() and not self:IsCached() then
 		ContainerFrame_UpdateCooldown(self.bag, self)
 	else
 		SetItemButtonTextureVertexColor(self, 1, 1, 1)
