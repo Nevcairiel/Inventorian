@@ -12,6 +12,8 @@ local Events = Inventorian:GetModule("Events")
 local ITEM_CONTAINER_OFFSET_W = -22
 local ITEM_CONTAINER_OFFSET_H = -95
 
+local PLAYER_NAME = string.format("%s - %s", UnitName("player"), GetRealmName())
+
 Inventorian.Frame = {}
 Inventorian.Frame.defaults = {}
 Inventorian.Frame.prototype = Frame
@@ -335,7 +337,14 @@ end
 -- Various information getters
 
 function Frame:GetPlayerName()
-	return UnitName("player")
+	local name = PLAYER_NAME
+
+	-- only return the realm name if its not the current realm
+	local realm, player = ItemCache:GetPlayerAddress(name)
+	if realm == GetRealmName() then
+		name = player
+	end
+	return name
 end
 
 function Frame:IsCached()
