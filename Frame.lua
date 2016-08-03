@@ -135,7 +135,7 @@ function Frame:CreateTabs()
 end
 
 function Inventorian.Frame.ManageBackpackTokenFrame(backpack)
-	if not backpack then
+	if not backpack or InventorianBagFrame:IsCached() then
 		BackpackTokenFrame:Hide()
 		return
 	end
@@ -153,7 +153,7 @@ function Frame:OnShow()
 	PlaySound("igBackPackOpen")
 	SetPortraitTexture(self.portrait, "player")
 
-	if self:IsBank() and self:AtBank() then
+	if self:IsBank() and not self:IsCached() then
 		if self.selectedTab == 2 then
 			BankFrame:Show()
 		end
@@ -193,6 +193,7 @@ function Frame:OnBagToggleClick(toggle, button)
 end
 
 function Frame:OnSortClick()
+	if self:IsCached() then return end
 	PlaySound("UI_BagSorting_01")
 	if self:IsReagentBank() then
 		SortReagentBankBags()
@@ -270,8 +271,10 @@ function Frame:UpdateBags()
 
 	if self:IsCached() then
 		self.DepositButton:Disable()
+		self.SortButton:Disable()
 	else
 		self.DepositButton:Enable()
+		self.SortButton:Enable()
 	end
 end
 

@@ -147,7 +147,7 @@
 				</Scripts>
 			</EditBox>
 
-			<Button name="$parentAutoSortButton">
+			<Button name="$parentAutoSortButton" parentKey="SortButton">
 				<Size x="25" y="23"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT">
@@ -156,6 +156,7 @@
 				</Anchors>
 				<NormalTexture atlas="bags-button-autosort-up"/>
 				<PushedTexture atlas="bags-button-autosort-down"/>
+				<DisabledTexture atlas="bags-button-autosort-up" desaturated="true" />
 				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
 					<Size x="21" y="20"/>
 					<Anchors>
