@@ -301,6 +301,7 @@ end
 function Frame:Update()
 	self:UpdateBags()
 	self.itemContainer:GenerateItemButtons()
+	self:UpdateTitleText()
 end
 
 function Frame:ToggleFrame(auto)
