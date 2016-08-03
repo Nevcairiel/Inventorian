@@ -314,6 +314,9 @@ function Frame:ShowFrame(auto)
 		self:Show()
 		self.autoShown = auto or nil
 	end
+	if not auto then
+		self.autoShown = nil
+	end
 	self:Update()
 end
 
