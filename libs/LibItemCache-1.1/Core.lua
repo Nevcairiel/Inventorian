@@ -15,7 +15,7 @@ along with this library. If not, see <http://www.gnu.org/licenses/>.
 This file is part of LibItemCache.
 --]]
 
-local Lib = LibStub:NewLibrary('LibItemCache-1.1', 21)
+local Lib = LibStub:NewLibrary('LibItemCache-1.1', 22)
 if not Lib then
 	return
 end
@@ -69,7 +69,7 @@ function Lib:GetPlayerGuild(player)
 end
 
 function Lib:GetPlayerAddress(address)
-	local player, realm = strmatch(address or '', '(%S+) %- (%S+)')
+	local player, realm = strmatch(address or '', '(.+) %- (.+)')
 	return realm or self.REALM, player or address or self.PLAYER
 end
 

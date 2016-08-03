@@ -116,7 +116,9 @@ end
 --[[ Players ]]--
 
 function Cache:GetPlayer(realm, player)
-	player = BrotherBags[realm][player]
+	realm = BrotherBags[realm]
+	player = realm and realm[player]
+
 	if player then
 		return player.class, player.race, player.sex, player.faction and 'Alliance' or 'Horde'
 	end
