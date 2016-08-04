@@ -191,6 +191,10 @@ function Frame:OnBagToggleClick(toggle, button)
 	if button == "LeftButton" then
 		_G[toggle:GetName() .. "Icon"]:SetTexCoord(0.075, 0.925, 0.075, 0.925)
 		self:ToggleBagFrame()
+	elseif button == "RightButton" then
+		if not self:IsBank() and ItemCache:HasCache() then
+			Inventorian.bank:ShowFrame(false)
+		end
 	end
 end
 
@@ -210,6 +214,9 @@ function Frame:OnBagToggleEnter(toggle)
 	GameTooltip:SetOwner(toggle, "ANCHOR_LEFT")
 	GameTooltip:SetText(L["Bags"], 1, 1, 1)
 	GameTooltip:AddLine(L["<Left-Click> to toggle the bag display"])
+	if not self:IsBank() and ItemCache:HasCache() then
+		GameTooltip:AddLine(L["<Right-Click> to show the bank contents"])
+	end
 	GameTooltip:Show()
 end
 
