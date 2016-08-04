@@ -16,5 +16,6 @@ move-folders:
     Inventorian/BagBrother: BagBrother
 
 ignore:
+    - localcheck.lua
     - BagBrother/Ignore.manifest
     - BagBrother/Tests.lua
