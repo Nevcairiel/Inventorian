@@ -313,6 +313,11 @@ function Frame:ToggleFrame(auto)
 end
 
 function Frame:ShowFrame(auto)
+	if self:IsCached() and not ItemCache:HasCache() then
+		Inventorian:Print("No Cache available, please enable BagBrother to enable this functionality")
+		return
+	end
+
 	if not self:IsShown() then
 		self:Show()
 		self.autoShown = auto or nil
