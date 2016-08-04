@@ -300,7 +300,7 @@ end
 
 function Frame:Update()
 	self:UpdateBags()
-	self.itemContainer:GenerateItemButtons()
+	self.itemContainer:UpdateBags()
 	self:UpdateTitleText()
 end
 
