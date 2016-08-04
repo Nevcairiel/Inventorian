@@ -244,7 +244,11 @@ function Frame:OnSearchTextChanged()
 end
 
 function Frame:UpdateTitleText()
-	self.Title:SetFormattedText(self.titleText, self:GetPlayerName())
+	if self:IsCached() then
+		self.Title:SetFormattedText(self.titleText .. " (%s)", self:GetPlayerName(), L["Cached"])
+	else
+		self.Title:SetFormattedText(self.titleText, self:GetPlayerName())
+	end
 end
 
 function Frame:ToggleBagFrame()
