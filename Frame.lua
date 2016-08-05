@@ -14,6 +14,15 @@ local ITEM_CONTAINER_OFFSET_H = -95
 
 local PLAYER_NAME = string.format("%s - %s", UnitName("player"), GetRealmName())
 
+MoneyTypeInfo["INVENTORIAN"] = {
+	UpdateFunc = function(self)
+		return ItemCache:GetPlayerMoney(self:GetParent():GetPlayerName())
+	end,
+
+	collapse = 1,
+	showSmallerCoins = "Backpack"
+};
+
 Inventorian.Frame = {}
 Inventorian.Frame.defaults = {}
 Inventorian.Frame.prototype = Frame
@@ -313,6 +322,14 @@ function Frame:Update()
 	self:UpdateBags()
 	self.itemContainer:UpdateBags()
 	self:UpdateTitleText()
+
+	-- update the money frame
+	if self:IsCached() then
+		MoneyFrame_SetType(self.Money, "INVENTORIAN")
+	else
+		MoneyFrame_SetType(self.Money, "PLAYER")
+	end
+	MoneyFrame_UpdateMoney(self.Money)
 end
 
 function Frame:ToggleFrame(auto)
