@@ -69,10 +69,10 @@ function Inventorian.Item:CreateItemPool()
 end
 
 function Item:Free()
+	self:Hide()
 	self:SetParent(nil)
 	self:SetID(0)
 	self:ClearAllPoints()
-	self:Hide()
 	self:UnlockHighlight()
 
 	Inventorian.Item.pool[self] = true
@@ -94,6 +94,7 @@ function Item:Set(container, bag, slot)
 end
 
 function Item:OnShow()
+	if not self:GetParent() then return end
 	self:Update()
 end
 

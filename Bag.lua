@@ -76,8 +76,8 @@ end
 
 function Bag:Free()
 	Inventorian.Bag.pool[self] = true
-	self:SetParent(nil)
 	self:Hide()
+	self:SetParent(nil)
 	self:UnregisterAllEvents()
 end
 
@@ -180,7 +180,7 @@ function Bag:OnShow()
 end
 
 function Bag:Update()
-	if not self:IsVisible() then return end
+	if not self:IsVisible() or not self:GetParent() then return end
 
 	self:UpdateLock()
 	self:UpdateSlotInfo()
