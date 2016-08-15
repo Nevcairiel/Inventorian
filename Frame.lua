@@ -428,12 +428,10 @@ do
 
 	local function PlayerEntry(player)
 		local class = ItemCache:GetPlayerInfo(player)
-		if RAID_CLASS_COLORS[class] and RAID_CLASS_COLORS[class].colorStr then
-			player = ("|c%s%s|r"):format(RAID_CLASS_COLORS[class].colorStr, player)
-		end
+		if not RAID_CLASS_COLORS[class] or not RAID_CLASS_COLORS[class].colorStr then class = nil end
 
 		UIDropDownMenu_AddButton({
-			text = player,
+			text = class and ("|c%s%s|r"):format(RAID_CLASS_COLORS[class].colorStr, player) or player,
 			hasArrow = ItemCache:IsPlayerCached(player),
 			checked = (player == ActiveFrame:GetPlayerName()),
 			func = SetPlayer,
