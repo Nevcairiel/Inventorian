@@ -15,7 +15,7 @@ along with this library. If not, see <http://www.gnu.org/licenses/>.
 This file is part of LibItemCache.
 --]]
 
-local Lib = LibStub('LibItemCache-1.1')
+local Lib = LibStub('LibItemCache-Inventorian-1.1')
 if not BagBrother or Lib:HasCache() then
 	return
 end
