@@ -273,7 +273,11 @@ end
 function Frame:OnPortraitEnter(portrait)
 	GameTooltip:SetOwner(portrait, "ANCHOR_RIGHT")
 	GameTooltip:SetText(self:GetPlayerName(), 1, 1, 1)
-	GameTooltip:AddLine(L["<Left-Click> to switch characters"])
+	if ItemCache:HasCache() then
+		GameTooltip:AddLine(L["<Left-Click> to switch characters"])
+	else
+		GameTooltip:AddLine(L["Install BagBrother to get access to the inventory of other characters."])
+	end
 	GameTooltip:Show()
 end
 
