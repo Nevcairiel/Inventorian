@@ -32,8 +32,10 @@ end
 function Inventorian.Item:WrapItemButton(item)
 	item = setmetatable(item, Item_MT)
 
+	item:UnregisterAllEvents()
+
 	-- scripts
-	item:SetScript("OnEvent", nil)
+	item:SetScript("OnEvent", item.OnEvent)
 	item:SetScript("OnEnter", item.OnEnter)
 	item:SetScript("OnLeave", item.OnLeave)
 	item:SetScript("OnShow", item.OnShow)
@@ -250,6 +252,16 @@ function Item:Highlight(enable)
 	end
 end
 
+function Item:OnEvent(event, ...)
+	if event == "GET_ITEM_INFO_RECEIVED" then
+		local id = (...)
+		if id == self.itemID then
+			self:UnregisterEvent("GET_ITEM_INFO_RECEIVED")
+			self:Update()
+		end
+	end
+end
+
 function Item:OnEnter()
 	if not self:IsCached() then
 		if self:IsBank() or self:IsReagentBank() then
@@ -322,17 +334,23 @@ end
 
 function Item:GetInfo()
 	local player = self.container:GetParent():GetPlayerName()
+	local icon, count, locked, quality, readable, lootable, link, _, noValue, itemID
 	if self:IsCached() then
-		return ItemCache:GetItemInfo(player, self.bag, self.slot)
+		icon, count, locked, quality, readable, lootable, link = ItemCache:GetItemInfo(player, self.bag, self.slot)
 	else
 		-- LibItemCache doesn't provide noValue or itemID, so fallback to base API
-		local icon, count, locked, quality, readable, lootable, link, _, noValue, itemID = GetContainerItemInfo(self.bag, self.slot)
+		icon, count, locked, quality, readable, lootable, link, _, noValue, itemID = GetContainerItemInfo(self.bag, self.slot)
 		if link and quality < 0 then
 			quality = select(3, GetItemInfo(link))
 		end
-
-		return icon, count, locked, quality, readable, lootable, link, noValue, itemID
 	end
+
+	if not icon and link then
+		self:RegisterEvent("GET_ITEM_INFO_RECEIVED")
+		self.itemID = GetItemInfoInstant(link)
+	end
+
+	return icon, count, locked, quality, readable, lootable, link, noValue, itemID
 end
 
 function Item:GetQuestInfo()

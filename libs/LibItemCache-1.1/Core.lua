@@ -15,7 +15,7 @@ along with this library. If not, see <http://www.gnu.org/licenses/>.
 This file is part of LibItemCache.
 --]]
 
-local Lib = LibStub:NewLibrary('LibItemCache-1.1', 22)
+local Lib = LibStub:NewLibrary('LibItemCache-1.1', 23)
 if not Lib then
 	return
 end
@@ -281,8 +281,9 @@ function Lib:RestorePetLink(partial)
 end
 
 function Lib:RestoreItemLink(partial)
-	local _, link, quality = GetItemInfo('item:' .. partial)
-	return link, GetItemIcon(link), quality
+	partial = 'item:' .. partial
+	local _, link, quality = GetItemInfo(partial)
+	return link or partial, GetItemIcon(link), quality
 end
 
 
