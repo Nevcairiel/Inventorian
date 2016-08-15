@@ -176,12 +176,6 @@ function Frame:OnShow()
 			ManageBackpackTokenFrame(self)
 		end
 	end
-
-	-- reset to the default player on a fresh frame
-	if self.playerName then
-		self.playerName = nil
-		self:Update()
-	end
 end
 
 function Frame:OnHide()
@@ -200,6 +194,15 @@ function Frame:OnHide()
 
 	-- clear search on hide
 	self.SearchBox.clearButton:Click()
+
+	-- close any dropdowns
+	CloseDropDownMenus()
+
+	-- reset to the default player when hiding
+	if self.playerName then
+		self.playerName = nil
+		self:Update()
+	end
 end
 
 function Frame:OnBagToggleClick(toggle, button)
