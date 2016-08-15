@@ -263,7 +263,11 @@ function Item:OnEvent(event, ...)
 end
 
 function Item:OnEnter()
-	if not self:IsCached() then
+	if self:IsCached() then
+		self.cacheOverlay = self.cacheOverlay or self:CreateCacheOverlay()
+		self.cacheOverlay:Show()
+		self.cacheOverlay:GetScript("OnEnter")(self.cacheOverlay)
+	else
 		if self:IsBank() or self:IsReagentBank() then
 			if self:GetItem() then
 				local id = self:IsBank() and BankButtonIDToInvSlotID(self:GetID()) or ReagentBankButtonIDToInvSlotID(self:GetID())
@@ -274,12 +278,6 @@ function Item:OnEnter()
 			end
 		else
 			ContainerFrameItemButton_OnEnter(self)
-		end
-	else
-		if self:GetItem() then
-			self:AnchorTooltip()
-			GameTooltip:SetHyperlink(self:GetItem())
-			GameTooltip:Show()
 		end
 	end
 end
@@ -302,6 +300,41 @@ end
 
 -----------------------------------------------------------------------
 -- Utility
+
+local function CacheOverlay_OnEnter(self)
+	local parent = self:GetParent()
+	if parent:GetItem() then
+		parent:AnchorTooltip()
+		GameTooltip:SetHyperlink(parent:GetItem())
+		GameTooltip:Show()
+	end
+
+	parent:LockHighlight()
+	CursorUpdate(parent)
+end
+
+local function CacheOverlay_OnLeave(self)
+	self:GetParent():OnLeave()
+	self:Hide()
+end
+
+local function CacheOverlay_OnHide(self)
+	self:GetParent():UnlockHighlight()
+end
+
+function Item:CreateCacheOverlay()
+	local overlay = CreateFrame("Button", nil, self)
+	overlay:RegisterForClicks("anyUp")
+	overlay:EnableMouse(true)
+	overlay:SetAllPoints(self)
+
+	overlay.UpdateTooltip = CacheOverlay_OnEnter
+	overlay:SetScript("OnEnter", CacheOverlay_OnEnter)
+	overlay:SetScript("OnLeave", CacheOverlay_OnLeave)
+	overlay:SetScript("OnHide", CacheOverlay_OnHide)
+
+	return overlay
+end
 
 function Item:GetBagContainer(container, bag)
 	local bagContainers = container.bagContainers
