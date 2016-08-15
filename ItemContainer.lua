@@ -18,6 +18,8 @@ function Inventorian.ItemContainer:Create(parent)
 	frame.items = {}
 	frame.itemCount = 0
 
+	frame.bagSizes = {}
+
 	-- scripts
 	frame:SetScript("OnShow", frame.OnShow)
 	frame:SetScript("OnHide", frame.OnHide)
@@ -204,11 +206,24 @@ function ItemContainer:GenerateItemButtons()
 	local slotChanged = false
 
 	for _, bag in ipairs(self.bags) do
-		for slot = 1, self:GetBagSize(bag) do
+		local bagSize = self:GetBagSize(bag)
+
+		-- check if the size changed
+		if (self.bagSizes[bag] or 0) > bagSize then
+			slotChanged = true
+			for slot = bagSize, self.bagSizes[bag] do
+				self:RemoveSlot(bag, slot)
+			end
+		end
+
+		-- update slots
+		for slot = 1, bagSize do
 			if self:UpdateSlot(bag, slot) then
 				slotChanged = true
 			end
 		end
+
+		self.bagSizes[bag] = bagSize
 	end
 
 	if slotChanged then
@@ -221,5 +236,5 @@ end
 
 function ItemContainer:GetBagSize(bag)
 	local link, numFreeSlots, icon, slot, numSlots = ItemCache:GetBagInfo(self:GetParent():GetPlayerName(), bag)
-	return numSlots
+	return numSlots >= 0 and numSlots or 0
 end
