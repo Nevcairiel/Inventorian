@@ -427,7 +427,12 @@ do
 	end
 
 	local function PlayerEntry(player)
-		 UIDropDownMenu_AddButton({
+		local class = ItemCache:GetPlayerInfo(player)
+		if RAID_CLASS_COLORS[class] and RAID_CLASS_COLORS[class].colorStr then
+			player = ("|c%s%s|r"):format(RAID_CLASS_COLORS[class].colorStr, player)
+		end
+
+		UIDropDownMenu_AddButton({
 			text = player,
 			hasArrow = ItemCache:IsPlayerCached(player),
 			checked = (player == ActiveFrame:GetPlayerName()),
