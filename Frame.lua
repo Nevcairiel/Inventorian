@@ -201,6 +201,7 @@ function Frame:OnHide()
 	-- reset to the default player when hiding
 	if self.playerName then
 		self.playerName = nil
+		self.cachedView = nil
 		self:Update()
 	end
 end
@@ -368,6 +369,13 @@ function Frame:Update()
 	MoneyFrame_UpdateMoney(self.Money)
 end
 
+function Frame:UpdateCachedView()
+	if self.cachedView ~= self:IsCached() then
+		self.cachedView = self:IsCached()
+		self:Update()
+	end
+end
+
 function Frame:ToggleFrame(auto)
 	if self:IsShown() then
 		self:HideFrame(auto)
@@ -389,7 +397,8 @@ function Frame:ShowFrame(auto)
 	if not auto then
 		self.autoShown = nil
 	end
-	self:Update()
+
+	self:UpdateCachedView()
 end
 
 function Frame:HideFrame(auto)
@@ -398,7 +407,7 @@ function Frame:HideFrame(auto)
 			self:Hide()
 			self.autoShown = nil
 		else
-			self:Update()
+			self:UpdateCachedView()
 		end
 	end
 end
