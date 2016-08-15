@@ -79,6 +79,47 @@
 		</Layers>
 		
 		<Frames>
+			<Button parentKey="IconButton" name = "$parentIconButton">
+				<Size x="64" y="64"/>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="-8" y="8"/>
+					</Anchor>
+				</Anchors>
+				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight">
+					<Size x="78" y="78"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</HighlightTexture>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForClicks("anyUp")
+						self.icon = self:GetParent().portrait
+						self.icon:ClearAllPoints()
+						self.icon:SetPoint("CENTER", self)
+					</OnLoad>
+					<OnMouseDown>
+						self.icon:SetWidth(56)
+						self.icon:SetHeight(56)
+						self.icon:SetTexCoord(0.075, 0.925, 0.075, 0.925)
+					</OnMouseDown>
+					<OnMouseUp>
+						self.icon:SetWidth(62)
+						self.icon:SetHeight(62)
+						self.icon:SetTexCoord(0, 1, 0, 1)
+					</OnMouseUp>
+					<OnClick>
+						self:GetParent():OnPortraitClick(self)
+					</OnClick>
+					<OnEnter>
+						self:GetParent():OnPortraitEnter(self)
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide()
+					</OnLeave>
+				</Scripts>
+			</Button>
 			<Button parentKey="Title" name="$parentTitle">
 				<Size x="262" y="14"/>
 				<Scripts>

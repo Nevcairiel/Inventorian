@@ -176,6 +176,12 @@ function Frame:OnShow()
 			ManageBackpackTokenFrame(self)
 		end
 	end
+
+	-- reset to the default player on a fresh frame
+	if self.playerName then
+		self.playerName = nil
+		self:Update()
+	end
 end
 
 function Frame:OnHide()
@@ -258,6 +264,17 @@ function Frame:OnSizeChanged(width, height)
 	LibWindow.SavePosition(self)
 
 	self:UpdateItemContainer()
+end
+
+function Frame:OnPortraitClick(portrait)
+	self:TogglePlayerDropdown(portrait, 15, 10)
+end
+
+function Frame:OnPortraitEnter(portrait)
+	GameTooltip:SetOwner(portrait, "ANCHOR_RIGHT")
+	GameTooltip:SetText(self:GetPlayerName(), 1, 1, 1)
+	GameTooltip:AddLine(L["<Left-Click> to switch characters"])
+	GameTooltip:Show()
 end
 
 function Frame:OnSearchTextChanged()
@@ -379,11 +396,87 @@ function Frame:HideFrame(auto)
 	end
 end
 
+do
+	local ActiveFrame
+	local PlayerDropdown
+
+	local function DeletePlayer(self)
+		local playerName = self.value
+		if Inventorian.bag:GetPlayerName() == playerName then
+			Inventorian.bag:SetPlayer(nil)
+		end
+
+		if Inventorian.bank:GetPlayerName() == playerName then
+			Inventorian.bank:SetPlayer(nil)
+		end
+
+		ItemCache:DeletePlayer(playerName)
+		CloseDropDownMenus()
+	end
+
+	local function SetPlayer(self)
+		ActiveFrame:SetPlayer(self.value)
+		CloseDropDownMenus()
+	end
+
+	local function PlayerEntry(player)
+		 UIDropDownMenu_AddButton({
+			text = player,
+			hasArrow = ItemCache:IsPlayerCached(player),
+			checked = (player == ActiveFrame:GetPlayerName()),
+			func = SetPlayer,
+			value = player,
+		})
+	end
+
+	local function CreatePlayerDropdown(self, level)
+		if level == 2 then
+			UIDropDownMenu_AddButton({ text = REMOVE, notCheckable = true, value = UIDROPDOWNMENU_MENU_VALUE, func = DeletePlayer}, 2)
+		else
+			PlayerEntry(ItemCache.PLAYER)
+
+			for i, player in ItemCache:IteratePlayers() do
+				if player ~= ItemCache.PLAYER then
+					PlayerEntry(player)
+				end
+			end
+		end
+	end
+
+	local function GetPlayerDropdown()
+		if not PlayerDropdown then
+			PlayerDropdown = CreateFrame("Frame", "InventorianPlayerDropdown", UIParent, "UIDropDownMenuTemplate")
+			PlayerDropdown.initialize = CreatePlayerDropdown
+			PlayerDropdown.displayMode = "MENU"
+			PlayerDropdown:SetID(1)
+		end
+
+		return PlayerDropdown
+	end
+
+	function Frame:TogglePlayerDropdown(anchor, offsetX, offsetY)
+		if ItemCache:HasCache() then
+			ActiveFrame = self
+			ToggleDropDownMenu(1, nil, GetPlayerDropdown(), anchor, offsetX, offsetY)
+		end
+	end
+
+end
+
 -----------------------------------------------------------------------
 -- Various information getters
 
+function Frame:SetPlayer(player)
+	if not player or not ItemCache:IsPlayerCached(player) then
+		self.playerName = nil
+	else
+		self.playerName = player
+	end
+	self:Update()
+end
+
 function Frame:GetPlayerName()
-	local name = PLAYER_NAME
+	local name = self.playerName or PLAYER_NAME
 
 	-- only return the realm name if its not the current realm
 	local realm, player = ItemCache:GetPlayerAddress(name)
