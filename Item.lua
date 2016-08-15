@@ -322,6 +322,13 @@ local function CacheOverlay_OnHide(self)
 	self:GetParent():UnlockHighlight()
 end
 
+local function CacheOverlay_OnClick(self)
+	local item = self:GetParent():GetItem()
+	if item then
+		HandleModifiedItemClick(item)
+	end
+end
+
 function Item:CreateCacheOverlay()
 	local overlay = CreateFrame("Button", nil, self)
 	overlay:RegisterForClicks("anyUp")
@@ -329,6 +336,7 @@ function Item:CreateCacheOverlay()
 	overlay:SetAllPoints(self)
 
 	overlay.UpdateTooltip = CacheOverlay_OnEnter
+	overlay:SetScript("OnClick", CacheOverlay_OnClick)
 	overlay:SetScript("OnEnter", CacheOverlay_OnEnter)
 	overlay:SetScript("OnLeave", CacheOverlay_OnLeave)
 	overlay:SetScript("OnHide", CacheOverlay_OnHide)
