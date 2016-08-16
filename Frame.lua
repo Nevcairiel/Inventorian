@@ -200,9 +200,7 @@ function Frame:OnHide()
 
 	-- reset to the default player when hiding
 	if self.playerName then
-		self.playerName = nil
-		self.cachedView = nil
-		self:Update()
+		self:SetPlayer(nil)
 	end
 end
 
@@ -491,6 +489,7 @@ function Frame:SetPlayer(player)
 	else
 		self.playerName = player
 	end
+	self.cachedView = self:IsCached()
 	self:Update()
 end
 
