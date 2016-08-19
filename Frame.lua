@@ -365,11 +365,12 @@ function Frame:Update()
 		MoneyFrame_SetType(self.Money, "PLAYER")
 	end
 	MoneyFrame_UpdateMoney(self.Money)
+
+	self.cachedView = self:IsCached()
 end
 
 function Frame:UpdateCachedView()
 	if self.cachedView ~= self:IsCached() then
-		self.cachedView = self:IsCached()
 		self:Update()
 	end
 end
@@ -489,7 +490,6 @@ function Frame:SetPlayer(player)
 	else
 		self.playerName = player
 	end
-	self.cachedView = self:IsCached()
 	self:Update()
 end
 
