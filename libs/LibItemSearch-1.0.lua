@@ -274,6 +274,25 @@ Lib:RegisterTypedSearch{
 	end,
 }
 
+--[[ Crafting Reagent ]]--
+
+Lib:RegisterTypedSearch{
+	id = 'crafting',
+	keywords = {
+		['crafting'] = true,
+		['reagents'] = true,
+		['crafting reagent'] = true,
+	},
+
+	canSearch = function(self, operator, search)
+		return self.keywords[search]
+	end,
+
+	findItem = function(self, link, operator, num)
+		local isCrafting = select(17, GetItemInfo(link))
+		return isCrafting
+	end,
+}
 
 --[[ Tooltip searches ]]--
 
@@ -358,9 +377,6 @@ Lib:RegisterTypedSearch{
 		['artifact power'] = 'Artifact Power',
 		['equipment'] = 'Champion Equipment',
 		['champion equipment'] = 'Champion Equipment',
-		['crafting'] = 'Crafting Reagent',
-		['reagents'] = 'Crafting Reagent',
-		['crafting reagent'] = 'Crafting Reagent',
 		['toy'] = 'Toy',
 	}
 }
