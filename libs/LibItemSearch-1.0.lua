@@ -280,8 +280,13 @@ Lib:RegisterTypedSearch{
 	id = 'crafting',
 	keywords = {
 		['crafting'] = true,
+		['reagent'] = true,
 		['reagents'] = true,
 		['crafting reagent'] = true,
+		-- 'reagents'
+		[MINIMAP_TRACKING_VENDOR_REAGENT:lower()] = true,
+		-- 'crafting reagents'
+		[PROFESSIONS_USED_IN_COOKING:lower()] = true,
 	},
 
 	canSearch = function(self, operator, search)
@@ -353,13 +358,16 @@ Lib:RegisterTypedSearch{
 
 	keywords = {
 		['soulbound'] = ITEM_BIND_ON_PICKUP,
+		[ITEM_SOULBOUND:lower()] = ITEM_BIND_ON_PICKUP,
 		['bound'] = ITEM_BIND_ON_PICKUP,
 		['boe'] = ITEM_BIND_ON_EQUIP,
 		['bop'] = ITEM_BIND_ON_PICKUP,
 		['bou'] = ITEM_BIND_ON_USE,
 		['quest'] = ITEM_BIND_QUEST,
+		[GetItemClassInfo(LE_ITEM_CLASS_QUESTITEM):lower()] = ITEM_BIND_QUEST,
 		['boa'] = ITEM_BIND_TO_BNETACCOUNT,
 		['unique'] = ITEM_UNIQUE,
+		[ITEM_UNIQUE:lower()] = ITEM_UNIQUE,
 	}
 }
 
@@ -374,13 +382,15 @@ Lib:RegisterTypedSearch{
 		return search and link_FindSearchInTooltip(itemLink, search)
 	end,
 
-	-- TODO: localization might be nice
+	-- TODO: localization of the missing entries might be nice
 	keywords = {
-		['ap'] = 'Artifact Power',
-		['artifact power'] = 'Artifact Power',
+		['ap'] = ARTIFACT_POWER,
+		['artifact power'] = ARTIFACT_POWER,
+		[ARTIFACT_POWER:lower()] = ARTIFACT_POWER,
 		['equipment'] = 'Champion Equipment',
 		['champion equipment'] = 'Champion Equipment',
-		['toy'] = 'Toy',
+		['toy'] = TOY,
+		[TOY:lower()] = TOY,
 	}
 }
 
