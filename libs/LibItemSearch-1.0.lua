@@ -314,6 +314,9 @@ end
 local function link_FindSearchInTooltip(itemLink, search)
 	--look in the cache for the result
 	local itemID = itemLink:match('item:(%d+)')
+	if not itemID then
+		return false
+	end
 	local cachedResult = tooltipCache[search][itemID]
 	if cachedResult ~= nil then
 		return cachedResult
