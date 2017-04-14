@@ -274,6 +274,24 @@ Lib:RegisterTypedSearch{
 	end,
 }
 
+--[[ Required level ]]--
+
+Lib:RegisterTypedSearch{
+	id = 'requiredLevel',
+	tags = {'r', 'req', 'rl', 'reql', 'reqlvl'},
+
+	canSearch = function(self, _, search)
+		return tonumber(search)
+	end,
+
+	findItem = function(self, link, operator, num)
+		local lvl = select(5, GetItemInfo(link))
+		if lvl then
+			return compare(operator, lvl, num)
+		end
+	end,
+}
+
 --[[ Crafting Reagent ]]--
 
 Lib:RegisterTypedSearch{
