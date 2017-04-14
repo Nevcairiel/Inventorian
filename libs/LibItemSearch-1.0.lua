@@ -200,7 +200,7 @@ end
 
 Lib:RegisterTypedSearch{
   id = 'itemName',
-  tags = {'name'},
+  tags = {'n', 'name'},
 
 	canSearch = function(self, operator, search)
 		return not operator and search
@@ -217,7 +217,7 @@ Lib:RegisterTypedSearch{
 
 Lib:RegisterTypedSearch{
 	id = 'itemType',
-	tags = {'type', 'slot'},
+	tags = {'t', 'type', 'slot'},
 
 	canSearch = function(self, operator, search)
 		return not operator and search
@@ -239,7 +239,7 @@ end
 
 Lib:RegisterTypedSearch{
 	id = 'itemQuality',
-	tags = {'quality'},
+	tags = {'q', 'quality'},
 
 	canSearch = function(self, _, search)
 		for i, name in pairs(qualities) do
@@ -260,7 +260,7 @@ Lib:RegisterTypedSearch{
 
 Lib:RegisterTypedSearch{
 	id = 'itemLevel',
-	tags = {'level', 'lvl'},
+	tags = {'l', 'level', 'lvl', 'ilvl'},
 
 	canSearch = function(self, _, search)
 		return tonumber(search)
@@ -522,7 +522,7 @@ end
 
 Lib:RegisterTypedSearch{
 	id = 'equipmentSet',
-	tags = {'set'},
+	tags = {'s', 'set'},
 
 	canSearch = function(self, operator, search)
 		return not operator and search
