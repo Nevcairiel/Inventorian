@@ -352,8 +352,8 @@ Lib:RegisterTypedSearch{
 	end,
 
 	keywords = {
-    	['soulbound'] = ITEM_BIND_ON_PICKUP,
-    	['bound'] = ITEM_BIND_ON_PICKUP,
+		['soulbound'] = ITEM_BIND_ON_PICKUP,
+		['bound'] = ITEM_BIND_ON_PICKUP,
 		['boe'] = ITEM_BIND_ON_EQUIP,
 		['bop'] = ITEM_BIND_ON_PICKUP,
 		['bou'] = ITEM_BIND_ON_USE,
