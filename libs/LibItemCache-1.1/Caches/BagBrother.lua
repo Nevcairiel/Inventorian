@@ -1,5 +1,5 @@
 --[[
-Copyright 2011-2015 João Cardoso
+Copyright 2011-2017 João Cardoso
 LibItemCache is distributed under the terms of the GNU General Public License.
 You can redistribute it and/or modify it under the terms of the license as
 published by the Free Software Foundation.
@@ -15,7 +15,7 @@ along with this library. If not, see <http://www.gnu.org/licenses/>.
 This file is part of LibItemCache.
 --]]
 
-local Lib = LibStub('LibItemCache-Inventorian-1.1')
+local Lib = LibStub('LibItemCache-1.1')
 if not BagBrother or Lib:HasCache() then
 	return
 end
@@ -24,7 +24,6 @@ local Cache = Lib:NewCache()
 local LAST_BANK_SLOT = NUM_BAG_SLOTS + NUM_BANKBAGSLOTS
 local FIRST_BANK_SLOT = NUM_BAG_SLOTS + 1
 local ITEM_COUNT = ';(%d+)$'
-local ITEM_ID = '^(%d+)'
 
 
 --[[ Items ]]--
@@ -38,7 +37,7 @@ function Cache:GetBag(realm, player, bag, tab, slot)
 	elseif slot then
 		return self:GetItem(realm, player, 'equip', nil, slot)
 	else
-		return self:GetNormalBag(realm, player, bag)
+		return self:GetPersonalBag(realm, player, bag)
 	end
 end
 
@@ -46,7 +45,7 @@ function Cache:GetItem(realm, player, bag, tab, slot)
 	if tab then
 		bag = self:GetGuildTab(realm, player, tab)
 	else
-		bag = self:GetNormalBag(realm, player, bag)
+		bag = self:GetPersonalBag(realm, player, bag)
 	end
 	
 	local item = bag and bag[slot]
@@ -62,43 +61,49 @@ function Cache:GetGuildTab(realm, player, tab)
 	return guild and guild[tab]
 end
 
-function Cache:GetNormalBag(realm, player, bag)
-	return realm and player and BrotherBags[realm][player][bag]
+function Cache:GetPersonalBag(realm, player, bag)
+	return BrotherBags[realm][player][bag]
 end
 
 
 --[[ Item Counts ]]--
 
 function Cache:GetItemCounts(realm, player, id)
-	local player = BrotherBags[realm][player]
-	local bank = self:GetItemCount(player[BANK_CONTAINER], id) + self:GetItemCount(player[REAGENTBANK_CONTAINER], id)
-	local equipment = self:GetItemCount(player.equip, id, true)
-	local vault = self:GetItemCount(player.vault, id, true)
-	local bags = 0
+	local personal = BrotherBags[realm][player]
+	local equipment = self:GetItemCount(personal.equip, id, true)
+	local vault = self:GetItemCount(personal.vault, id, true)
+
+	local bank = self:GetItemCount(personal[BANK_CONTAINER], id) + self:GetItemCount(personal[REAGENTBANK_CONTAINER], id)
+	local bags, guild = 0, 0
 	
 	for i = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
-		bags = bags + self:GetItemCount(player[i], id)
+		bags = bags + self:GetItemCount(personal[i], id)
 	end
 	
 	for i = FIRST_BANK_SLOT, LAST_BANK_SLOT do
-		bank = bank + self:GetItemCount(player[i], id)
+		bank = bank + self:GetItemCount(personal[i], id)
     end
 	
-	return equipment, bags, bank, vault
+    for i = 1, GetNumGuildBankTabs() do
+	guild = guild + self:GetItemCount(self:GetGuildTab(realm, player, i), id)
+    end
+
+	return equipment, bags, bank, vault, guild
 end
 
 function Cache:GetItemCount(bag, id, unique)
-	local i = 0
+	local count = 0
+	local id = '^'..id
 	
 	if bag then
-		for _,item in pairs(bag) do
-			if strmatch(item, ITEM_ID) == id then
-				i = i + (not unique and tonumber(strmatch(item, ITEM_COUNT)) or 1)
+		for i,item in pairs(bag) do
+			if type(i) == 'number' and item:find(id) then
+				count = count + (not unique and tonumber(item:match(ITEM_COUNT)) or 1)
 			end
 		end
 	end
 	
-	return i
+	return count
 end
 
 

@@ -24,7 +24,7 @@ local _, Inventorian = ...
 local Events = Inventorian:NewModule("Events", "AceEvent-3.0")
 Events.Fire = LibStub("CallbackHandler-1.0"):New(Events, "Register", "Unregister", "UnregisterAll").Fire
 
-local ItemCache = LibStub("LibItemCache-Inventorian-1.1")
+local ItemCache = LibStub("LibItemCache-1.1")
 
 local function ToIndex(bag, slot)
 	return (bag < 0 and bag * 100 - slot) or (bag * 100 + slot)
