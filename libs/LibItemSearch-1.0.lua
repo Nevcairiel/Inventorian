@@ -176,7 +176,7 @@ function Lib:FindTypedSearch(item, search, default)
     end
   else
     for id, searchType in self:GetTypedSearches() do
-      if self:UseTypedSearch(searchType, item, operator, search) then
+      if not searchType.onlyTags and self:UseTypedSearch(searchType, item, operator, search) then
         return true
       end
     end
@@ -417,12 +417,20 @@ Lib:RegisterTypedSearch{
 
 Lib:RegisterTypedSearch{
 	id = 'tooltip',
+	tags = { 'tooltip', 'tt' },
+	onlyTags = true,
 
 	canSearch = function(self, _, search)
-		return false 
+		return not operator and search
 	end,
 
 	findItem = function(self, itemLink, _, search)
+		-- we can only scan items
+		if not itemLink:find('item:') then
+			return false
+		end
+
+		-- load tooltip
 		tooltipScanner:SetOwner(UIParent, 'ANCHOR_NONE')
 		tooltipScanner:SetHyperlink(itemLink)
 
