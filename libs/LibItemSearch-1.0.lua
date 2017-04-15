@@ -365,6 +365,7 @@ end
 
 Lib:RegisterTypedSearch{
 	id = 'bindType',
+	tags = { 'bind', 'b' },
 
 	canSearch = function(self, _, search)
 		return self.keywords[search]
@@ -391,6 +392,7 @@ Lib:RegisterTypedSearch{
 
 Lib:RegisterTypedSearch{
 	id = 'itemDescription',
+	tags = { 'desc', 'd' },
 
 	canSearch = function(self, _, search)
 		return self.keywords[search]
