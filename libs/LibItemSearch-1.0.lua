@@ -417,7 +417,7 @@ Lib:RegisterTypedSearch{
 
 Lib:RegisterTypedSearch{
 	id = 'tooltip',
-	tags = { 'tooltip', 'tt' },
+	tags = { 'tooltip', 'tt', 'tip' },
 	onlyTags = true,
 
 	canSearch = function(self, _, search)
