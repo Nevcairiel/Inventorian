@@ -346,6 +346,7 @@ local function link_FindSearchInTooltip(itemLink, search)
 	end
 
 	--no match?, pull in the resut from tooltip parsing
+	tooltipScanner:SetOwner(UIParent, 'ANCHOR_NONE')
 	tooltipScanner:SetHyperlink(itemLink)
 
 	local result = false
@@ -422,6 +423,7 @@ Lib:RegisterTypedSearch{
 	end,
 
 	findItem = function(self, itemLink, _, search)
+		tooltipScanner:SetOwner(UIParent, 'ANCHOR_NONE')
 		tooltipScanner:SetHyperlink(itemLink)
 
 		local i = 1
