@@ -523,10 +523,11 @@ elseif IsAddOnLoaded('Wardrobe') then
 --Last Resort: Blizzard Equipment Manager
 else
 	function ES_FindSets(setList, search, exactMatch)
-		for i = 1, GetNumEquipmentSets() do
-			local setName = GetEquipmentSetInfo(i)
+		local setIDs = C_EquipmentSet.GetEquipmentSetIDs()
+		for _, id in pairs(setIDs) do
+			local setName = C_EquipmentSet.GetEquipmentSetInfo(id)
 			if ES_TrySetName(setName, search, exactMatch) then
-				table.insert(setList, setName)
+				table.insert(setList, id)
 			end
 		end
 		if (search ~= '*') and exactMatch and #setList == 0 then --if we just finished an exact, non-global (not "*"), name match search and still have no results, try one more time with partial ("starts with") set name matching instead
@@ -537,8 +538,8 @@ else
 	function ES_CheckItem(itemLink, setList)
 		local itemID = tonumber(string.match(itemLink or '','item:(%-?%d+)') or 0) --grab the baseID of the item we are searching for (we don't need the full itemString, since we'll only be doing a loose baseID comparison below)
 
-		for _, setName in pairs(setList) do
-			local bzSetItemIDs = GetEquipmentSetItemIDs(setName)
+		for _, setID in pairs(setList) do
+			local bzSetItemIDs = C_EquipmentSet.GetItemIDs(setID)
 			for _, bzItemID in pairs(bzSetItemIDs) do --note: do not change this to ipairs() or it will abort scanning at empty slots in a set
 				if itemID == bzItemID then --loose match: compare the current item's baseID to the baseID of the set item
 					return true
