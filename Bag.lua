@@ -138,7 +138,7 @@ function Bag:OnClick(button)
 	end
 
 	if button == "RightButton" then
-		PlaySound("igMainMenuOptionCheckBoxOn");
+		PlaySound(SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or "igMainMenuOptionCheckBoxOn");
 		ToggleDropDownMenu(1, nil, self.filterDropDown, self, 0, 0);
 	elseif self:IsPurchasable() then
 		self:PurchaseSlot()
@@ -265,7 +265,6 @@ function Bag:SetCount(count)
 end
 
 function Bag:Pickup()
-	PlaySound("BAGMENUBUTTONPRESS")
 	PickupBagFromSlot(self:GetInventorySlot())
 end
 
@@ -300,7 +299,7 @@ function Bag:PurchaseSlot()
 		}
 	end
 
-	PlaySound("igMainMenuOption")
+	PlaySound(SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION or "igMainMenuOption")
 	StaticPopup_Show("CONFIRM_BUY_BANK_SLOT_INVENTORIAN")
 end
 

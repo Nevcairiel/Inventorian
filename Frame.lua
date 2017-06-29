@@ -79,7 +79,7 @@ function Frame.OnTabClick(tab)
 	local frame = tab:GetParent()
 	local tabID = tab:GetID()
 	if frame.selectedTab ~= tabID then
-		PlaySound("igCharacterInfoTab")
+		PlaySound(SOUNDKIT and SOUNDKIT.IG_CHARACTER_INFO_TAB or "igCharacterInfoTab")
 	end
 
 	PanelTemplates_SetTab(frame, tabID)
@@ -161,7 +161,7 @@ function Inventorian.Frame.ManageBackpackTokenFrame(backpack)
 end
 
 function Frame:OnShow()
-	PlaySound("igBackPackOpen")
+	PlaySound(SOUNDKIT and SOUNDKIT.IG_BACKPACK_OPEN or "igBackPackOpen")
 	SetPortraitTexture(self.portrait, "player")
 
 	if self:IsBank() and not self:IsCached() then
@@ -179,7 +179,7 @@ function Frame:OnShow()
 end
 
 function Frame:OnHide()
-	PlaySound("igBackPackClose")
+	PlaySound(SOUNDKIT and SOUNDKIT.IG_BACKPACK_CLOSE or "igBackPackClose")
 
 	if self:IsBank() then
 		if self:AtBank() then
@@ -218,7 +218,7 @@ end
 function Frame:OnSortClick(frame, button)
 	if self:IsCached() then return end
 	if button == "LeftButton" then
-		PlaySound("UI_BagSorting_01")
+		PlaySound(SOUNDKIT and SOUNDKIT.UI_BAG_SORTING_01 or "UI_BagSorting_01")
 		if self:IsReagentBank() then
 			SortReagentBankBags()
 		elseif self:IsBank() then
@@ -250,7 +250,7 @@ function Frame:OnBagToggleEnter(toggle)
 end
 
 function Frame.OnDepositClick(button)
-	PlaySound("igMainMenuOption")
+	PlaySound(SOUNDKIT and SOUNDKIT.IG_MAINMENU_OPTION or "igMainMenuOption")
 	DepositReagentBank()
 end
 
