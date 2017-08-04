@@ -152,4 +152,7 @@ function Inventorian:SetupBagHooks()
 	self:RegisterEvent("AUCTION_HOUSE_CLOSED", "AutoHideInventory")
 
 	self:SecureHook("ContainerFrame_UpdateAll", "UpdateBag")
+
+	-- noop out container anchor update
+	UpdateContainerFrameAnchors = function() end
 end
