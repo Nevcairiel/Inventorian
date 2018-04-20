@@ -253,10 +253,10 @@ function Item:Highlight(enable)
 end
 
 function Item:OnEvent(event, ...)
-	if event == "GET_ITEM_INFO_RECEIVED" then
+	if event == "ITEM_DATA_LOAD_RESULT" then
 		local id = (...)
 		if id == self.itemID then
-			self:UnregisterEvent("GET_ITEM_INFO_RECEIVED")
+			self:UnregisterEvent("ITEM_DATA_LOAD_RESULT")
 			self:Update()
 		end
 	end
@@ -386,9 +386,10 @@ function Item:GetInfo()
 		end
 	end
 
-	if not icon and link then
-		self:RegisterEvent("GET_ITEM_INFO_RECEIVED")
+	if not icon and link and not C_Item.IsItemDataCached(ItemLocation:CreateFromBagAndSlot(self.bag, self.slot)) then
 		self.itemID = GetItemInfoInstant(link)
+		self:RegisterEvent("ITEM_DATA_LOAD_RESULT")
+		C_Item.RequestLoadItemDataByID(self.itemID)
 	end
 
 	return icon, count, locked, quality, readable, lootable, link, noValue, itemID
