@@ -178,6 +178,7 @@ function Item:HideBorder()
 	self.IconQuestTexture:Hide()
 	self.BattlepayItemTexture:Hide()
 	self.IconBorder:Hide()
+	self.IconOverlay:Hide()
 	self.JunkIcon:Hide()
 
 	if self.flashAnim:IsPlaying() or self.newitemglowAnim:IsPlaying() then
