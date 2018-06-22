@@ -13,6 +13,3 @@ externals:
 
 move-folders:
     Inventorian/BagBrother: BagBrother
-
-ignore:
-    - localcheck.lua
