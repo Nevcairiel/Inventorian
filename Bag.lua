@@ -280,9 +280,9 @@ end
 function Bag:PurchaseSlot()
 	if not StaticPopupDialogs["CONFIRM_BUY_BANK_SLOT_INVENTORIAN"] then
 		StaticPopupDialogs["CONFIRM_BUY_BANK_SLOT_INVENTORIAN"] = {
-			text = TEXT(CONFIRM_BUY_BANK_SLOT),
-			button1 = TEXT(YES),
-			button2 = TEXT(NO),
+			text = CONFIRM_BUY_BANK_SLOT,
+			button1 = YES,
+			button2 = NO,
 
 			OnAccept = function(self) 
 				PurchaseSlot() 
