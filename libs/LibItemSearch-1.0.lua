@@ -334,7 +334,7 @@ local function stripColor(text)
 	return text
 end
 
-local function link_FindSearchInTooltip(itemLink, search)
+local function link_FindSearchInTooltip(itemLink, search, nolimit)
 	--look in the cache for the result
 	local itemID = itemLink:match('item:(%d+)')
 	if not itemID then
@@ -350,7 +350,7 @@ local function link_FindSearchInTooltip(itemLink, search)
 	tooltipScanner:SetHyperlink(itemLink)
 
 	local result = false
-	local maxLines = math.min(4, tooltipScanner:NumLines())
+	local maxLines = nolimit and tooltipScanner:NumLines() or math.min(4, tooltipScanner:NumLines())
 	for i = 2, maxLines do
 		local text = stripColor(_G[tooltipScanner:GetName() .. 'TextLeft' .. i]:GetText())
 		if text == search then
@@ -414,6 +414,25 @@ Lib:RegisterTypedSearch{
 		[TOY:lower()] = TOY,
 	}
 }
+
+Lib:RegisterTypedSearch{
+	id = 'itemDescriptionExtended',
+	tags = { 'descex', 'dex' },
+
+	canSearch = function(self, _, search)
+		return self.keywords[search]
+	end,
+
+	findItem = function(self, itemLink, _, search)
+		return search and link_FindSearchInTooltip(itemLink, search, true)
+	end,
+
+	-- TODO: localization of the missing entries might be nice
+	keywords = {
+		['scrap'] = ITEM_SCRAPABLE,
+	}
+}
+
 
 Lib:RegisterTypedSearch{
 	id = 'tooltip',
