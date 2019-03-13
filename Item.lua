@@ -4,7 +4,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Inventorian")
 local ItemCache = LibStub("LibItemCache-1.1")
 local ItemSearch = LibStub("LibItemSearch-Inventorian-1.0")
 
-local Item = CreateFrame("Button")
+local Item = CreateFrame("ItemButton")
 local Item_MT = {__index = Item}
 
 Inventorian.Item = {}
@@ -21,7 +21,7 @@ function Inventorian.Item:Create()
 		self.pool[item] = nil
 	else
 		self.count = self.count + 1
-		item = CreateFrame("Button", ("InventorianItemButton%d"):format(self.count), nil, "ContainerFrameItemButtonTemplate")
+		item = CreateFrame("ItemButton", ("InventorianItemButton%d"):format(self.count), nil, "ContainerFrameItemButtonTemplate")
 		item = self:WrapItemButton(item)
 	end
 
