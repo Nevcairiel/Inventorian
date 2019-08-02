@@ -389,8 +389,10 @@ function Item:GetInfo()
 
 	if not icon and link and (self:IsCached() or not C_Item.IsItemDataCached(ItemLocation:CreateFromBagAndSlot(self.bag, self.slot))) then
 		self.itemID = GetItemInfoInstant(link)
-		self:RegisterEvent("ITEM_DATA_LOAD_RESULT")
-		C_Item.RequestLoadItemDataByID(self.itemID)
+		if self.itemID then
+			self:RegisterEvent("ITEM_DATA_LOAD_RESULT")
+			C_Item.RequestLoadItemDataByID(self.itemID)
+		end
 	end
 
 	return icon, count, locked, quality, readable, lootable, link, noValue, itemID
