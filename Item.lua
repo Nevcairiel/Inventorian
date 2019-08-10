@@ -274,7 +274,6 @@ end
 
 function Item:OnLeave()
 	GameTooltip:Hide()
-	BattlePetTooltip:Hide()
 	ResetCursor()
 end
 
