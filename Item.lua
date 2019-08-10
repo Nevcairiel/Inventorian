@@ -268,6 +268,15 @@ function Item:OnEnter()
 			end
 		else
 			ContainerFrameItemButton_OnEnter(self)
+
+			-- Hide new item overlay glow
+			self.NewItemTexture:Hide()
+			self.BattlepayItemTexture:Hide()
+
+			if self.flashAnim:IsPlaying() or self.newitemglowAnim:IsPlaying() then
+				self.flashAnim:Stop()
+				self.newitemglowAnim:Stop()
+			end
 		end
 	end
 end
