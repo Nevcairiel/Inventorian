@@ -187,10 +187,6 @@ function Frame:UpdateItemContainer(force)
 		width = width - 36
 	end
 
-	if self.DepositButton:IsShown() then
-		height = height - 26
-	end
-
 	if width ~= self.itemContainer:GetWidth() or height ~= self.itemContainer:GetHeight() then
 		self.itemContainer:SetWidth(width)
 		self.itemContainer:SetHeight(height)
