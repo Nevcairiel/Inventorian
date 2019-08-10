@@ -1,4 +1,4 @@
-## Interface: 80200
+## Interface: 11302
 
 ## Title: Inventorian
 ## Notes: One large inventory.
