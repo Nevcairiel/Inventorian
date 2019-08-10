@@ -43,7 +43,6 @@ function Inventorian.Item:WrapItemButton(item)
 
 	-- elements
 	local name = item:GetName()
-	item.IconQuestTexture = _G[name .. "IconQuestTexture"]
 	item.Cooldown = _G[name .. "Cooldown"]
 
 	-- re-size search overlay to cover the item quality border as well
@@ -175,7 +174,6 @@ end
 
 function Item:HideBorder()
 	self.NewItemTexture:Hide()
-	self.IconQuestTexture:Hide()
 	self.BattlepayItemTexture:Hide()
 	self.IconBorder:Hide()
 	self.IconOverlay:Hide()
@@ -192,15 +190,6 @@ function Item:UpdateBorder(quality, itemID, noValue)
 	self:HideBorder()
 
 	if item then
-		local isQuestItem, questId, isActive = self:GetQuestInfo()
-		if questId and not isActive then
-			self.IconQuestTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG)
-			self.IconQuestTexture:Show()
-		elseif questId or isQuestItem then
-			self.IconQuestTexture:SetTexture(TEXTURE_ITEM_QUEST_BORDER)
-			self.IconQuestTexture:Show()
-		end
-
 		local isNewItem, isBattlePayItem = self:IsNew()
 		if isNewItem then
 			if isBattlePayItem then
@@ -396,12 +385,6 @@ function Item:GetInfo()
 	end
 
 	return icon, count, locked, quality, readable, lootable, link, noValue, itemID
-end
-
-function Item:GetQuestInfo()
-	if not self:IsCached() then
-		return GetContainerItemQuestInfo(self.bag, self.slot)
-	end
 end
 
 function Item:IsNew()
