@@ -41,7 +41,7 @@ local BANK_CONFIG =
 {
 	{
 		title = BANK,
-		bags = { BANK_CONTAINER, 5, 6, 7, 8, 9, 10, 11 },
+		bags = { BANK_CONTAINER, 5, 6, 7, 8, 9, 10 },
 		isBank = true,
 	}
 }
