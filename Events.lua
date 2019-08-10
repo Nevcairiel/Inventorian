@@ -41,7 +41,6 @@ function Events:OnEnable()
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN")
 	self:RegisterEvent("BAG_NEW_ITEMS_UPDATED")
 	self:RegisterEvent("PLAYERBANKSLOTS_CHANGED")
-	self:RegisterEvent("PLAYERREAGENTBANKSLOTS_CHANGED")
 	self:RegisterEvent("BANKFRAME_OPENED")
 	self:RegisterEvent("BANKFRAME_CLOSED")
 	self:RegisterEvent("ITEM_LOCK_CHANGED", "GenericEvent")
@@ -181,10 +180,6 @@ function Events:PLAYERBANKSLOTS_CHANGED()
 	self:UpdateItems(BANK_CONTAINER)
 end
 
-function Events:PLAYERREAGENTBANKSLOTS_CHANGED()
-	self:UpdateItems(REAGENTBANK_CONTAINER)
-end
-
 function Events:BANKFRAME_OPENED()
 	self.atBank = true
 	ItemCache.AtBank = true
@@ -193,7 +188,6 @@ function Events:BANKFRAME_OPENED()
 		self.firstVisit = nil
 
 		self:UpdateBagSize(BANK_CONTAINER)
-		self:UpdateBagSize(REAGENTBANK_CONTAINER)
 		self:UpdateBagSizes()
 	end
 

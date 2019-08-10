@@ -42,15 +42,6 @@ function Inventorian.Frame:Create(name, titleText, settings, config)
 	frame.itemContainer:SetBags(config[1].bags)
 	frame.itemContainer:Show()
 
-	frame.DepositButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-	frame.DepositButton:SetText(REAGENTBANK_DEPOSIT)
-	frame.DepositButton:SetSize(256, 24)
-	frame.DepositButton:SetPoint("BOTTOM", 0, 31)
-	frame.DepositButton:SetScript("OnClick", frame.OnDepositClick)
-	frame.DepositButton:Hide()
-
-	frame:CreateTabs()
-
 	-- scripts
 	frame:SetScript("OnShow", frame.OnShow)
 	frame:SetScript("OnHide", frame.OnHide)
@@ -75,122 +66,13 @@ function Inventorian.Frame:Create(name, titleText, settings, config)
 	return frame
 end
 
-function Frame.OnTabClick(tab)
-	local frame = tab:GetParent()
-	local tabID = tab:GetID()
-	if frame.selectedTab ~= tabID then
-		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
-	end
-
-	PanelTemplates_SetTab(frame, tabID)
-	frame.currentConfig = frame.config[tabID]
-	frame.itemContainer:SetBags(frame.currentConfig.bags)
-
-	-- hack for the reagent bank to behave properly when right-clicking inventory items
-	if frame:IsBank() and frame:AtBank() then
-		if tabID == 2 then
-			BankFrame:Show()
-			BankFrame.selectedTab = 2
-		else
-			BankFrame:Hide()
-			BankFrame.selectedTab = 1
-		end
-	end
-
-	ReagentBankFrameUnlockInfo:Hide()
-	frame.DepositButton:Hide()
-	if frame:IsReagentBank() then
-		if not IsReagentBankUnlocked() then
-			local UnlockInfo = ReagentBankFrameUnlockInfo
-			UnlockInfo:SetParent(frame.itemContainer)
-			UnlockInfo:SetFrameLevel(frame.itemContainer:GetFrameLevel() + 10)
-			UnlockInfo:ClearAllPoints()
-			UnlockInfo:SetPoint("TOPLEFT", -8, 1)
-			UnlockInfo:SetPoint("BOTTOMRIGHT", 8, -1)
-			UnlockInfo:Show()
-
-			MoneyFrame_Update(UnlockInfo.CostMoneyFrame, GetReagentBankCost())
-		end
-
-		frame.DepositButton:Show()
-	end
-
-	frame:UpdateBags()
-end
-
-function Frame:CreateTabs()
-	local numConfigs = #self.config
-	if numConfigs <= 1 then return end
-
-	self.tabs = {}
-	for i = 1, numConfigs do
-		local tab = CreateFrame("Button", self:GetName() .. "Tab" .. i, self, "InventorianFrameTabButtonTemplate")
-		tab:SetScript("OnClick", self.OnTabClick)
-		tab:SetID(i)
-		tab:SetText(self.config[i].title)
-
-		if i > 1 then
-			tab:SetPoint("LEFT", self.tabs[i-1], "RIGHT", -16, 0)
-		else
-			tab:SetPoint("CENTER", self, "BOTTOMLEFT", 50, -14)
-		end
-
-		PanelTemplates_TabResize(tab, 0)
-		tab:GetHighlightTexture():SetWidth(tab:GetTextWidth() + 30)
-
-		self.tabs[i] = tab
-	end
-
-	PanelTemplates_SetNumTabs(self, numConfigs)
-	PanelTemplates_SetTab(self, 1)
-end
-
-function Inventorian.Frame.ManageBackpackTokenFrame(backpack)
-	if not backpack or InventorianBagFrame:IsCached() then
-		BackpackTokenFrame:Hide()
-		return
-	end
-	if BackpackTokenFrame_IsShown() then
-		BackpackTokenFrame:SetParent(backpack)
-		BackpackTokenFrame:ClearAllPoints()
-		BackpackTokenFrame:SetPoint("TOPRIGHT", InventorianBagFrame, "BOTTOMRIGHT", 4, 5)
-		BackpackTokenFrame:Show()
-	else
-		BackpackTokenFrame:Hide()
-	end
-end
-
 function Frame:OnShow()
 	PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
 	SetPortraitTexture(self.portrait, "player")
-
-	if self:IsBank() and not self:IsCached() then
-		if self.selectedTab == 2 then
-			BankFrame:Show()
-		end
-	end
-
-	if not self:IsBank() then
-		if BackpackTokenFrame_Update then
-			BackpackTokenFrame_Update()
-			ManageBackpackTokenFrame(self)
-		end
-	end
 end
 
 function Frame:OnHide()
 	PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE)
-
-	if self:IsBank() then
-		if self:AtBank() then
-			CloseBankFrame()
-		end
-		BankFrame:Hide()
-	else
-		if BackpackTokenFrame then
-			BackpackTokenFrame:Hide()
-		end
-	end
 
 	-- clear search on hide
 	self.SearchBox.clearButton:Click()
@@ -247,11 +129,6 @@ function Frame:OnBagToggleEnter(toggle)
 		GameTooltip:AddLine(L["<Right-Click> to show the bank contents"])
 	end
 	GameTooltip:Show()
-end
-
-function Frame.OnDepositClick(button)
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
-	DepositReagentBank()
 end
 
 function Frame:OnEvent(event, ...)
@@ -325,14 +202,6 @@ function Frame:UpdateBags()
 		end
 	end
 	self:UpdateItemContainer()
-
-	if self:IsCached() then
-		self.DepositButton:Disable()
-		self.SortButton:Disable()
-	else
-		self.DepositButton:Enable()
-		self.SortButton:Enable()
-	end
 end
 
 function Frame:UpdateItemContainer(force)
@@ -505,15 +374,11 @@ function Frame:GetPlayerName()
 end
 
 function Frame:IsCached()
-	return ItemCache:IsPlayerCached(self:GetPlayerName()) or ((self:IsBank() or self:IsReagentBank()) and not self:AtBank())
+	return ItemCache:IsPlayerCached(self:GetPlayerName()) or (self:IsBank() and not self:AtBank())
 end
 
 function Frame:IsBank()
 	return self.currentConfig.isBank
-end
-
-function Frame:IsReagentBank()
-	return self.currentConfig.isReagentBank
 end
 
 function Frame:AtBank()

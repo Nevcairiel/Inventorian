@@ -24,14 +24,13 @@ local FirstBankSlot = 1 + BagSlots
 local LastBankSlot = BankSlots + BagSlots
 local Backpack = BACKPACK_CONTAINER
 local Bank = BANK_CONTAINER
-local Reagents = REAGENTBANK_CONTAINER
 
 
 --[[ Continuous Events ]]--
 
 function BagBrother:BAG_UPDATE(bag)
 	local isBag = bag > Bank and bag <= BagSlots
-	
+
 	if isBag then
   		self:SaveBag(bag, bag == Backpack)
 	end
@@ -60,10 +59,6 @@ function BagBrother:BANKFRAME_CLOSED()
 	if self.atBank then
 		for i = FirstBankSlot, LastBankSlot do
 			self:SaveBag(i)
-		end
-
-		if IsReagentBankUnlocked() then
-			self:SaveBag(Reagents, true)
 		end
 
 		self:SaveBag(Bank, true)

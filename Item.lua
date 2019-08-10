@@ -269,9 +269,9 @@ function Item:OnEnter()
 		self.cacheOverlay:Show()
 		self.cacheOverlay:GetScript("OnEnter")(self.cacheOverlay)
 	else
-		if self:IsBank() or self:IsReagentBank() then
+		if self:IsBank() then
 			if self:GetItem() then
-				local id = self:IsBank() and BankButtonIDToInvSlotID(self:GetID()) or ReagentBankButtonIDToInvSlotID(self:GetID())
+				local id = BankButtonIDToInvSlotID(self:GetID())
 				self:AnchorTooltip()
 				GameTooltip:SetInventoryItem("player", id)
 				GameTooltip:Show()
@@ -412,8 +412,4 @@ end
 
 function Item:IsBank()
 	return self.bag == BANK_CONTAINER
-end
-
-function Item:IsReagentBank()
-	return self.bag == REAGENTBANK_CONTAINER
 end

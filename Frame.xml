@@ -77,7 +77,7 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		
+
 		<Frames>
 			<Button parentKey="IconButton" name = "$parentIconButton">
 				<Size x="64" y="64"/>

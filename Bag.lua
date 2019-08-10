@@ -73,7 +73,7 @@ function Bag:Set(parent, id)
 	self:SetID(id)
 	self:SetParent(parent)
 
-	if self:IsBank() or self:IsReagentBank() or self:IsBackpack() then
+	if self:IsBank() or self:IsBackpack() then
 		SetItemButtonTexture(self, [[Interface\Buttons\Button-Backpack-Up]])
 		SetItemButtonTextureVertexColor(self, 1, 1, 1)
 	else
@@ -273,8 +273,6 @@ function Bag:UpdateTooltip()
 		GameTooltip:SetText(BACKPACK_TOOLTIP, 1, 1, 1)
 	elseif self:IsBank() then
 		GameTooltip:SetText(BANK, 1, 1, 1)
-	elseif self:IsReagentBank() then
-		GameTooltip:SetText(REAGENT_BANK, 1, 1, 1)
 	else
 		self:UpdateBagTooltip()
 	end
@@ -311,10 +309,6 @@ end
 
 function Bag:IsBank()
 	return (self:GetID() == BANK_CONTAINER)
-end
-
-function Bag:IsReagentBank()
-	return (self:GetID() == REAGENTBANK_CONTAINER)
 end
 
 function Bag:IsBackpackBag()
