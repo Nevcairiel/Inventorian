@@ -208,7 +208,7 @@ end
 
 function Events:BAG_UPDATE_COOLDOWN()
 	self:UpdateCooldowns(BACKPACK_CONTAINER)
-		
+
 	for bag = 1, NUM_BAG_SLOTS do
 		self:UpdateCooldowns(bag)
 	end

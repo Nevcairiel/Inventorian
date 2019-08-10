@@ -42,7 +42,7 @@ end
 
 function ItemContainer:OnShow()
 	self:GenerateItemButtons()
-	
+
 	Events.Register(self, "ITEM_SLOT_ADD", "ITEM_SLOT_UPDATE")
 	Events.Register(self, "ITEM_SLOT_UPDATE")
 	Events.Register(self, "ITEM_SLOT_REMOVE")
@@ -140,7 +140,7 @@ end
 
 function ItemContainer:AddSlot(bag, slot)
 	local index = ToIndex(bag, slot)
-	
+
 	if self.items[index] then
 		self.items[index]:Update()
 	else
@@ -153,7 +153,7 @@ end
 
 function ItemContainer:RemoveSlot(bag, slot)
 	local index = ToIndex(bag, slot)
-	
+
 	if self.items[index] then
 		self.items[index]:Free()
 		self.items[index] = nil
@@ -169,7 +169,7 @@ function ItemContainer:Layout()
 	local size = 36 + spacing*2
 	local cols = 0
 	local scale, rows
-	
+
 	if count <= 0 then return end
 
 	repeat
@@ -187,7 +187,7 @@ function ItemContainer:Layout()
 			local item = items[ToIndex(bag, slot)]
 			if item then
 				i = i + 1
-				
+
 				local row = mod(i-1, cols)
 				local col = ceil(i / cols) - 1
 				item:ClearAllPoints()

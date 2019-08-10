@@ -19,17 +19,17 @@ function Inventorian.Bag:Create()
 	end
 	local name = ("InventorianBag%d"):format(BagID)
 	local bag = setmetatable(CreateFrame("Button", name), Bag_MT)
-	
+
 	bag:SetSize(30, 30)
-	
+
 	local icon = bag:CreateTexture(name .. "IconTexture", "BORDER")
 	icon:SetAllPoints(bag)
-	
+
 	bag.count = bag:CreateFontString(name .. "Count", "OVERLAY")
 	bag.count:SetFontObject("NumberFontNormalSmall")
 	bag.count:SetJustifyH("RIGHT")
 	bag.count:SetPoint("BOTTOMRIGHT", -2, 2)
-	
+
 	local nt = bag:CreateTexture(name .. "NormalTexture")
 	nt:SetTexture([[Interface\Buttons\UI-Quickslot2]])
 	nt:SetWidth(64 * (5/6))
@@ -69,7 +69,7 @@ function Inventorian.Bag:Create()
 	bag:SetScript("OnDragStart", bag.OnDrag)
 	bag:SetScript("OnReceiveDrag", bag.OnClick)
 	bag:SetScript("OnEvent", bag.OnEvent)
-	
+
 	BagID = BagID + 1
 	return bag
 end
@@ -84,7 +84,7 @@ end
 function Bag:Set(parent, id)
 	self:SetID(id)
 	self:SetParent(parent)
-	
+
 	if self:IsBank() or self:IsReagentBank() or self:IsBackpack() then
 		SetItemButtonTexture(self, [[Interface\Buttons\Button-Backpack-Up]])
 		SetItemButtonTextureVertexColor(self, 1, 1, 1)
@@ -250,7 +250,7 @@ function Bag:UpdateFilterIcon()
 end
 
 function Bag:SetCount(count)
-	local count = count or 0
+	count = count or 0
 
 	if count > 1 then
 		if count > 999 then
@@ -284,12 +284,12 @@ function Bag:PurchaseSlot()
 			button1 = YES,
 			button2 = NO,
 
-			OnAccept = function(self) 
-				PurchaseSlot() 
+			OnAccept = function(f)
+				PurchaseSlot()
 			end,
 
-			OnShow = function(self) 
-				MoneyFrame_Update(self:GetName().. "MoneyFrame", GetBankSlotCost(GetNumBankSlots()))
+			OnShow = function(f)
+				MoneyFrame_Update(f:GetName().. "MoneyFrame", GetBankSlotCost(GetNumBankSlots()))
 			end,
 
 			hasMoneyFrame = 1,

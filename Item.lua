@@ -15,7 +15,7 @@ function Inventorian.Item:Create()
 	if not self.pool then
 		self:CreateItemPool()
 	end
-	
+
 	local item = next(self.pool)
 	if item then
 		self.pool[item] = nil
@@ -40,7 +40,7 @@ function Inventorian.Item:WrapItemButton(item)
 	item:SetScript("OnLeave", item.OnLeave)
 	item:SetScript("OnShow", item.OnShow)
 	item.UpdateTooltip = nil
-	
+
 	-- elements
 	local name = item:GetName()
 	item.IconQuestTexture = _G[name .. "IconQuestTexture"]
@@ -190,7 +190,7 @@ end
 function Item:UpdateBorder(quality, itemID, noValue)
 	local item = self:GetItem()
 	self:HideBorder()
-	
+
 	if item then
 		local isQuestItem, questId, isActive = self:GetQuestInfo()
 		if questId and not isActive then
@@ -200,7 +200,7 @@ function Item:UpdateBorder(quality, itemID, noValue)
 			self.IconQuestTexture:SetTexture(TEXTURE_ITEM_QUEST_BORDER)
 			self.IconQuestTexture:Show()
 		end
-		
+
 		local isNewItem, isBattlePayItem = self:IsNew()
 		if isNewItem then
 			if isBattlePayItem then
