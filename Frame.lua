@@ -97,30 +97,6 @@ function Frame:OnBagToggleClick(toggle, button)
 	end
 end
 
-function Frame:OnSortClick(frame, button)
-	if self:IsCached() then return end
-	if button == "LeftButton" then
-		PlaySound(SOUNDKIT.UI_BAG_SORTING_01)
-		if self:IsReagentBank() then
-			SortReagentBankBags()
-		elseif self:IsBank() then
-			SortBankBags()
-		else
-			SortBags()
-		end
-	elseif button == "RightButton" then
-		self.OnDepositClick(frame)
-	end
-end
-
-function Frame:OnSortButtonEnter(button)
-	GameTooltip:SetOwner(button, "ANCHOR_LEFT")
-	GameTooltip:SetText(BAG_CLEANUP_BAGS, 1, 1, 1)
-	GameTooltip:AddLine(L["<Left-Click> to automatically sort this bag"])
-	GameTooltip:AddLine(L["<Right-Click> to deposit reagents into the reagent bank"])
-	GameTooltip:Show()
-end
-
 function Frame:OnBagToggleEnter(toggle)
 	GameTooltip:SetOwner(toggle, "ANCHOR_LEFT")
 	GameTooltip:SetText(L["Bags"], 1, 1, 1)
