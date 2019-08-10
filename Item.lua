@@ -208,7 +208,9 @@ function Item:UpdateBorder(quality, itemID, noValue)
 			end
 		end
 
-		SetItemButtonQuality(self, quality, itemID)
+		if quality and quality >= LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality] then
+			self:SetBorderColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b)
+		end
 		self.JunkIcon:SetShown(quality == LE_ITEM_QUALITY_POOR and not noValue and MerchantFrame:IsShown())
 	end
 end
