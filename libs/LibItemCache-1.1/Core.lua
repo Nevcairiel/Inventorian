@@ -151,7 +151,7 @@ function Lib:GetBagInfo(player, bag)
 		end
 		return GetGuildBankTabInfo(tab)
 
-	elseif bag ~= BACKPACK_CONTAINER and bag ~= BANK_CONTAINER then
+	elseif bag ~= BACKPACK_CONTAINER and bag ~= BANK_CONTAINER and bag ~= KEYRING_CONTAINER then
 		local slot = ContainerIDToInventoryID(bag)
 
    		if isCached then
