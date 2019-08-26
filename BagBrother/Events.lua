@@ -24,14 +24,13 @@ local FirstBankSlot = 1 + BagSlots
 local LastBankSlot = BankSlots + BagSlots
 local Backpack = BACKPACK_CONTAINER
 local Bank = BANK_CONTAINER
-local Reagents = REAGENTBANK_CONTAINER
 
 
 --[[ Continuous Events ]]--
 
 function BagBrother:BAG_UPDATE(bag)
 	local isBag = bag > Bank and bag <= BagSlots
-	
+
 	if isBag then
   		self:SaveBag(bag, bag == Backpack)
 	end
@@ -62,71 +61,7 @@ function BagBrother:BANKFRAME_CLOSED()
 			self:SaveBag(i)
 		end
 
-		if IsReagentBankUnlocked() then
-			self:SaveBag(Reagents, true)
-		end
-
 		self:SaveBag(Bank, true)
 		self.atBank = nil
-	end
-end
-
-
---[[ Void Storage Events ]]--
-
-function BagBrother:VOID_STORAGE_OPEN()
-	self.atVault = true
-end
-
-function BagBrother:VOID_STORAGE_CLOSE()
-	if self.atVault then
-		self.Player.vault = {}
-		self.atVault = nil
-
-		for i = 1, VaultSlots do
-			local id = GetVoidItemInfo(1, i)
-    		self.Player.vault[i] = id and tostring(id) or nil
-  		end
-  	end
-end
-
-
---[[ Guild Events ]]--
-
-function BagBrother:GUILDBANKFRAME_OPENED()
-	self.atGuild = true
-end
-
-function BagBrother:GUILDBANKFRAME_CLOSED()
-	self.atGuild = nil
-end
-
-function BagBrother:GUILD_ROSTER_UPDATE()
-	self.Player.guild = GetGuildInfo('player')
-end
-
-function BagBrother:GUILDBANKBAGSLOTS_CHANGED()
-	if self.atGuild then
-		local id = GetGuildInfo('player') .. '*'
-		local tab = GetCurrentGuildBankTab()
-		local tabs = self.Realm[id] or {}
-
-		for i = 1, GetNumGuildBankTabs() do
-			tabs[i] = tabs[i] or {}
-			tabs[i].name, tabs[i].icon, tabs[i].view, tabs[i].deposit, tabs[i].withdraw = GetGuildBankTabInfo(i)
-			tabs[i].info = nil
-		end
-
-		local items = tabs[tab]
-		if items then
-			for i = 1, 98 do
-				local link = GetGuildBankItemLink(tab, i)
-				local _, count = GetGuildBankItemInfo(tab, i)
-
-				items[i] = self:ParseItem(link, count)
-			end
-		end
-
-		self.Realm[id] = tabs
 	end
 end

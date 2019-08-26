@@ -41,14 +41,8 @@ local BANK_CONFIG =
 {
 	{
 		title = BANK,
-		bags = { BANK_CONTAINER, 5, 6, 7, 8, 9, 10, 11 },
+		bags = { BANK_CONTAINER, 5, 6, 7, 8, 9, 10 },
 		isBank = true,
-	},
-	{
-		title = L["Reagents"],
-		bags = { REAGENTBANK_CONTAINER },
-		isBank = true,
-		isReagentBank = true,
 	}
 }
 
@@ -117,13 +111,6 @@ function Inventorian:SetupBagHooks()
 	self:RawHook("OpenBag", "OpenAllBags", true)
 
 	self:RawHook("GetBackpackFrame", function() return self.bag end, true)
-	self:RawHook("ManageBackpackTokenFrame", function() Inventorian.Frame.ManageBackpackTokenFrame(self.bag) end, true)
-
-	-- Update BackpackTokenFrame visuals to integrate into Inventorian properly
-	local tex = BackpackTokenFrame:GetRegions()
-	tex:SetTexCoord(1, 0, 0, 1)
-	tex:ClearAllPoints()
-	tex:SetPoint("TOPRIGHT", -4, 0)
 
 	--closing the game menu triggers this function, and can be done in combat,
 	self:SecureHook("CloseAllBags")

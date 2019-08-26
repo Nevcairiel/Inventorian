@@ -47,7 +47,7 @@ function Cache:GetItem(realm, player, bag, tab, slot)
 	else
 		bag = self:GetPersonalBag(realm, player, bag)
 	end
-	
+
 	local item = bag and bag[slot]
 	if item then
 		return strsplit(';', item)
@@ -73,17 +73,17 @@ function Cache:GetItemCounts(realm, player, id)
 	local equipment = self:GetItemCount(personal.equip, id, true)
 	local vault = self:GetItemCount(personal.vault, id, true)
 
-	local bank = self:GetItemCount(personal[BANK_CONTAINER], id) + self:GetItemCount(personal[REAGENTBANK_CONTAINER], id)
+	local bank = self:GetItemCount(personal[BANK_CONTAINER], id)
 	local bags, guild = 0, 0
-	
+
 	for i = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
 		bags = bags + self:GetItemCount(personal[i], id)
 	end
-	
+
 	for i = FIRST_BANK_SLOT, LAST_BANK_SLOT do
 		bank = bank + self:GetItemCount(personal[i], id)
     end
-	
+
     for i = 1, GetNumGuildBankTabs() do
 	guild = guild + self:GetItemCount(self:GetGuildTab(realm, player, i), id)
     end
@@ -94,7 +94,7 @@ end
 function Cache:GetItemCount(bag, id, unique)
 	local count = 0
 	local id = '^'..id
-	
+
 	if bag then
 		for i,item in pairs(bag) do
 			if type(i) == 'number' and item:find(id) then
@@ -102,7 +102,7 @@ function Cache:GetItemCount(bag, id, unique)
 			end
 		end
 	end
-	
+
 	return count
 end
 

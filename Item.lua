@@ -4,7 +4,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Inventorian")
 local ItemCache = LibStub("LibItemCache-1.1")
 local ItemSearch = LibStub("LibItemSearch-Inventorian-1.0")
 
-local Item = CreateFrame("ItemButton")
+local Item = CreateFrame("Button")
 local Item_MT = {__index = Item}
 
 Inventorian.Item = {}
@@ -21,7 +21,7 @@ function Inventorian.Item:Create()
 		self.pool[item] = nil
 	else
 		self.count = self.count + 1
-		item = CreateFrame("ItemButton", ("InventorianItemButton%d"):format(self.count), nil, "ContainerFrameItemButtonTemplate")
+		item = CreateFrame("Button", ("InventorianItemButton%d"):format(self.count), nil, "ContainerFrameItemButtonTemplate")
 		item = self:WrapItemButton(item)
 	end
 
@@ -43,7 +43,6 @@ function Inventorian.Item:WrapItemButton(item)
 
 	-- elements
 	local name = item:GetName()
-	item.IconQuestTexture = _G[name .. "IconQuestTexture"]
 	item.Cooldown = _G[name .. "Cooldown"]
 
 	-- re-size search overlay to cover the item quality border as well
@@ -175,7 +174,6 @@ end
 
 function Item:HideBorder()
 	self.NewItemTexture:Hide()
-	self.IconQuestTexture:Hide()
 	self.BattlepayItemTexture:Hide()
 	self.IconBorder:Hide()
 	self.IconOverlay:Hide()
@@ -192,15 +190,6 @@ function Item:UpdateBorder(quality, itemID, noValue)
 	self:HideBorder()
 
 	if item then
-		local isQuestItem, questId, isActive = self:GetQuestInfo()
-		if questId and not isActive then
-			self.IconQuestTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG)
-			self.IconQuestTexture:Show()
-		elseif questId or isQuestItem then
-			self.IconQuestTexture:SetTexture(TEXTURE_ITEM_QUEST_BORDER)
-			self.IconQuestTexture:Show()
-		end
-
 		local isNewItem, isBattlePayItem = self:IsNew()
 		if isNewItem then
 			if isBattlePayItem then
@@ -219,7 +208,9 @@ function Item:UpdateBorder(quality, itemID, noValue)
 			end
 		end
 
-		SetItemButtonQuality(self, quality, itemID)
+		if quality and quality >= LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality] then
+			self:SetBorderColor(BAG_ITEM_QUALITY_COLORS[quality].r, BAG_ITEM_QUALITY_COLORS[quality].g, BAG_ITEM_QUALITY_COLORS[quality].b)
+		end
 		self.JunkIcon:SetShown(quality == LE_ITEM_QUALITY_POOR and not noValue and MerchantFrame:IsShown())
 	end
 end
@@ -269,9 +260,9 @@ function Item:OnEnter()
 		self.cacheOverlay:Show()
 		self.cacheOverlay:GetScript("OnEnter")(self.cacheOverlay)
 	else
-		if self:IsBank() or self:IsReagentBank() then
+		if self:IsBank() then
 			if self:GetItem() then
-				local id = self:IsBank() and BankButtonIDToInvSlotID(self:GetID()) or ReagentBankButtonIDToInvSlotID(self:GetID())
+				local id = BankButtonIDToInvSlotID(self:GetID())
 				self:AnchorTooltip()
 				GameTooltip:SetInventoryItem("player", id)
 				GameTooltip:Show()
@@ -279,13 +270,21 @@ function Item:OnEnter()
 			end
 		else
 			ContainerFrameItemButton_OnEnter(self)
+
+			-- Hide new item overlay glow
+			self.NewItemTexture:Hide()
+			self.BattlepayItemTexture:Hide()
+
+			if self.flashAnim:IsPlaying() or self.newitemglowAnim:IsPlaying() then
+				self.flashAnim:Stop()
+				self.newitemglowAnim:Stop()
+			end
 		end
 	end
 end
 
 function Item:OnLeave()
 	GameTooltip:Hide()
-	BattlePetTooltip:Hide()
 	ResetCursor()
 end
 
@@ -398,12 +397,6 @@ function Item:GetInfo()
 	return icon, count, locked, quality, readable, lootable, link, noValue, itemID
 end
 
-function Item:GetQuestInfo()
-	if not self:IsCached() then
-		return GetContainerItemQuestInfo(self.bag, self.slot)
-	end
-end
-
 function Item:IsNew()
 	if not self:IsCached() then
 		return C_NewItems.IsNewItem(self.bag, self.slot), IsBattlePayItem(self.bag, self.slot)
@@ -412,8 +405,4 @@ end
 
 function Item:IsBank()
 	return self.bag == BANK_CONTAINER
-end
-
-function Item:IsReagentBank()
-	return self.bag == REAGENTBANK_CONTAINER
 end

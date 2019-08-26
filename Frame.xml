@@ -77,7 +77,7 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		
+
 		<Frames>
 			<Button parentKey="IconButton" name = "$parentIconButton">
 				<Size x="64" y="64"/>
@@ -187,36 +187,6 @@
 					</OnTextChanged>
 				</Scripts>
 			</EditBox>
-
-			<Button name="$parentAutoSortButton" parentKey="SortButton">
-				<Size x="25" y="23"/>
-				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset x="-44" y="-31"/>
-					</Anchor>
-				</Anchors>
-				<NormalTexture atlas="bags-button-autosort-up"/>
-				<PushedTexture atlas="bags-button-autosort-down"/>
-				<DisabledTexture atlas="bags-button-autosort-up" desaturated="true" />
-				<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
-					<Size x="21" y="20"/>
-					<Anchors>
-						<Anchor point="CENTER" x="0" y="0" />
-					</Anchors>
-				</HighlightTexture>
-				<Scripts>
-					<OnLoad>
-						self:RegisterForClicks("anyUp")
-					</OnLoad>
-					<OnClick>
-						self:GetParent():OnSortClick(self, button)
-					</OnClick>
-					<OnEnter>
-						self:GetParent():OnSortButtonEnter(self)
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
-				</Scripts>
-			</Button>
 
 			<Button name="$pargenBagToggle">
 				<Size x="32" y="32"/>

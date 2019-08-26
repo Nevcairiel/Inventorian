@@ -47,19 +47,7 @@ function Inventorian.Bag:Create()
 	ht:SetAllPoints(bag)
 	bag:SetHighlightTexture(ht)
 
-	bag.filterDropDown = CreateFrame("Frame", name .. "FilterDropDown", bag, "UIDropDownMenuTemplate")
-	ContainerFrameFilterDropDown_OnLoad(bag.filterDropDown)
-
-	bag.FilterIcon = CreateFrame("Frame", nil, bag)
-	bag.FilterIcon:SetSize(28, 28)
-	bag.FilterIcon:SetScale(0.7)
-	bag.FilterIcon:SetPoint("CENTER", bag, "BOTTOMRIGHT", -9, 7)
-	bag.FilterIcon.Icon = bag.FilterIcon:CreateTexture(nil, "OVERLAY")
-	bag.FilterIcon.Icon:SetAtlas("bags-icon-consumables", true)
-	bag.FilterIcon.Icon:SetPoint("CENTER")
-	bag.FilterIcon:Hide()
-
-	bag:RegisterForClicks("AnyUp")
+	bag:RegisterForClicks("LeftButtonUp")
 	bag:RegisterForDrag("LeftButton")
 
 	bag:SetScript("OnEnter", bag.OnEnter)
@@ -85,7 +73,7 @@ function Bag:Set(parent, id)
 	self:SetID(id)
 	self:SetParent(parent)
 
-	if self:IsBank() or self:IsReagentBank() or self:IsBackpack() then
+	if self:IsBank() or self:IsBackpack() then
 		SetItemButtonTexture(self, [[Interface\Buttons\Button-Backpack-Up]])
 		SetItemButtonTextureVertexColor(self, 1, 1, 1)
 	else
@@ -137,10 +125,7 @@ function Bag:OnClick(button)
 		return
 	end
 
-	if button == "RightButton" then
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-		ToggleDropDownMenu(1, nil, self.filterDropDown, self, 0, 0);
-	elseif self:IsPurchasable() then
+	if self:IsPurchasable() then
 		self:PurchaseSlot()
 	elseif CursorHasItem() then
 		if self:IsBackpack() then
@@ -185,7 +170,6 @@ function Bag:Update()
 	self:UpdateLock()
 	self:UpdateSlotInfo()
 	self:UpdateCursor()
-	self:UpdateFilterIcon()
 end
 
 function Bag:UpdateLock()
@@ -226,27 +210,6 @@ function Bag:UpdateSlotInfo()
 		end
 	end
 	self:SetCount(count)
-end
-
-function Bag:UpdateFilterIcon()
-	local id = self:GetID()
-
-	self.FilterIcon:Hide()
-	if id > 0 and not self:IsCached() then
-		for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
-			local active = false
-			if id > NUM_BAG_SLOTS then
-				active = GetBankBagSlotFlag(id - NUM_BAG_SLOTS, i)
-			else
-				active = GetBagSlotFlag(id, i)
-			end
-			if active then
-				self.FilterIcon.Icon:SetAtlas(BAG_FILTER_ICONS[i], true)
-				self.FilterIcon:Show()
-				break
-			end
-		end
-	end
 end
 
 function Bag:SetCount(count)
@@ -310,8 +273,6 @@ function Bag:UpdateTooltip()
 		GameTooltip:SetText(BACKPACK_TOOLTIP, 1, 1, 1)
 	elseif self:IsBank() then
 		GameTooltip:SetText(BANK, 1, 1, 1)
-	elseif self:IsReagentBank() then
-		GameTooltip:SetText(REAGENT_BANK, 1, 1, 1)
 	else
 		self:UpdateBagTooltip()
 	end
@@ -348,10 +309,6 @@ end
 
 function Bag:IsBank()
 	return (self:GetID() == BANK_CONTAINER)
-end
-
-function Bag:IsReagentBank()
-	return (self:GetID() == REAGENTBANK_CONTAINER)
 end
 
 function Bag:IsBackpackBag()

@@ -33,10 +33,10 @@ end
 function Brother:StartupCache()
 	local Player = UnitName('player')
 	local Realm = GetRealmName()
-	
+
 	BrotherBags = BrotherBags or {}
 	BrotherBags[Realm] = BrotherBags[Realm] or {}
-	
+
 	self.Realm = BrotherBags[Realm]
 	self.Realm[Player] = self.Realm[Player] or {equip = {}}
 	self.Player = self.Realm[Player]
@@ -66,14 +66,6 @@ function Brother:SetupEvents()
 
 	self:RegisterEvent('BANKFRAME_OPENED')
 	self:RegisterEvent('BANKFRAME_CLOSED')
-
-	self:RegisterEvent('VOID_STORAGE_OPEN')
-	self:RegisterEvent('VOID_STORAGE_CLOSE')
-
-	self:RegisterEvent('GUILD_ROSTER_UPDATE')
-	self:RegisterEvent('GUILDBANKFRAME_OPENED')
-	self:RegisterEvent('GUILDBANKFRAME_CLOSED')
-	self:RegisterEvent('GUILDBANKBAGSLOTS_CHANGED')
 end
 
 function Brother:UpdateData()
@@ -82,7 +74,6 @@ function Brother:UpdateData()
 	end
 
 	self:UNIT_INVENTORY_CHANGED('player')
-	self:GUILD_ROSTER_UPDATE()
 	self:PLAYER_MONEY()
 end
 
