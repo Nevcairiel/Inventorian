@@ -176,7 +176,7 @@ function ItemContainer:Layout()
 		cols = cols + 1
 		scale = width / (size*cols)
 		rows = floor(height / (size*scale))
-	until (scale <= 1.5 and cols*rows >= count)
+	until (scale <= 1.33 and cols*rows >= count)
 
 	--layout the items
 	local items = self.items
