@@ -1,7 +1,8 @@
-## Interface: 80200
+## Interface: 11302
 
 ## Title: Inventorian
 ## Notes: One large inventory.
+## Notes-zhCN: 老牌暴雪风格背包整合
 ## Author: Nevcairiel
 ## Version: @project-version@
 

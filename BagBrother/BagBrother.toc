@@ -1,6 +1,7 @@
-## Interface: 80200
+## Interface: 11302
 ## Title: BagBrother
 ## Notes: Stores your characters inventory, bank, vault and guild bank, so that you may view them from anywhere.
+## Notes-zhCN: 离线银行
 ## Author: Jaliborc (João Cardoso)
 ## SavedVariables: BrotherBags
 ## OptionalDeps: WoWUnit
