@@ -50,6 +50,9 @@ function Inventorian.Item:WrapItemButton(item)
 	item.searchOverlay:SetSize(39, 39)
 	item.searchOverlay:SetPoint("CENTER")
 
+	-- adjust ther normal texture to be less "obvious" on empty buttons
+	item:GetNormalTexture():SetVertexColor(1,1,1,0.66)
+
 	return item
 end
 
@@ -134,7 +137,13 @@ function Item:GetItem()
 end
 
 function Item:SetTexture(icon)
-	SetItemButtonTexture(self, icon or [[Interface\PaperDoll\UI-Backpack-EmptySlot]])
+	if icon then
+		SetItemButtonTexture(self, icon)
+		self.icon:SetAlpha(1)
+	else
+		SetItemButtonTexture(self, [[Interface\PaperDoll\UI-Backpack-EmptySlot]])
+		self.icon:SetAlpha(0.66)
+	end
 end
 
 function Item:SetCount(count)
