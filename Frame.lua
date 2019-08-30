@@ -36,6 +36,12 @@ function Inventorian.Frame:Create(name, titleText, settings, config)
 	frame.currentConfig = config[1]
 	frame.bagButtons = {}
 
+	if frame:IsBank() then
+		frame:SetMinResize(275, 325)
+	else
+		frame:SetMinResize(250, 260)
+	end
+
 	-- components
 	frame.itemContainer = Inventorian.ItemContainer:Create(frame)
 	frame.itemContainer:SetPoint("TOPLEFT", 10, -64)

@@ -31,7 +31,7 @@
 	       inherits="ButtonFrameTemplate" virtual="true">
 		<Size x="300" y="400"/>
 		<ResizeBounds>
-			<minResize x="300" y="400"/>
+			<minResize x="250" y="260"/>
 		</ResizeBounds>
 
 		<Layers>
