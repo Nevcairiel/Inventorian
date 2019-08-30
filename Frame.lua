@@ -74,6 +74,10 @@ end
 function Frame:OnHide()
 	PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE)
 
+	if self:IsBank() and self:AtBank() then
+		CloseBankFrame()
+	end
+
 	-- clear search on hide
 	self.SearchBox.clearButton:Click()
 
