@@ -168,7 +168,7 @@ end
 
 function Frame:OnShow()
 	PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
-	SetPortraitTexture(self.portrait, "player")
+	self:SetPortrait()
 
 	if self:IsBank() and not self:IsCached() then
 		if self.selectedTab == 2 then
@@ -261,7 +261,7 @@ function Frame.OnDepositClick(button)
 end
 
 function Frame:OnEvent(event, ...)
-	if event == "UNIT_PORTRAIT_UPDATE" and self:IsShown() then
+	if event == "UNIT_PORTRAIT_UPDATE" and self:IsShown() and not self.portrait.classIcon then
 		SetPortraitTexture(self.portrait, "player")
 	end
 end
@@ -272,6 +272,19 @@ function Frame:OnSizeChanged(width, height)
 	LibWindow.SavePosition(self)
 
 	self:UpdateItemContainer()
+end
+
+function Frame:SetPortrait()
+	if self:IsCached() and self:GetPlayerName() ~= ItemCache.PLAYER then
+		local classToken = ItemCache:GetPlayerInfo(self:GetPlayerName())
+		self.portrait:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes")
+		self.portrait:SetTexCoord(CLASS_ICON_TCOORDS[classToken][1] + 0.01, CLASS_ICON_TCOORDS[classToken][2] - 0.01, CLASS_ICON_TCOORDS[classToken][3] + 0.01, CLASS_ICON_TCOORDS[classToken][4] - 0.01)
+		self.portrait.classIcon = true
+	else
+		SetPortraitTexture(self.portrait, "player")
+		self.portrait:SetTexCoord(0, 1, 0, 1)
+		self.portrait.classIcon = false
+	end
 end
 
 function Frame:OnPortraitClick(portrait)
@@ -363,6 +376,7 @@ function Frame:Update()
 	self:UpdateBags()
 	self.itemContainer:UpdateBags()
 	self:UpdateTitleText()
+	self:SetPortrait()
 
 	-- update the money frame
 	if self:IsCached() then
