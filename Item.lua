@@ -130,6 +130,13 @@ end
 
 function Item:SetItem(itemLink)
 	self.hasItem = itemLink
+
+	if itemLink then
+		local itemID, itemType, itemSubType, itemEquipLoc, icon, itemClassID, itemSubClassID = GetItemInfoInstant(itemLink)
+		self.itemClass = itemClassID
+	else
+		self.itemClass = nil
+	end
 end
 
 function Item:GetItem()
@@ -215,6 +222,12 @@ function Item:UpdateBorder(quality, itemID, noValue)
 				self.flashAnim:Play()
 				self.newitemglowAnim:Play()
 			end
+		end
+
+		local isQuestItem = self:IsQuestItem()
+		if isQuestItem then
+			self.IconOverlay:SetTexture(TEXTURE_ITEM_QUEST_BORDER)
+			self.IconOverlay:Show()
 		end
 
 		if quality and quality >= LE_ITEM_QUALITY_COMMON and BAG_ITEM_QUALITY_COLORS[quality] then
@@ -404,6 +417,10 @@ function Item:GetInfo()
 	end
 
 	return icon, count, locked, quality, readable, lootable, link, noValue, itemID
+end
+
+function Item:IsQuestItem()
+	return self.itemClass == LE_ITEM_CLASS_QUESTITEM
 end
 
 function Item:IsNew()
