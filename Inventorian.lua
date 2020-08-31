@@ -21,6 +21,14 @@ local defaults = {
 			height = 512,
 			showBags = false,
 		},
+		keyring = {
+			x = -422,
+			y = 75,
+			point = "RIGHT",
+			width = 265,
+			height = 200,
+			showBags = false,
+		},
 	}
 }
 
@@ -46,9 +54,19 @@ local BANK_CONFIG =
 	}
 }
 
+local KEYRING_CONFIG =
+{
+	{
+		title = KEYRING,
+		bags = { KEYRING_CONTAINER },
+		isKeyring = true,
+	}
+}
+
 function Inventorian:OnEnable()
 	self.bag = Inventorian.Frame:Create("InventorianBagFrame", L["%s's Inventory"], db.bag, BAG_CONFIG)
 	self.bank = Inventorian.Frame:Create("InventorianBankFrame", L["%s's Bank"], db.bank, BANK_CONFIG)
+	self.keyring = Inventorian.Frame:Create("InventorianKeyringFrame", L["%s's Keyring"], db.keyring, KEYRING_CONFIG)
 	self:SetupBagHooks()
 
 	self:RegisterChatCommand("inventorian", "HandleSlash")
@@ -71,8 +89,20 @@ function Inventorian:AutoHideInventory()
 	self.bag:HideFrame(true)
 end
 
-function Inventorian:ToggleBackpack()
-	self.bag:ToggleFrame()
+function Inventorian:ToggleBackpack(id)
+	if id == KEYRING_CONTAINER then
+		self.keyring:ToggleFrame()
+	else
+		self.bag:ToggleFrame()
+	end
+end
+
+function Inventorian:OpenBag(id)
+	if id == KEYRING_CONTAINER then
+		self.keyring:ShowFrame()
+	else
+		self.bag:ShowFrame()
+	end
 end
 
 function Inventorian:OpenAllBags()
@@ -108,7 +138,7 @@ function Inventorian:SetupBagHooks()
 	self:RawHook("ToggleBackpack", true)
 	self:RawHook("ToggleAllBags", "ToggleBackpack", true)
 	self:RawHook("OpenAllBags", true)
-	self:RawHook("OpenBag", "OpenAllBags", true)
+	self:RawHook("OpenBag", true)
 
 	self:RawHook("GetBackpackFrame", function() return self.bag end, true)
 

@@ -38,8 +38,21 @@ function Inventorian.Frame:Create(name, titleText, settings, config)
 
 	if frame:IsBank() then
 		frame:SetMinResize(275, 325)
+		frame.KeyRingButton:Hide()
 	else
 		frame:SetMinResize(250, 260)
+	end
+
+	if frame:IsKeyring() then
+		frame:SetMinResize(200, 200)
+		frame.KeyRingButton:Hide()
+
+		frame.Money:Hide()
+		frame.BagToggle:Hide()
+		frame.ArtBottomDivider:Hide()
+		frame.ArtBottomLeft:Hide()
+		frame.ArtBottomRight:Hide()
+		frame.ArtBottomRight2:Hide()
 	end
 
 	-- components
@@ -375,6 +388,10 @@ end
 
 function Frame:IsBank()
 	return self.currentConfig.isBank
+end
+
+function Frame:IsKeyring()
+	return self.currentConfig.isKeyring
 end
 
 function Frame:AtBank()
