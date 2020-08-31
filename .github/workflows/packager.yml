@@ -6,7 +6,9 @@ name: CI
 # events but only for the master branch
 on:
   push:
-    branches: [ master ]
+    branches:
+     - master
+     - classic
     tags:
      - '**'
 
@@ -30,7 +32,7 @@ jobs:
           luarocks install --local luacheck
           /home/runner/.luarocks/bin/luacheck . --no-color -q
 
-      - name: Create Retail Package
+      - name: Create Package
         run: curl -s https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh | bash
         env:
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
