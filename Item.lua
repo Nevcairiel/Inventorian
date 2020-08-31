@@ -120,7 +120,7 @@ function Item:Update()
 	self:SetLocked(locked)
 	self:SetReadable(readable)
 	self:UpdateCooldown()
-	self:UpdateBorder(quality, itemID, noValue)
+	self:UpdateBorder(quality, noValue)
 	self:UpdateSearch(self.container.searchText)
 
 	if GameTooltip:IsOwned(self) then
@@ -198,7 +198,7 @@ function Item:HideBorder()
 	end
 end
 
-function Item:UpdateBorder(quality, itemID, noValue)
+function Item:UpdateBorder(quality, noValue)
 	local item = self:GetItem()
 	self:HideBorder()
 
@@ -230,7 +230,7 @@ function Item:UpdateBorder(quality, itemID, noValue)
 			end
 		end
 
-		SetItemButtonQuality(self, quality, itemID)
+		SetItemButtonQuality(self, quality, item)
 		self.JunkIcon:SetShown(quality == Enum.ItemQuality.Poor and not noValue and MerchantFrame:IsShown())
 	end
 end
