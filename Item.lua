@@ -231,7 +231,7 @@ function Item:UpdateBorder(quality, itemID, noValue)
 		end
 
 		SetItemButtonQuality(self, quality, itemID)
-		self.JunkIcon:SetShown(quality == LE_ITEM_QUALITY_POOR and not noValue and MerchantFrame:IsShown())
+		self.JunkIcon:SetShown(quality == Enum.ItemQuality.Poor and not noValue and MerchantFrame:IsShown())
 	end
 end
 
