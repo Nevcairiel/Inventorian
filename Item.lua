@@ -57,6 +57,8 @@ function Inventorian.Item:WrapItemButton(item)
 	return item
 end
 
+local MAX_CONTAINER_ITEMS = 36
+
 function Inventorian.Item:CreateItemPool()
 	self.pool = {}
 	for c = 1, NUM_CONTAINER_FRAMES do
