@@ -93,6 +93,7 @@ read_globals = {
 	"HandleModifiedItemClick",
 	"ItemLocation",
 	"ManageBackpackTokenFrame",
+	"Mixin",
 	"MoneyFrame_SetType",
 	"MoneyFrame_Update",
 	"MoneyFrame_UpdateMoney",

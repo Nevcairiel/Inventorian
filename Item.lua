@@ -4,11 +4,9 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Inventorian")
 local ItemCache = LibStub("LibItemCache-1.1")
 local ItemSearch = LibStub("LibItemSearch-Inventorian-1.0")
 
-local Item = CreateFrame("ItemButton")
-local Item_MT = {__index = Item}
+local ItemMixin = {}
 
 Inventorian.Item = {}
-Inventorian.Item.prototype = Item
 Inventorian.Item.count = 0
 Inventorian.Item.pool = nil
 function Inventorian.Item:Create()
@@ -30,7 +28,7 @@ end
 
 
 function Inventorian.Item:WrapItemButton(item)
-	item = setmetatable(item, Item_MT)
+	item = Mixin(item, ItemMixin)
 
 	item:UnregisterAllEvents()
 
@@ -39,7 +37,6 @@ function Inventorian.Item:WrapItemButton(item)
 	item:SetScript("OnEnter", item.OnEnter)
 	item:SetScript("OnLeave", item.OnLeave)
 	item:SetScript("OnShow", item.OnShow)
-	item.UpdateTooltip = nil
 
 	-- elements
 	local name = item:GetName()
@@ -75,7 +72,7 @@ function Inventorian.Item:CreateItemPool()
 	end
 end
 
-function Item:Free()
+function ItemMixin:Free()
 	self:Hide()
 	self:SetParent(nil)
 	self:SetID(0)
@@ -85,7 +82,7 @@ function Item:Free()
 	Inventorian.Item.pool[self] = true
 end
 
-function Item:Set(container, bag, slot)
+function ItemMixin:Set(container, bag, slot)
 	self.container = container
 	self.bag = bag
 	self.slot = slot
@@ -100,7 +97,7 @@ function Item:Set(container, bag, slot)
 	end
 end
 
-function Item:OnShow()
+function ItemMixin:OnShow()
 	if not self:GetParent() then return end
 	self:Update()
 end
@@ -108,7 +105,7 @@ end
 -----------------------------------------------------------------------
 -- Button style setters
 
-function Item:Update()
+function ItemMixin:Update()
 	if not self:IsVisible() then
 		return
 	end
@@ -131,15 +128,7 @@ function Item:Update()
 	end
 end
 
-function Item:SetItem(itemLink)
-	self.hasItem = itemLink
-end
-
-function Item:GetItem()
-	return self.hasItem
-end
-
-function Item:SetTexture(icon)
+function ItemMixin:SetTexture(icon)
 	if icon then
 		SetItemButtonTexture(self, icon)
 		self.icon:SetAlpha(1)
@@ -149,28 +138,28 @@ function Item:SetTexture(icon)
 	end
 end
 
-function Item:SetCount(count)
+function ItemMixin:SetCount(count)
 	SetItemButtonCount(self, count)
 end
 
-function Item:SetLocked(locked)
+function ItemMixin:SetLocked(locked)
 	SetItemButtonDesaturated(self, locked)
 end
 
-function Item:UpdateLocked()
+function ItemMixin:UpdateLocked()
 	self:SetLocked(self:IsLocked())
 end
 
 -- returns true if the slot is locked, and false otherwise
-function Item:IsLocked()
+function ItemMixin:IsLocked()
 	return select(3, self:GetInfo())
 end
 
-function Item:SetReadable(readable)
+function ItemMixin:SetReadable(readable)
 	self.readable = readable
 end
 
-function Item:UpdateCooldown()
+function ItemMixin:UpdateCooldown()
 	if self:GetItem() and not self:IsCached() then
 		ContainerFrame_UpdateCooldown(self.bag, self)
 	else
@@ -179,12 +168,12 @@ function Item:UpdateCooldown()
 	end
 end
 
-function Item:SetBorderColor(r, g, b)
+function ItemMixin:SetBorderColor(r, g, b)
 	self.IconBorder:SetVertexColor(r, g, b)
 	self.IconBorder:Show()
 end
 
-function Item:HideBorder()
+function ItemMixin:HideBorder()
 	self.NewItemTexture:Hide()
 	self.IconQuestTexture:Hide()
 	self.BattlepayItemTexture:Hide()
@@ -198,7 +187,7 @@ function Item:HideBorder()
 	end
 end
 
-function Item:UpdateBorder(quality, noValue)
+function ItemMixin:UpdateBorder(quality, noValue)
 	local item = self:GetItem()
 	self:HideBorder()
 
@@ -235,10 +224,10 @@ function Item:UpdateBorder(quality, noValue)
 	end
 end
 
-function Item:UpdateSearch(text)
+function ItemMixin:UpdateSearch(text)
 	local found = false
-	if text and self.hasItem then
-		found = ItemSearch:Find(self.hasItem, text)
+	if text and self:GetItem() then
+		found = ItemSearch:Find(self:GetItem(), text)
 	end
 
 	if not text or found then
@@ -256,7 +245,7 @@ function Item:UpdateSearch(text)
 	end
 end
 
-function Item:Highlight(enable)
+function ItemMixin:Highlight(enable)
 	if enable then
 		self:LockHighlight()
 	else
@@ -264,7 +253,7 @@ function Item:Highlight(enable)
 	end
 end
 
-function Item:OnEvent(event, ...)
+function ItemMixin:OnEvent(event, ...)
 	if event == "ITEM_DATA_LOAD_RESULT" then
 		local id = (...)
 		if id == self.itemID then
@@ -274,7 +263,7 @@ function Item:OnEvent(event, ...)
 	end
 end
 
-function Item:OnEnter()
+function ItemMixin:OnEnter()
 	if self:IsCached() then
 		self.cacheOverlay = self.cacheOverlay or self:CreateCacheOverlay()
 		self.cacheOverlay:Show()
@@ -294,15 +283,15 @@ function Item:OnEnter()
 	end
 end
 
-function Item:OnLeave()
+function ItemMixin:OnLeave()
 	GameTooltip:Hide()
 	BattlePetTooltip:Hide()
 	ResetCursor()
 end
 
-Item.UpdateTooltip = Item.OnEnter
+ItemMixin.UpdateTooltip = ItemMixin.OnEnter
 
-function Item:AnchorTooltip()
+function ItemMixin:AnchorTooltip()
 	if self:GetRight() >= (GetScreenWidth() / 2) then
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT")
 	else
@@ -341,7 +330,7 @@ local function CacheOverlay_OnClick(self)
 	end
 end
 
-function Item:CreateCacheOverlay()
+function ItemMixin:CreateCacheOverlay()
 	local overlay = CreateFrame("Button", nil, self)
 	overlay:RegisterForClicks("anyUp")
 	overlay:EnableMouse(true)
@@ -356,7 +345,7 @@ function Item:CreateCacheOverlay()
 	return overlay
 end
 
-function Item:GetBagContainer(container, bag)
+function ItemMixin:GetBagContainer(container, bag)
 	local bagContainers = container.bagContainers
 
 	-- use a metatable to create the new bag wrappers on demand
@@ -377,15 +366,15 @@ end
 -----------------------------------------------------------------------
 -- Various information getters
 
-function Item:IsCached()
+function ItemMixin:IsCached()
 	return self.container:GetParent():IsCached()
 end
 
-function Item:GetBag()
+function ItemMixin:GetBag()
 	return self.bag
 end
 
-function Item:GetInfo()
+function ItemMixin:GetInfo()
 	local player = self.container:GetParent():GetPlayerName()
 	local icon, count, locked, quality, readable, lootable, link, _, noValue, itemID
 	if self:IsCached() then
@@ -409,22 +398,22 @@ function Item:GetInfo()
 	return icon, count, locked, quality, readable, lootable, link, noValue, itemID
 end
 
-function Item:GetQuestInfo()
+function ItemMixin:GetQuestInfo()
 	if not self:IsCached() then
 		return GetContainerItemQuestInfo(self.bag, self.slot)
 	end
 end
 
-function Item:IsNew()
+function ItemMixin:IsNew()
 	if not self:IsCached() then
 		return C_NewItems.IsNewItem(self.bag, self.slot), IsBattlePayItem(self.bag, self.slot)
 	end
 end
 
-function Item:IsBank()
+function ItemMixin:IsBank()
 	return self.bag == BANK_CONTAINER
 end
 
-function Item:IsReagentBank()
+function ItemMixin:IsReagentBank()
 	return self.bag == REAGENTBANK_CONTAINER
 end
