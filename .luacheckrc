@@ -91,6 +91,7 @@ read_globals = {
 	"ContainerFrameFilterDropDown_OnLoad",
 	"ContainerFrameItemButton_OnEnter",
 	"HandleModifiedItemClick",
+	"ItemButtonMixin",
 	"ItemLocation",
 	"ManageBackpackTokenFrame",
 	"MoneyFrame_SetType",
