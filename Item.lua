@@ -49,8 +49,14 @@ function Inventorian.Item:WrapItemButton(item)
 	-- re-size search overlay to cover the item quality border as well
 	item.UpdateItemContextOverlay = Item.UpdateItemContextOverlay
 
+	-- use our own SetItem
+	item.SetItem = Item.SetItem
+
 	-- adjust ther normal texture to be less "obvious" on empty buttons
 	item:GetNormalTexture():SetVertexColor(1,1,1,0.66)
+
+	-- cleanup state
+	item:Reset()
 
 	return item
 end
@@ -127,6 +133,11 @@ function Item:Update()
 		end
 		self:UpdateTooltip()
 	end
+end
+
+function Item:SetItem(itemLink)
+	self.item = itemLink
+	self.itemLink = itemLink
 end
 
 function Item:SetTexture(icon)
