@@ -47,9 +47,7 @@ function Inventorian.Item:WrapItemButton(item)
 	item.Cooldown = _G[name .. "Cooldown"]
 
 	-- re-size search overlay to cover the item quality border as well
-	item.searchOverlay:ClearAllPoints()
-	item.searchOverlay:SetSize(39, 39)
-	item.searchOverlay:SetPoint("CENTER")
+	item.UpdateItemContextOverlay = Item.UpdateItemContextOverlay
 
 	-- adjust ther normal texture to be less "obvious" on empty buttons
 	item:GetNormalTexture():SetVertexColor(1,1,1,0.66)
@@ -234,17 +232,28 @@ function Item:UpdateSearch(text)
 	end
 
 	if not text or found then
-		self.searchOverlay:Hide()
+		self:SetMatchesSearch(found or nil)
 		local isNewItem = self:IsNew()
 		if isNewItem and not self.newitemglowAnim:IsPlaying() then
 			self.newitemglowAnim:Play()
 		end
 	else
-		self.searchOverlay:Show()
+		self:SetMatchesSearch(false)
 		if self.flashAnim:IsPlaying() or self.newitemglowAnim:IsPlaying() then
 			self.flashAnim:Stop()
 			self.newitemglowAnim:Stop()
 		end
+	end
+end
+
+function Item:UpdateItemContextOverlay()
+	ItemButtonMixin.UpdateItemContextOverlay(self)
+
+	-- update anchoring for the color texture to cover the borders
+	if self.ItemContextOverlay:GetTexture() == nil then
+		self.ItemContextOverlay:ClearAllPoints()
+		self.ItemContextOverlay:SetSize(39, 39)
+		self.ItemContextOverlay:SetPoint("CENTER")
 	end
 end
 
