@@ -410,11 +410,17 @@ function Item:GetInfo()
 		end
 	end
 
-	if not icon and link and (self:IsCached() or not C_Item.IsItemDataCached(ItemLocation:CreateFromBagAndSlot(self.bag, self.slot))) then
-		self.itemID = GetItemInfoInstant(link)
-		if self.itemID then
+	if not icon and itemID then
+		self.itemID = itemID
+		if self:IsCached() then
 			self:RegisterEvent("ITEM_DATA_LOAD_RESULT")
 			C_Item.RequestLoadItemDataByID(self.itemID)
+		else
+			local location = ItemLocation:CreateFromBagAndSlot(self.bag, self.slot)
+			if C_Item.DoesItemExist(location) and not C_Item.IsItemDataCached(location) then
+				self:RegisterEvent("ITEM_DATA_LOAD_RESULT")
+				C_Item.RequestLoadItemData(location)
+			end
 		end
 	end
 
