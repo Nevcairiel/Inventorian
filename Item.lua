@@ -117,14 +117,14 @@ function Item:Update()
 		return
 	end
 
-	local icon, count, locked, quality, readable, lootable, link, noValue, itemID = self:GetInfo()
+	local icon, count, locked, quality, readable, lootable, link, noValue, itemID, isBound = self:GetInfo()
 	self:SetItem(link)
 	self:SetTexture(icon)
 	self:SetCount(count)
 	self:SetLocked(locked)
 	self:SetReadable(readable)
 	self:UpdateCooldown()
-	self:UpdateBorder(quality, noValue)
+	self:UpdateBorder(quality, noValue, isBound)
 	self:UpdateSearch(self.container.searchText)
 
 	if GameTooltip:IsOwned(self) then
@@ -199,7 +199,7 @@ function Item:HideBorder()
 	end
 end
 
-function Item:UpdateBorder(quality, noValue)
+function Item:UpdateBorder(quality, noValue, isBound)
 	local item = self:GetItem()
 	self:HideBorder()
 
@@ -231,7 +231,7 @@ function Item:UpdateBorder(quality, noValue)
 			end
 		end
 
-		SetItemButtonQuality(self, quality, item)
+		SetItemButtonQuality(self, quality, item, false, isBound)
 		self.JunkIcon:SetShown(quality == Enum.ItemQuality.Poor and not noValue and MerchantFrame:IsShown())
 	end
 end
@@ -399,12 +399,12 @@ end
 
 function Item:GetInfo()
 	local player = self.container:GetParent():GetPlayerName()
-	local icon, count, locked, quality, readable, lootable, link, _, noValue, itemID
+	local icon, count, locked, quality, readable, lootable, link, _, noValue, itemID, isBound
 	if self:IsCached() then
 		icon, count, locked, quality, readable, lootable, link = ItemCache:GetItemInfo(player, self.bag, self.slot)
 	else
 		-- LibItemCache doesn't provide noValue or itemID, so fallback to base API
-		icon, count, locked, quality, readable, lootable, link, _, noValue, itemID = GetContainerItemInfo(self.bag, self.slot)
+		icon, count, locked, quality, readable, lootable, link, _, noValue, itemID, isBound = GetContainerItemInfo(self.bag, self.slot)
 		if link and quality < 0 then
 			quality = select(3, GetItemInfo(link))
 		end
@@ -418,7 +418,7 @@ function Item:GetInfo()
 		end
 	end
 
-	return icon, count, locked, quality, readable, lootable, link, noValue, itemID
+	return icon, count, locked, quality, readable, lootable, link, noValue, itemID, isBound
 end
 
 function Item:GetQuestInfo()
