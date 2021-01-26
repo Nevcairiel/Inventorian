@@ -1,7 +1,7 @@
 --[[
 	ItemSearch
 		An item text search engine of some sort
-		
+
 	Grammar:
 		<search> 			:=	<intersect search>
 		<intersect search> 	:=	<union search> & <union search> ; <union search>
@@ -412,6 +412,8 @@ Lib:RegisterTypedSearch{
 		['champion equipment'] = 'Champion Equipment',
 		['toy'] = TOY,
 		[TOY:lower()] = TOY,
+		['anima'] = ANIMA,
+		[ANIMA:lower()] = ANIMA,
 	}
 }
 
@@ -581,10 +583,10 @@ Lib:RegisterTypedSearch{
 	findItem = function(self, itemLink, _, search)
 		--this is an item-set search and we know that the only items that can possibly match will be *equippable* items, so we'll short-circuit the response for non-equippable items to speed up searches.
 		if not IsEquippableItem(itemLink) then return false end
-		
+
 		--default to matching *all* equipment sets if no set name has been provided yet
 		if search == '' then search = '*' end
-		
+
 		--generate a list of all equipment sets whose names begin with the search term (or a single set if an exact set name match is found), then look for our item in those equipment sets
 		local setList = {}
 		ES_FindSets(setList, search, true)
