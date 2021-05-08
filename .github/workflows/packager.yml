@@ -32,8 +32,14 @@ jobs:
           luarocks install --local luacheck
           /home/runner/.luarocks/bin/luacheck . --no-color -q
 
-      - name: Create Package
-        run: curl -s https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh | bash
+      - name: Create Classic Package
+        run: curl -s https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh | bash -s -- -g classic
+        env:
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create BC Package
+        run: curl -s https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh | bash -s -- -g bc
         env:
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
           GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
