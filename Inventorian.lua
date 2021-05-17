@@ -49,7 +49,7 @@ local BANK_CONFIG =
 {
 	{
 		title = BANK,
-		bags = { BANK_CONTAINER, 5, 6, 7, 8, 9, 10 },
+		bags = (WOW_PROJECT_ID == WOW_PROJECT_CLASSIC) and { BANK_CONTAINER, 5, 6, 7, 8, 9, 10 } or { BANK_CONTAINER, 5, 6, 7, 8, 9, 10, 11 },
 		isBank = true,
 	}
 }
