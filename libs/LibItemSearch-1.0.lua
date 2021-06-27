@@ -412,8 +412,8 @@ Lib:RegisterTypedSearch{
 		['champion equipment'] = 'Champion Equipment',
 		['toy'] = TOY,
 		[TOY:lower()] = TOY,
-		['anima'] = ANIMA,
-		[ANIMA:lower()] = ANIMA,
+		['anima'] = ANIMA or WORLD_QUEST_REWARD_FILTERS_ANIMA,
+		[(ANIMA or WORLD_QUEST_REWARD_FILTERS_ANIMA):lower()] = ANIMA or WORLD_QUEST_REWARD_FILTERS_ANIMA,
 	}
 }
 
