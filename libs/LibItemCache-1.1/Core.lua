@@ -47,7 +47,7 @@ function Lib:GetPlayerInfo(player)
 		local _,class = UnitClass('player')
 		local _,race = UnitRace('player')
 		local sex = UnitSex('player')
-		
+
 		return class, race, sex, self.FACTION
 	end
 end
@@ -144,7 +144,7 @@ function Lib:GetBagInfo(player, bag)
 	local isCached, _,_, tab = self:GetBagType(player, bag)
 	local realm, player = self:GetPlayerAddress(player)
 	local owned = true
-	
+
 	if tab then
 		if isCached then
 			return Cache('GetBag', realm, player, bag, tab)
@@ -164,7 +164,7 @@ function Lib:GetBagInfo(player, bag)
    		if isCached then
 			local data, size = Cache('GetBag', realm, player, bag, nil, slot)
 			local link, icon = self:RestoreLink(data)
-			
+
 			return link, 0, icon, slot, tonumber(size) or 0, true
 		else
 			local link = GetInventoryItemLink('player', slot)
@@ -204,13 +204,13 @@ function Lib:GetItemInfo(player, bag, slot)
 		local realm, player = self:GetPlayerAddress(player)
 		local data, count = Cache('GetItem', realm, player, bag, tab, slot)
 		local link, icon, quality = self:RestoreLink(data)
-		
+
 		if isVault then
 			return link, icon, nil, nil, nil, true
 		else
 			return icon, tonumber(count) or 1, nil, quality, nil, nil, link, true
 		end
-		
+
 	elseif isVault then
 		return GetVoidItemInfo(1, slot)
 	elseif tab then
@@ -225,7 +225,7 @@ function Lib:GetItemInfo(player, bag, slot)
 		if link and quality < 0 then
 			quality = self:GetItemQuality(link)
 		end
-	
+
 		return icon, count, locked, quality, readable, lootable, link
 	end
 end
@@ -276,10 +276,10 @@ end
 function Lib:RestorePetLink(partial)
 	local id, _, quality = strsplit(':', partial)
 	local name, icon = C_PetJournal.GetPetInfoBySpeciesID(id)
-	
+
 	local color = select(4, GetItemQualityColor(quality))
 	local link = PetLinkFormat:format(color, partial, name)
-	
+
 	return link, icon, tonumber(quality)
 end
 

@@ -33,10 +33,10 @@ end
 function Brother:StartupCache()
 	local Player = UnitName('player')
 	local Realm = GetRealmName()
-	
+
 	BrotherBags = BrotherBags or {}
 	BrotherBags[Realm] = BrotherBags[Realm] or {}
-	
+
 	self.Realm = BrotherBags[Realm]
 	self.Realm[Player] = self.Realm[Player] or {equip = {}}
 	self.Player = self.Realm[Player]
