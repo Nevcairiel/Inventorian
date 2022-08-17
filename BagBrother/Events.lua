@@ -33,7 +33,10 @@ function BagBrother:BAG_UPDATE(bag)
 	local isBag = bag > Bank and bag <= BagSlots
 	
 	if isBag then
-  		self:SaveBag(bag, bag == Backpack)
+		self:SaveBag(bag, bag == Backpack)
+		if bag == Backpack then
+			self.Player.backpackSize = GetContainerNumSlots(Backpack)
+		end
 	end
 end
 
@@ -47,6 +50,10 @@ end
 
 function BagBrother:PLAYER_MONEY()
 	self.Player.money = GetMoney()
+end
+
+function BagBrother:PLAYER_ENTERING_WORLD()
+	self.Player.backpackSize = GetContainerNumSlots(Backpack)
 end
 
 

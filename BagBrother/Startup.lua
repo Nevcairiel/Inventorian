@@ -60,6 +60,7 @@ function Brother:PLAYER_LOGIN()
 end
 
 function Brother:SetupEvents()
+	self:RegisterEvent('PLAYER_ENTERING_WORLD')
 	self:RegisterEvent('UNIT_INVENTORY_CHANGED')
 	self:RegisterEvent('PLAYER_MONEY')
 	self:RegisterEvent('BAG_UPDATE')

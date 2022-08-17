@@ -172,6 +172,9 @@ function Lib:GetBagInfo(player, bag)
 
 			return link, GetContainerNumFreeSlots(bag), icon, slot, GetContainerNumSlots(bag)
 		end
+	elseif isCached and bag == BACKPACK_CONTAINER then
+		local size = Cache('GetBackpackSize', realm, player)
+		return nil, 0, nil, nil, tonumber(size) or GetContainerNumSlots(bag), true
 	end
 
 	return nil, GetContainerNumFreeSlots(bag), nil, nil, owned and GetContainerNumSlots(bag) or 0, isCached

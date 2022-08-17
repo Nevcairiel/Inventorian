@@ -65,6 +65,10 @@ function Cache:GetPersonalBag(realm, player, bag)
 	return BrotherBags[realm][player][bag]
 end
 
+function Cache:GetBackpackSize(realm, player)
+	return BrotherBags[realm][player].backpackSize
+end
+
 
 --[[ Item Counts ]]--
 
