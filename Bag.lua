@@ -80,7 +80,11 @@ function Bag:Set(parent, id)
 		self:Update()
 
 		self:RegisterEvent("ITEM_LOCK_CHANGED")
-		self:RegisterEvent("CURSOR_UPDATE")
+		if select(4, GetBuildInfo()) >= 30400 then
+			self:RegisterEvent("CURSOR_CHANGED")
+		else
+			self:RegisterEvent("CURSOR_UPDATE")
+		end
 		self:RegisterEvent("BAG_UPDATE")
 		self:RegisterEvent("PLAYERBANKSLOTS_CHANGED")
 
@@ -103,7 +107,7 @@ function Bag:OnEvent(event, ...)
 	elseif not self:IsCached() then
 		if event == "ITEM_LOCK_CHANGED" then
 			self:UpdateLock()
-		elseif event == "CURSOR_UPDATE" then
+		elseif event == "CURSOR_UPDATE" or event == "CURSOR_CHANGED" then
 			self:UpdateCursor()
 		elseif event == "BAG_UPDATE" or event == "PLAYERBANKSLOTS_CHANGED" then
 			self:Update()
