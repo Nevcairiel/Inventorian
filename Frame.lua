@@ -156,10 +156,10 @@ function Inventorian.Frame.ManageBackpackTokenFrame(backpack)
 		BackpackTokenFrame:Hide()
 		return
 	end
-	if BackpackTokenFrame_IsShown() then
+	if BackpackTokenFrame:ShouldShow() then
 		BackpackTokenFrame:SetParent(backpack)
 		BackpackTokenFrame:ClearAllPoints()
-		BackpackTokenFrame:SetPoint("TOPRIGHT", InventorianBagFrame, "BOTTOMRIGHT", 4, 5)
+		BackpackTokenFrame:SetPoint("RIGHT", InventorianBagFrame.Money, "LEFT", -88, -1)
 		BackpackTokenFrame:Show()
 	else
 		BackpackTokenFrame:Hide()
@@ -177,10 +177,7 @@ function Frame:OnShow()
 	end
 
 	if not self:IsBank() then
-		if BackpackTokenFrame_Update then
-			BackpackTokenFrame_Update()
-			ManageBackpackTokenFrame(self)
-		end
+		BackpackTokenFrame:Update()
 	end
 end
 
