@@ -47,6 +47,7 @@ read_globals = {
 	"GetBagSlotFlag",
 	"GetBankBagSlotFlag",
 	"GetBankSlotCost",
+	"GetBuildInfo",
 	"GetContainerItemCooldown",
 	"GetContainerItemInfo",
 	"GetContainerItemQuestInfo",
