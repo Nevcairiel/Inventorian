@@ -37,9 +37,9 @@ function Inventorian.Frame:Create(name, titleText, settings, config)
 	frame.bagButtons = {}
 
 	if frame:IsBank() then
-		frame:SetMinResize(275, 325)
+		frame:SetResizeBounds(275, 325)
 	else
-		frame:SetMinResize(250, 260)
+		frame:SetResizeBounds(250, 260)
 	end
 
 	-- components
