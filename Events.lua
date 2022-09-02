@@ -26,6 +26,8 @@ Events.Fire = LibStub("CallbackHandler-1.0"):New(Events, "Register", "Unregister
 
 local ItemCache = LibStub("LibItemCache-1.1")
 
+local NUM_TOTAL_EQUIPPED_BAG_SLOTS = NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
+
 local function ToIndex(bag, slot)
 	return (bag < 0 and bag * 100 - slot) or (bag * 100 + slot)
 end
@@ -154,11 +156,11 @@ end
 
 function Events:UpdateBagSizes()
 	if self.atBank then
-		for bag = 1, NUM_BAG_SLOTS + GetNumBankSlots() do
+		for bag = 1, NUM_TOTAL_EQUIPPED_BAG_SLOTS + GetNumBankSlots() do
 			self:UpdateBagSize(bag)
 		end
 	else
-		for bag = 1, NUM_BAG_SLOTS do
+		for bag = 1, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
 			self:UpdateBagSize(bag)
 		end
 	end
@@ -171,7 +173,7 @@ function Events:BAG_UPDATE(event, bag)
 end
 
 function Events:BAG_NEW_ITEMS_UPDATED(event)
-	for bag = 0, NUM_BAG_SLOTS do
+	for bag = 0, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
 		self:UpdateItems(bag)
 	end
 end
@@ -209,7 +211,7 @@ end
 function Events:BAG_UPDATE_COOLDOWN()
 	self:UpdateCooldowns(BACKPACK_CONTAINER)
 
-	for bag = 1, NUM_BAG_SLOTS do
+	for bag = 1, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
 		self:UpdateCooldowns(bag)
 	end
 end

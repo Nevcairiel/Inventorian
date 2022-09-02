@@ -21,8 +21,9 @@ if not BagBrother or Lib:HasCache() then
 end
 
 local Cache = Lib:NewCache()
-local LAST_BANK_SLOT = NUM_BAG_SLOTS + NUM_BANKBAGSLOTS
-local FIRST_BANK_SLOT = NUM_BAG_SLOTS + 1
+local NUM_TOTAL_EQUIPPED_BAG_SLOTS = NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
+local LAST_BANK_SLOT = NUM_TOTAL_EQUIPPED_BAG_SLOTS + NUM_BANKBAGSLOTS
+local FIRST_BANK_SLOT = NUM_TOTAL_EQUIPPED_BAG_SLOTS + 1
 local ITEM_COUNT = ';(%d+)$'
 
 
@@ -80,7 +81,7 @@ function Cache:GetItemCounts(realm, player, id)
 	local bank = self:GetItemCount(personal[BANK_CONTAINER], id) + self:GetItemCount(personal[REAGENTBANK_CONTAINER], id)
 	local bags, guild = 0, 0
 
-	for i = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
+	for i = BACKPACK_CONTAINER, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
 		bags = bags + self:GetItemCount(personal[i], id)
 	end
 

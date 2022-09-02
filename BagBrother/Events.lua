@@ -16,7 +16,7 @@ This file is part of BagBrother.
 --]]
 
 local EquipmentSlots = INVSLOT_LAST_EQUIPPED
-local BagSlots = NUM_BAG_SLOTS
+local BagSlots = NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
 local BankSlots = NUM_BANKBAGSLOTS
 local VaultSlots = 80 * 2
 

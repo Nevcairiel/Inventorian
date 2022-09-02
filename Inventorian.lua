@@ -2,6 +2,8 @@ local _, Inventorian = ...
 Inventorian = LibStub("AceAddon-3.0"):NewAddon(Inventorian, "Inventorian", "AceEvent-3.0", "AceHook-3.0", "AceConsole-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Inventorian")
 
+local WoW10 = select(4, GetBuildInfo()) >= 100000
+
 local db
 local defaults = {
 	profile = {
@@ -34,14 +36,18 @@ local BAG_CONFIG =
 	{
 		title = BAGSLOT,
 		bags = { BACKPACK_CONTAINER, 1, 2, 3, 4 }
+	},
+	{
+		title = L["Reagents"],
+		bags = { 5 },
+		isReagentBag = true,
 	}
 }
-
 local BANK_CONFIG =
 {
 	{
 		title = BANK,
-		bags = { BANK_CONTAINER, 5, 6, 7, 8, 9, 10, 11 },
+		bags = { BANK_CONTAINER, 6, 7, 8, 9, 10, 11, 12 },
 		isBank = true,
 	},
 	{

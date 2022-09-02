@@ -453,12 +453,16 @@ function Bag:IsReagentBank()
 	return (self:GetID() == REAGENTBANK_CONTAINER)
 end
 
+function Bag:IsReagentBag()
+	return self:IsBackpackBag() and self:GetID() > NUM_BAG_SLOTS
+end
+
 function Bag:IsBackpackBag()
-	return (self:GetID() > 0 and self:GetID() <= NUM_BAG_SLOTS)
+	return (self:GetID() > 0 and self:GetID() <= NUM_TOTAL_EQUIPPED_BAG_SLOTS)
 end
 
 function Bag:IsBankBag()
-	return (self:GetID() > NUM_BAG_SLOTS and self:GetID() <= (NUM_BAG_SLOTS + NUM_BANKBAGSLOTS))
+	return (self:GetID() > NUM_TOTAL_EQUIPPED_BAG_SLOTS and self:GetID() <= (NUM_TOTAL_EQUIPPED_BAG_SLOTS + NUM_BANKBAGSLOTS))
 end
 
 function Bag:IsCustomSlot()
@@ -466,7 +470,7 @@ function Bag:IsCustomSlot()
 end
 
 function Bag:IsPurchasable()
-	return not self:IsCached() and (self:GetID() - NUM_BAG_SLOTS) > GetNumBankSlots()
+	return not self:IsCached() and (self:GetID() - NUM_TOTAL_EQUIPPED_BAG_SLOTS) > GetNumBankSlots()
 end
 
 function Bag:GetInventorySlot()

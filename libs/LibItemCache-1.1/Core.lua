@@ -15,10 +15,12 @@ along with this library. If not, see <http://www.gnu.org/licenses/>.
 This file is part of LibItemCache.
 --]]
 
-local Lib = LibStub:NewLibrary('LibItemCache-1.1', 24)
+local Lib = LibStub:NewLibrary('LibItemCache-1.1', 25)
 if not Lib then
 	return
 end
+
+local NUM_TOTAL_EQUIPPED_BAG_SLOTS = NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
 
 local PetLinkFormat = '|c%s|Hbattlepet:%sx0|h[%s]|h|r'
 local PetDataFormat = '^' .. strrep('%d+:', 6) .. '%d+$'
@@ -188,7 +190,7 @@ function Lib:GetBagType(player, bag)
 	end
 
 	local vault = bag == 'vault'
-	local bank = bag == BANK_CONTAINER or bag == REAGENTBANK_CONTAINER or kind == 'number' and bag > NUM_BAG_SLOTS
+	local bank = bag == BANK_CONTAINER or bag == REAGENTBANK_CONTAINER or kind == 'number' and bag > NUM_TOTAL_EQUIPPED_BAG_SLOTS
 	local cached = self:IsPlayerCached(player) or vault and not self.AtVault or bank and not self.AtBank
 
 	return cached, bank, vault
