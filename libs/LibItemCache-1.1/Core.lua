@@ -15,7 +15,7 @@ along with this library. If not, see <http://www.gnu.org/licenses/>.
 This file is part of LibItemCache.
 --]]
 
-local Lib = LibStub:NewLibrary('LibItemCache-1.1', 25)
+local Lib = LibStub:NewLibrary('LibItemCache-1.1', 26)
 if not Lib then
 	return
 end

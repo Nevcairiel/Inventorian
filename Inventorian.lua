@@ -2,8 +2,6 @@ local _, Inventorian = ...
 Inventorian = LibStub("AceAddon-3.0"):NewAddon(Inventorian, "Inventorian", "AceEvent-3.0", "AceHook-3.0", "AceConsole-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Inventorian")
 
-local WoW10 = select(4, GetBuildInfo()) >= 100000
-
 local db
 local defaults = {
 	profile = {
@@ -144,16 +142,29 @@ function Inventorian:SetupBagHooks()
 		self:AutoHideInventory()
 	end)
 
-	self:RegisterEvent("MAIL_CLOSED", "AutoHideInventory")
-	self:RegisterEvent("TRADE_SHOW", "AutoShowInventory")
-	self:RegisterEvent("TRADE_CLOSED", "AutoHideInventory")
-	self:RegisterEvent("TRADE_SKILL_SHOW", "AutoShowInventory")
-	self:RegisterEvent("TRADE_SKILL_CLOSE", "AutoHideInventory")
-	self:RegisterEvent("AUCTION_HOUSE_SHOW", "AutoShowInventory")
-	self:RegisterEvent("AUCTION_HOUSE_CLOSED", "AutoHideInventory")
+	self:RegisterEvent("PLAYER_INTERACTION_MANAGER_FRAME_SHOW")
+	self:RegisterEvent("PLAYER_INTERACTION_MANAGER_FRAME_HIDE")
 
 	self:SecureHook("ContainerFrame_UpdateAll", "UpdateBag")
 
 	-- noop out container anchor update
 	UpdateContainerFrameAnchors = function() end
+end
+
+function Inventorian:PLAYER_INTERACTION_MANAGER_FRAME_SHOW(event, id)
+	if id == Enum.PlayerInteractionType.TradePartner then
+		self:AutoShowInventory()
+	elseif id == Enum.PlayerInteractionType.Auctioneer then
+		self:AutoShowInventory()
+	end
+end
+
+function Inventorian:PLAYER_INTERACTION_MANAGER_FRAME_HIDE(event, id)
+	if id == Enum.PlayerInteractionType.MailInfo then
+		self:AutoHideInventory() -- only close when leaving the mailbox, don't auto-open here
+	elseif id == Enum.PlayerInteractionType.TradePartner then
+		self:AutoHideInventory()
+	elseif id == Enum.PlayerInteractionType.Auctioneer then
+		self:AutoHideInventory()
+	end
 end

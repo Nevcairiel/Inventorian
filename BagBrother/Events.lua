@@ -56,6 +56,25 @@ function BagBrother:PLAYER_ENTERING_WORLD()
 	self.Player.backpackSize = GetContainerNumSlots(Backpack)
 end
 
+function BagBrother:PLAYER_INTERACTION_MANAGER_FRAME_SHOW(id)
+	if id == Enum.PlayerInteractionType.Banker then
+		self:BANKFRAME_OPENED()
+	elseif id == Enum.PlayerInteractionType.GuildBanker then
+		self:GUILDBANKFRAME_OPENED()
+	elseif id == Enum.PlayerInteractionType.VoidStorageBanker then
+		self:VOID_STORAGE_OPEN()
+	end
+end
+
+function BagBrother:PLAYER_INTERACTION_MANAGER_FRAME_HIDE(id)
+	if id == Enum.PlayerInteractionType.Banker then
+		self:BANKFRAME_CLOSED()
+	elseif id == Enum.PlayerInteractionType.GuildBanker then
+		self:GUILDBANKFRAME_CLOSED()
+	elseif id == Enum.PlayerInteractionType.VoidStorageBanker then
+		self:VOID_STORAGE_CLOSE()
+	end
+end
 
 --[[ Bank Events ]]--
 

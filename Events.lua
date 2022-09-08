@@ -44,8 +44,10 @@ function Events:OnEnable()
 	self:RegisterEvent("BAG_NEW_ITEMS_UPDATED")
 	self:RegisterEvent("PLAYERBANKSLOTS_CHANGED")
 	self:RegisterEvent("PLAYERREAGENTBANKSLOTS_CHANGED")
-	self:RegisterEvent("BANKFRAME_OPENED")
-	self:RegisterEvent("BANKFRAME_CLOSED")
+
+	self:RegisterEvent("PLAYER_INTERACTION_MANAGER_FRAME_SHOW")
+	self:RegisterEvent("PLAYER_INTERACTION_MANAGER_FRAME_HIDE")
+
 	self:RegisterEvent("ITEM_LOCK_CHANGED", "GenericEvent")
 
 	self:UpdateBagSize(BACKPACK_CONTAINER)
@@ -206,6 +208,18 @@ function Events:BANKFRAME_CLOSED()
 	self.atBank = false
 	ItemCache.AtBank = false
 	self:Fire("BANK_CLOSED")
+end
+
+function Events:PLAYER_INTERACTION_MANAGER_FRAME_SHOW(event, id)
+	if id == Enum.PlayerInteractionType.Banker then
+		self:BANKFRAME_OPENED()
+	end
+end
+
+function Events:PLAYER_INTERACTION_MANAGER_FRAME_HIDE(event, id)
+	if id == Enum.PlayerInteractionType.Banker then
+		self:BANKFRAME_CLOSED()
+	end
 end
 
 function Events:BAG_UPDATE_COOLDOWN()

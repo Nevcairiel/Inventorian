@@ -66,15 +66,10 @@ function Brother:SetupEvents()
 	self:RegisterEvent('PLAYER_MONEY')
 	self:RegisterEvent('BAG_UPDATE')
 
-	self:RegisterEvent('BANKFRAME_OPENED')
-	self:RegisterEvent('BANKFRAME_CLOSED')
-
-	self:RegisterEvent('VOID_STORAGE_OPEN')
-	self:RegisterEvent('VOID_STORAGE_CLOSE')
+	self:RegisterEvent('PLAYER_INTERACTION_MANAGER_FRAME_SHOW')
+	self:RegisterEvent('PLAYER_INTERACTION_MANAGER_FRAME_HIDE')
 
 	self:RegisterEvent('GUILD_ROSTER_UPDATE')
-	self:RegisterEvent('GUILDBANKFRAME_OPENED')
-	self:RegisterEvent('GUILDBANKFRAME_CLOSED')
 	self:RegisterEvent('GUILDBANKBAGSLOTS_CHANGED')
 end
 
