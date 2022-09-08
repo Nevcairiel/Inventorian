@@ -411,8 +411,8 @@ function Item:GetInfo()
 		end
 	end
 
-	if not icon and itemID then
-		self.itemID = itemID
+	if not icon and (itemID or link) then
+		self.itemID = itemID or GetItemInfoInstant(link)
 		if self:IsCached() then
 			self:RegisterEvent("ITEM_DATA_LOAD_RESULT")
 			C_Item.RequestLoadItemDataByID(self.itemID)
