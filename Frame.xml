@@ -28,7 +28,10 @@
 	<Frame name="InventorianFrameTemplate"
 	       resizable="true" clampedToScreen="true" enableMouse="true" movable="true"
 	       topLevel="true" frameStrata="HIGH" parent="UIParent" hidden="true"
-	       inherits="ButtonFrameTemplate" virtual="true">
+	       inherits="PortraitFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutType" value="PortraitFrameTemplate" type="string"/>
+		</KeyValues>
 		<Size x="300" y="400"/>
 		<ResizeBounds>
 			<minResize x="250" y="260"/>
@@ -38,63 +41,29 @@
 			<Layer level="ARTWORK">
 				<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.portrait"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.portrait"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.PortraitContainer.portrait"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.PortraitContainer.portrait"/>
 					</Anchors>
 					<MaskedTextures>
-						<MaskedTexture childKey="portrait"/>
+						<MaskedTexture childKey="PortraitContainer.portrait"/>
 					</MaskedTextures>
 				</MaskTexture>
 			</Layer>
-			<Layer level="OVERLAY">
-				<Texture inherits="UI-Frame-BtnDivMiddle"> <!-- Separator -->
-					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset x="145" y="2"/>
-						</Anchor>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="ARTWORK">
-				<Texture file="Interface\MerchantFrame\UI-Merchant-BotLeft"> <!-- Left -->
-					<Size x="64" y="24"/>
-					<Anchors>
-						<Anchor point="BOTTOMLEFT">
-							<Offset x="156" y="2"/>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0.72" right="1" top="0.675" bottom=".754"/>
-				</Texture>
-				<Texture file="Interface\MerchantFrame\UI-Merchant-BotRight">
-					<Size x="64" y="24"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset x="-30" y="2"/>
-						</Anchor>
-						<Anchor point="BOTTOMLEFT">
-							<Offset x="220" y="2"/>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0" right="0.5" top="0.675" bottom=".754"/>
-				</Texture>
-				<Texture file="Interface\MerchantFrame\UI-Merchant-BotRight"> <!-- Right -->
-					<Size x="64" y="24"/>
-					<Anchors>
-						<Anchor point="BOTTOMRIGHT">
-							<Offset x="34" y="2"/>
-						</Anchor>
-					</Anchors>
-					<TexCoords left="0.5" right="1" top="0.675" bottom=".754"/>
-				</Texture>
-			</Layer>
 		</Layers>
-		
+
 		<Frames>
-			<Button parentKey="IconButton" name = "$parentIconButton">
-				<Size x="64" y="64"/>
+			<Frame parentKey="Background" inherits="ContainerFrameBackgroundTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="2" y="-2"/>
+					<Anchor point="BOTTOMRIGHT" x="-1" y="2"/>
+				</Anchors>
+			</Frame>
+
+			<Button parentKey="IconButton" name="$parentIconButton">
+				<Size x="60" y="60"/>
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="-8" y="8"/>
+						<Offset x="-5" y="7"/>
 					</Anchor>
 				</Anchors>
 				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight">
@@ -106,21 +75,16 @@
 				<Scripts>
 					<OnLoad>
 						self:RegisterForClicks("anyUp")
-						self.icon = self:GetParent().portrait
-						self.icon:ClearAllPoints()
-						self.icon:SetPoint("CENTER", self)
+						self:SetFrameLevel(self:GetParent().PortraitContainer:GetFrameLevel() + 1)
+						self.icon = self:GetParent().PortraitContainer.portrait
 					</OnLoad>
 					<OnMouseDown>
 						if not self.icon.classIcon then
-							self.icon:SetWidth(56)
-							self.icon:SetHeight(56)
 							self.icon:SetTexCoord(0.075, 0.925, 0.075, 0.925)
 						end
 					</OnMouseDown>
 					<OnMouseUp>
 						if not self.icon.classIcon then
-							self.icon:SetWidth(62)
-							self.icon:SetHeight(62)
 							self.icon:SetTexCoord(0, 1, 0, 1)
 						end
 					</OnMouseUp>
@@ -140,7 +104,7 @@
 				<Scripts>
 					<OnLoad>
 						self:RegisterForDrag("LeftButton")
-						self:SetPoint("TOP", self:GetParent().TitleText)
+						self:SetPoint("TOP", self:GetParent().TitleContainer)
 					</OnLoad>
 					<OnMouseDown>
 						self.moving = true
@@ -154,23 +118,21 @@
 						end
 					</OnMouseUp>
 				</Scripts>
-				<NormalFont style="GameFontNormal"/>
-				<HighlightFont style="GameFontHighlight"/>
 			</Button>
 			<Button name="$parentResize">
 				<Size x="16" y="16"/>
 
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT">
-						<Offset x="-7" y="4"/>
+						<Offset x="0" y="0"/>
 					</Anchor>
 				</Anchors>
 
 				<Scripts>
 					<OnLoad>
-						self:SetFrameLevel(self:GetFrameLevel() + 4)
+						self:SetFrameLevel(self:GetParent().Background:GetFrameLevel() + 2)
 						self:GetNormalTexture():SetVertexColor(1, 0.82, 0, .8)
-						self:GetNormalTexture():SetAlpha(.5)
+						--self:GetNormalTexture():SetAlpha(.75)
 					</OnLoad>
 					<OnMouseDown>
 						self:GetParent():StartSizing()
@@ -287,23 +249,17 @@
 				</Scripts>
 				<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 			</Button>
-			<Frame parentKey="Money" name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
+			<Frame parentKey="Money" inherits="ContainerMoneyFrameTemplate">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="-6" y="9"/>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						SmallMoneyFrame_OnLoad(self);
-						MoneyFrame_SetType(self, "PLAYER");
-						MoneyFrame_SetMaxDisplayWidth(self, 168);
-					</OnLoad>
-				</Scripts>
 			</Frame>
 		</Frames>
 
 		<Scripts>
 			<OnLoad>
-				SetPortraitTexture(self.portrait, "player")
+				self.Bg:Hide()
+				self:SetPortraitToUnit("player")
 			</OnLoad>
 		</Scripts>
 	</Frame>

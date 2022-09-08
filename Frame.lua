@@ -44,7 +44,7 @@ function Inventorian.Frame:Create(name, titleText, settings, config)
 
 	-- components
 	frame.itemContainer = Inventorian.ItemContainer:Create(frame)
-	frame.itemContainer:SetPoint("TOPLEFT", 10, -64)
+	frame.itemContainer:SetPoint("TOPLEFT", 10, -68)
 	frame.itemContainer:SetBags(config[1].bags)
 	frame.itemContainer:Show()
 
@@ -274,13 +274,13 @@ end
 function Frame:SetPortrait()
 	if self:IsCached() and self:GetPlayerName() ~= ItemCache.PLAYER then
 		local classToken = ItemCache:GetPlayerInfo(self:GetPlayerName())
-		self.portrait:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes")
-		self.portrait:SetTexCoord(CLASS_ICON_TCOORDS[classToken][1] + 0.01, CLASS_ICON_TCOORDS[classToken][2] - 0.01, CLASS_ICON_TCOORDS[classToken][3] + 0.01, CLASS_ICON_TCOORDS[classToken][4] - 0.01)
-		self.portrait.classIcon = true
+		self:SetPortraitTextureRaw("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes")
+		self:SetPortraitTexCoord(CLASS_ICON_TCOORDS[classToken][1] + 0.01, CLASS_ICON_TCOORDS[classToken][2] - 0.01, CLASS_ICON_TCOORDS[classToken][3] + 0.01, CLASS_ICON_TCOORDS[classToken][4] - 0.01)
+		self:GetPortrait().classIcon = true
 	else
-		SetPortraitTexture(self.portrait, "player")
-		self.portrait:SetTexCoord(0, 1, 0, 1)
-		self.portrait.classIcon = false
+		self:SetPortraitToUnit("player")
+		self:SetPortraitTexCoord(0, 1, 0, 1)
+		self:GetPortrait().classIcon = false
 	end
 end
 
@@ -305,9 +305,9 @@ end
 
 function Frame:UpdateTitleText()
 	if self:IsCached() then
-		self.Title:SetFormattedText(self.titleText .. " (%s)", self:GetPlayerName(), L["Cached"])
+		self.TitleContainer.TitleText:SetFormattedText(self.titleText .. " (%s)", self:GetPlayerName(), L["Cached"])
 	else
-		self.Title:SetFormattedText(self.titleText, self:GetPlayerName())
+		self.TitleContainer.TitleText:SetFormattedText(self.titleText, self:GetPlayerName())
 	end
 end
 
