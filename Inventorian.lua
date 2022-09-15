@@ -120,7 +120,7 @@ function Inventorian:SetupBagHooks()
 	self:RawHook("OpenAllBags", true)
 	self:RawHook("OpenBag", "OpenAllBags", true)
 
-	self:RawHook("GetBackpackFrame", function() return self.bag end, true)
+	--self:RawHook("GetBackpackFrame", function() return self.bag:IsShown() and self.bag or nil end, true)
 
 	self:SecureHook(ContainerFrameSettingsManager.TokenTracker, "Update", function() Inventorian.Frame.ManageBackpackTokenFrame(self.bag) end, true)
 
