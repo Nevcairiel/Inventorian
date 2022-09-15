@@ -55,6 +55,9 @@ function Inventorian.Frame:Create(name, titleText, settings, config)
 	frame.DepositButton:SetScript("OnClick", frame.OnDepositClick)
 	frame.DepositButton:Hide()
 
+	-- fixup money border
+	frame.Money.Border:SetPoint("LEFT", -13, 0)
+
 	frame:CreateTabs()
 
 	-- scripts
@@ -159,7 +162,8 @@ function Inventorian.Frame.ManageBackpackTokenFrame(backpack)
 	if BackpackTokenFrame:ShouldShow() then
 		BackpackTokenFrame:SetParent(backpack)
 		BackpackTokenFrame:ClearAllPoints()
-		BackpackTokenFrame:SetPoint("RIGHT", InventorianBagFrame.Money, "LEFT", -88, -1)
+		BackpackTokenFrame:SetPoint("RIGHT", InventorianBagFrame.Money, "LEFT", -15, 0)
+		BackpackTokenFrame:SetWidth(78)
 		BackpackTokenFrame:Show()
 	else
 		BackpackTokenFrame:Hide()
