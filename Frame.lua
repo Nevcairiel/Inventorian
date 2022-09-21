@@ -262,8 +262,8 @@ function Frame.OnDepositClick(button)
 end
 
 function Frame:OnEvent(event, ...)
-	if event == "UNIT_PORTRAIT_UPDATE" and self:IsShown() and not self.portrait.classIcon then
-		SetPortraitTexture(self.portrait, "player")
+	if event == "UNIT_PORTRAIT_UPDATE" and self:IsShown() and not self:GetPortrait().classIcon then
+		self:SetPortraitToUnit("player")
 	end
 end
 
