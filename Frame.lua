@@ -144,9 +144,6 @@ function Frame:CreateTabs()
 			tab:SetPoint("CENTER", self, "BOTTOMLEFT", 50, -14)
 		end
 
-		PanelTemplates_TabResize(tab, 0)
-		tab:GetHighlightTexture():SetWidth(tab:GetTextWidth() + 30)
-
 		self.tabs[i] = tab
 	end
 

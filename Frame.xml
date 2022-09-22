@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-	<Button name="InventorianFrameTabButtonTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+	<Button name="InventorianFrameTabButtonTemplate" inherits="PanelTabButtonTemplate" virtual="true">
 		<Scripts>
 			<OnLoad>
 				self:SetFrameLevel(self:GetFrameLevel() + 4)
@@ -28,7 +28,7 @@
 	<Frame name="InventorianFrameTemplate"
 	       resizable="true" clampedToScreen="true" enableMouse="true" movable="true"
 	       topLevel="true" frameStrata="HIGH" parent="UIParent" hidden="true"
-	       inherits="PortraitFrameTemplate" virtual="true">
+	       inherits="PortraitFrameFlatTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="layoutType" value="PortraitFrameTemplate" type="string"/>
 		</KeyValues>
@@ -52,13 +52,6 @@
 		</Layers>
 
 		<Frames>
-			<Frame parentKey="Background" inherits="ContainerFrameBackgroundTemplate">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="2" y="-2"/>
-					<Anchor point="BOTTOMRIGHT" x="-1" y="2"/>
-				</Anchors>
-			</Frame>
-
 			<Button parentKey="IconButton" name="$parentIconButton">
 				<Size x="60" y="60"/>
 				<Anchors>
@@ -130,7 +123,7 @@
 
 				<Scripts>
 					<OnLoad>
-						self:SetFrameLevel(self:GetParent().Background:GetFrameLevel() + 2)
+						self:SetFrameLevel(self:GetParent().Bg:GetFrameLevel() + 2)
 						self:GetNormalTexture():SetVertexColor(1, 0.82, 0, .8)
 						--self:GetNormalTexture():SetAlpha(.75)
 					</OnLoad>
@@ -258,7 +251,6 @@
 
 		<Scripts>
 			<OnLoad>
-				self.Bg:Hide()
 				self:SetPortraitToUnit("player")
 			</OnLoad>
 		</Scripts>
