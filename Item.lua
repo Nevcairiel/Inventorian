@@ -43,6 +43,7 @@ function Inventorian.Item:WrapItemButton(item)
 
 	-- elements
 	local name = item:GetName()
+	item.IconQuestTexture = _G[name .. "IconQuestTexture"]
 	item.Cooldown = _G[name .. "Cooldown"]
 
 	-- re-size search overlay to cover the item quality border as well
@@ -190,6 +191,7 @@ end
 
 function Item:HideBorder()
 	self.NewItemTexture:Hide()
+	self.IconQuestTexture:Hide()
 	self.BattlepayItemTexture:Hide()
 	self.IconBorder:Hide()
 	self.IconOverlay:Hide()
