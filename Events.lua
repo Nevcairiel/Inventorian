@@ -58,23 +58,25 @@ function Events:GenericEvent(event, ...)
 	self:Fire(event, ...)
 end
 
+local emptyItemTbl = {}
+
 -- items
 function Events:AddItem(bag, slot)
 	local index = ToIndex(bag,slot)
 	if not slots[index] then slots[index] = {} end
 
 	local data = slots[index]
-	local texture, count, locked, quality, readable, lootable, link = GetContainerItemInfo(bag, slot)
-	local start, duration, enable = GetContainerItemCooldown(bag, slot)
-	local onCooldown = (start > 0 and duration > 0 and enable > 0)
+	local info = C_Container.GetContainerItemInfo(bag, slot) or emptyItemTbl
+	local start, duration, enable = C_Container.GetContainerItemCooldown(bag, slot)
+	local onCooldown = (start and start > 0 and duration and duration > 0 and enable and enable > 0)
 
-	data[1] = link
-	data[2] = count
-	data[3] = locked
+	data[1] = info.hyperlink
+	data[2] = info.stackCount
+	data[3] = info.isLocked
 	data[4] = onCooldown
 	data[5] = start
 
-	self:Fire("ITEM_SLOT_ADD", bag, slot, link, count, locked, onCooldown)
+	self:Fire("ITEM_SLOT_ADD", bag, slot, info.hyperlink, info.stackCount, info.isLocked, onCooldown)
 end
 
 function Events:RemoveItem(bag, slot)
@@ -95,24 +97,24 @@ function Events:UpdateItem(bag, slot)
 		local prevLink = data[1]
 		local prevCount = data[2]
 
-		local texture, count, locked, quality, readable, lootable, link = GetContainerItemInfo(bag, slot)
-		local start, duration, enable = GetContainerItemCooldown(bag, slot)
-		local onCooldown = (start > 0 and duration > 0 and enable > 0)
+		local info = C_Container.GetContainerItemInfo(bag, slot) or emptyItemTbl
+		local start, duration, enable = C_Container.GetContainerItemCooldown(bag, slot)
+		local onCooldown = (start and start > 0 and duration and duration > 0 and enable and enable > 0)
 
-		if prevLink ~= link or prevCount ~= count then
-			data[1] = link
-			data[2] = count
-			data[3] = locked
+		if prevLink ~= info.hyperlink or prevCount ~= info.stackCount then
+			data[1] = info.hyperlink
+			data[2] = info.stackCount
+			data[3] = info.isLocked
 			data[4] = onCooldown
 			data[5] = start
 
-			self:Fire("ITEM_SLOT_UPDATE", bag, slot, link, count, locked, onCooldown)
+			self:Fire("ITEM_SLOT_UPDATE", bag, slot,  info.hyperlink, info.stackCount, info.isLocked, onCooldown)
 		end
 	end
 end
 
 function Events:UpdateItems(bag)
-	for slot = 1, GetContainerNumSlots(bag) do
+	for slot = 1, C_Container.GetContainerNumSlots(bag) do
 		self:UpdateItem(bag, slot)
 	end
 end
@@ -122,8 +124,8 @@ function Events:UpdateCooldown(bag, slot)
 	local data = slots[ToIndex(bag,slot)]
 
 	if data and data[1] then
-		local start, duration, enable = GetContainerItemCooldown(bag, slot)
-		local onCooldown = (start > 0 and duration > 0 and enable > 0)
+		local start, duration, enable = C_Container.GetContainerItemCooldown(bag, slot)
+		local onCooldown = (start and start > 0 and duration and duration > 0 and enable and enable > 0)
 
 		if data[4] ~= onCooldown or (onCooldown and data[5] ~= start) then
 			data[4] = onCooldown
@@ -134,7 +136,7 @@ function Events:UpdateCooldown(bag, slot)
 end
 
 function Events:UpdateCooldowns(bag)
-	for slot = 1, GetContainerNumSlots(bag) do
+	for slot = 1, C_Container.GetContainerNumSlots(bag) do
 		self:UpdateCooldown(bag, slot)
 	end
 end
@@ -142,7 +144,7 @@ end
 -- bag sizes
 function Events:UpdateBagSize(bag)
 	local prevSize = slots[bag*100] or 0
-	local newSize = GetContainerNumSlots(bag) or 0
+	local newSize = C_Container.GetContainerNumSlots(bag) or 0
 	slots[bag*100] = newSize
 
 	if prevSize > newSize then

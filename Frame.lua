@@ -224,11 +224,11 @@ function Frame:OnSortClick(frame, button)
 	if button == "LeftButton" then
 		PlaySound(SOUNDKIT.UI_BAG_SORTING_01)
 		if self:IsReagentBank() then
-			SortReagentBankBags()
+			C_Container.SortReagentBankBags()
 		elseif self:IsBank() then
-			SortBankBags()
+			C_Container.SortBankBags()
 		else
-			SortBags()
+			C_Container.SortBags()
 		end
 	elseif button == "RightButton" then
 		self.OnDepositClick(frame)

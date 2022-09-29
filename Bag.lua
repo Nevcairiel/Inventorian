@@ -36,18 +36,18 @@ if WoW10 then
 		info.text = BAG_FILTER_IGNORE
 		info.func = function(_, _, _, value)
 			if id == -1 then -- bank
-				SetBankAutosortDisabled(not value)
+				C_Container.SetBankAutosortDisabled(not value)
 			elseif id == 0 then -- backback
-				SetBackpackAutosortDisabled(not value)
+				C_Container.SetBackpackAutosortDisabled(not value)
 			else
 				C_Container.SetBagSlotFlag(id, Enum.BagSlotFlags.DisableAutoSort, not value)
 			end
 		end
 
 		if id == -1 then -- bank
-			info.checked = GetBankAutosortDisabled()
+			info.checked = C_Container.GetBankAutosortDisabled()
 		elseif id == 0 then -- backpack
-			info.checked = GetBackpackAutosortDisabled()
+			info.checked = C_Container.GetBackpackAutosortDisabled()
 		else
 			info.checked = C_Container.GetBagSlotFlag(id, Enum.BagSlotFlags.DisableAutoSort)
 		end
@@ -328,23 +328,7 @@ function Bag:UpdateFilterIcon()
 
 	self.FilterIcon:Hide()
 	if id > 0 and not self:IsCached() then
-		if ContainerFrameMixin and ContainerFrameMixin.UpdateFilterIcon then
-			ContainerFrameMixin.UpdateFilterIcon(self)
-		else
-			for i = LE_BAG_FILTER_FLAG_EQUIPMENT, NUM_LE_BAG_FILTER_FLAGS do
-				local active = false
-				if id > NUM_BAG_SLOTS then
-					active = GetBankBagSlotFlag(id - NUM_BAG_SLOTS, i)
-				else
-					active = GetBagSlotFlag(id, i)
-				end
-				if active then
-					self.FilterIcon.Icon:SetAtlas(BAG_FILTER_ICONS[i], true)
-					self.FilterIcon:Show()
-					break
-				end
-			end
-		end
+		ContainerFrameMixin.UpdateFilterIcon(self)
 	end
 end
 
@@ -474,7 +458,7 @@ function Bag:IsPurchasable()
 end
 
 function Bag:GetInventorySlot()
-	return self:IsCustomSlot() and ContainerIDToInventoryID(self:GetID()) or nil
+	return self:IsCustomSlot() and C_Container.ContainerIDToInventoryID(self:GetID()) or nil
 end
 
 function Bag:GetInfo()

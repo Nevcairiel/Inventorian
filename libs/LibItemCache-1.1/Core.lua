@@ -161,9 +161,9 @@ function Lib:GetBagInfo(player, bag)
 		end
 
 	elseif bag ~= BACKPACK_CONTAINER and bag ~= BANK_CONTAINER then
-		local slot = ContainerIDToInventoryID(bag)
+		local slot = C_Container.ContainerIDToInventoryID(bag)
 
-   		if isCached then
+		if isCached then
 			local data, size = Cache('GetBag', realm, player, bag, nil, slot)
 			local link, icon = self:RestoreLink(data)
 
@@ -172,14 +172,14 @@ function Lib:GetBagInfo(player, bag)
 			local link = GetInventoryItemLink('player', slot)
 			local icon = GetInventoryItemTexture('player', slot)
 
-			return link, GetContainerNumFreeSlots(bag), icon, slot, GetContainerNumSlots(bag)
+			return link, C_Container.GetContainerNumFreeSlots(bag), icon, slot, C_Container.GetContainerNumSlots(bag)
 		end
 	elseif isCached and bag == BACKPACK_CONTAINER then
 		local size = Cache('GetBackpackSize', realm, player)
-		return nil, 0, nil, nil, tonumber(size) or GetContainerNumSlots(bag), true
+		return nil, 0, nil, nil, tonumber(size) or C_Container.GetContainerNumSlots(bag), true
 	end
 
-	return nil, GetContainerNumFreeSlots(bag), nil, nil, owned and GetContainerNumSlots(bag) or 0, isCached
+	return nil, C_Container.GetContainerNumFreeSlots(bag), nil, nil, owned and C_Container.GetContainerNumSlots(bag) or 0, isCached
 end
 
 function Lib:GetBagType(player, bag)
@@ -223,12 +223,13 @@ function Lib:GetItemInfo(player, bag, slot)
 		return icon, count, locked, quality, nil, nil, link
 
 	else
-		local icon, count, locked, quality, readable, lootable, link = GetContainerItemInfo(bag, slot)
-		if link and quality < 0 then
-			quality = self:GetItemQuality(link)
+		local info = C_Container.GetContainerItemInfo(bag, slot)
+		if not info then return end
+		if info.hyperlink and not info.quality or info.quality < 0 then
+			info.quality = self:GetItemQuality(info.hyperlink)
 		end
 
-		return icon, count, locked, quality, readable, lootable, link
+		return info.iconFileID, info.stackConut, info.isLocked, info.quality, info.isReadable, info.hasLoot, info.hyperlink
 	end
 end
 

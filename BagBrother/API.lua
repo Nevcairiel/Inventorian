@@ -17,16 +17,18 @@ This file is part of BagBrother.
 
 
 function BagBrother:SaveBag(bag, onlyItems)
-	local size = GetContainerNumSlots(bag)
+	local size = C_Container.GetContainerNumSlots(bag)
 	if size > 0 then
 		local items = {}
 		for slot = 1, size do
-			local _, count, _,_,_,_, link = GetContainerItemInfo(bag, slot)
-			items[slot] = self:ParseItem(link, count)
+			local info = C_Container.GetContainerItemInfo(bag, slot)
+			if info then
+				items[slot] = self:ParseItem(info.hyperlink, info.stackCount)
+			end
 		end
 
 		if not onlyItems then
-			self:SaveEquip(ContainerIDToInventoryID(bag), size)
+			self:SaveEquip(C_Container.ContainerIDToInventoryID(bag), size)
 		end
 
 		self.Player[bag] = items
@@ -48,7 +50,7 @@ function BagBrother:ParseItem(link, count)
 		if id == 0 and TradeSkillFrame then
 			local focus = GetMouseFocus():GetName()
 
-			if focus == 'TradeSkillSkillIcon' then 
+			if focus == 'TradeSkillSkillIcon' then
 				link = GetTradeSkillItemLink(TradeSkillFrame.selectedSkill)
 			else
 				local i = focus:match('TradeSkillReagent(%d+)')
@@ -63,7 +65,7 @@ function BagBrother:ParseItem(link, count)
 		else
 			link = link:match('|H%l+:([%d:]+)')
 		end
-		
+
 		if count and count > 1 then
 			link = link .. ';' .. count
 		end

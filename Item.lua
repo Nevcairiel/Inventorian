@@ -403,10 +403,25 @@ function Item:GetInfo()
 	local icon, count, locked, quality, readable, lootable, link, _, noValue, itemID, isBound
 	if self:IsCached() then
 		icon, count, locked, quality, readable, lootable, link = ItemCache:GetItemInfo(player, self.bag, self.slot)
+		if link then
+			itemID = GetItemInfoInstant(link)
+		end
 	else
 		-- LibItemCache doesn't provide noValue or itemID, so fallback to base API
-		icon, count, locked, quality, readable, lootable, link, _, noValue, itemID, isBound = GetContainerItemInfo(self.bag, self.slot)
-		if link and quality < 0 then
+		local info = C_Container.GetContainerItemInfo(self.bag, self.slot)
+		if info then
+			icon = info.iconFileID
+			count = info.stackCount
+			locked = info.isLocked
+			quality = info.quality
+			readable = info.isReadable
+			lootable = info.hasLoot
+			link = info.hyperlink
+			noValue = info.hasNoValue
+			itemID = info.itemID
+			isBound = info.isBound
+		end
+		if link and (not quality or quality < 0) then
 			quality = select(3, GetItemInfo(link))
 		end
 	end
@@ -430,13 +445,16 @@ end
 
 function Item:GetQuestInfo()
 	if not self:IsCached() then
-		return GetContainerItemQuestInfo(self.bag, self.slot)
+		local info = C_Container.GetContainerItemQuestInfo(self.bag, self.slot)
+		if info then
+			return info.isQuestItem, info.questID, info.isActive
+		end
 	end
 end
 
 function Item:IsNew()
 	if not self:IsCached() then
-		return C_NewItems.IsNewItem(self.bag, self.slot), IsBattlePayItem(self.bag, self.slot)
+		return C_NewItems.IsNewItem(self.bag, self.slot), C_Container.IsBattlePayItem(self.bag, self.slot)
 	end
 end
 
