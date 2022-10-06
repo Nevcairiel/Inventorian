@@ -11,6 +11,7 @@ local Events = Inventorian:GetModule("Events")
 
 local ITEM_CONTAINER_OFFSET_W = -22
 local ITEM_CONTAINER_OFFSET_H = -95
+local TOKEN_CONTAINER_HEIGHT = 20
 
 local PLAYER_NAME = string.format("%s - %s", UnitName("player"), GetRealmName())
 
@@ -54,9 +55,6 @@ function Inventorian.Frame:Create(name, titleText, settings, config)
 	frame.DepositButton:SetPoint("BOTTOM", 0, 31)
 	frame.DepositButton:SetScript("OnClick", frame.OnDepositClick)
 	frame.DepositButton:Hide()
-
-	-- fixup money border
-	frame.Money.Border:SetPoint("LEFT", -13, 0)
 
 	frame:CreateTabs()
 
@@ -151,19 +149,35 @@ function Frame:CreateTabs()
 	PanelTemplates_SetTab(self, 1)
 end
 
+function Frame:ShowTokenFrame()
+	self:SetHeight(self.settings.height + TOKEN_CONTAINER_HEIGHT)
+	BackpackTokenFrame:SetParent(self)
+	BackpackTokenFrame:ClearAllPoints()
+	BackpackTokenFrame:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -6, 9)
+	BackpackTokenFrame:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 6, 9)
+	BackpackTokenFrame:Show()
+
+	self.Money:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -6, 9 + TOKEN_CONTAINER_HEIGHT)
+	self.Money:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 6, 9 + TOKEN_CONTAINER_HEIGHT)
+end
+
+function Frame:HideTokenFrame()
+	self:SetHeight(self.settings.height)
+	BackpackTokenFrame:Hide()
+
+	self.Money:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -6, 9)
+	self.Money:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 6, 9)
+end
+
 function Inventorian.Frame.ManageBackpackTokenFrame(backpack)
 	if not backpack or InventorianBagFrame:IsCached() then
-		BackpackTokenFrame:Hide()
+		InventorianBagFrame:HideTokenFrame()
 		return
 	end
 	if BackpackTokenFrame:ShouldShow() then
-		BackpackTokenFrame:SetParent(backpack)
-		BackpackTokenFrame:ClearAllPoints()
-		BackpackTokenFrame:SetPoint("RIGHT", InventorianBagFrame.Money, "LEFT", -15, 0)
-		BackpackTokenFrame:SetWidth(78)
-		BackpackTokenFrame:Show()
+		InventorianBagFrame:ShowTokenFrame()
 	else
-		BackpackTokenFrame:Hide()
+		InventorianBagFrame:HideTokenFrame()
 	end
 end
 
@@ -265,6 +279,10 @@ function Frame:OnEvent(event, ...)
 end
 
 function Frame:OnSizeChanged(width, height)
+	if BackpackTokenFrame:IsShown() and BackpackTokenFrame:GetParent() == self then
+		height = height - TOKEN_CONTAINER_HEIGHT
+	end
+
 	self.settings.width = width
 	self.settings.height = height
 	LibWindow.SavePosition(self)
@@ -361,6 +379,10 @@ function Frame:UpdateItemContainer(force)
 
 	if self.DepositButton:IsShown() then
 		height = height - 26
+	end
+
+	if BackpackTokenFrame:IsShown() and BackpackTokenFrame:GetParent() == self then
+		height = height - TOKEN_CONTAINER_HEIGHT
 	end
 
 	if width ~= self.itemContainer:GetWidth() or height ~= self.itemContainer:GetHeight() then

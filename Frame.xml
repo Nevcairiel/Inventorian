@@ -245,6 +245,7 @@
 			<Frame parentKey="Money" inherits="ContainerMoneyFrameTemplate">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" x="-6" y="9"/>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="6" y="9"/>
 				</Anchors>
 			</Frame>
 		</Frames>
