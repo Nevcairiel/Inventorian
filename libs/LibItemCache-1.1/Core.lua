@@ -22,6 +22,19 @@ end
 
 local NUM_TOTAL_EQUIPPED_BAG_SLOTS = NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
 
+local ContainerIDToInventoryID = C_Container.ContainerIDToInventoryID or ContainerIDToInventoryID
+local GetContainerNumFreeSlots = C_Container.GetContainerNumFreeSlots or GetContainerNumFreeSlots
+local GetContainerNumSlots = C_Container.GetContainerNumSlots or GetContainerNumSlots
+local C_Container_GetContainerItemInfo = C_Container.GetContainerItemInfo
+if not C_Container_GetContainerItemInfo then
+	C_Container_GetContainerItemInfo = function(bag, slot)
+		local icon, itemCount, locked, quality, readable, lootable, itemLink, isFiltered, noValue, itemID, isBound = GetContainerItemInfo(bag, slot)
+		if not icon then return nil end
+
+		return { iconFileID = icon, stackCount = itemCount, isLocked = locked, quality = quality, isReadable = readable, hasLoot = lootable, hyperlink = itemLink, isFiltered = isFiltered, hasNoValue = noValue, itemID = itemID, isBound = isBound }
+	end
+end
+
 local PetLinkFormat = '|c%s|Hbattlepet:%sx0|h[%s]|h|r'
 local PetDataFormat = '^' .. strrep('%d+:', 6) .. '%d+$'
 
@@ -161,7 +174,7 @@ function Lib:GetBagInfo(player, bag)
 		end
 
 	elseif bag ~= BACKPACK_CONTAINER and bag ~= BANK_CONTAINER then
-		local slot = C_Container.ContainerIDToInventoryID(bag)
+		local slot = ContainerIDToInventoryID(bag)
 
 		if isCached then
 			local data, size = Cache('GetBag', realm, player, bag, nil, slot)
@@ -172,14 +185,14 @@ function Lib:GetBagInfo(player, bag)
 			local link = GetInventoryItemLink('player', slot)
 			local icon = GetInventoryItemTexture('player', slot)
 
-			return link, C_Container.GetContainerNumFreeSlots(bag), icon, slot, C_Container.GetContainerNumSlots(bag)
+			return link, GetContainerNumFreeSlots(bag), icon, slot, GetContainerNumSlots(bag)
 		end
 	elseif isCached and bag == BACKPACK_CONTAINER then
 		local size = Cache('GetBackpackSize', realm, player)
-		return nil, 0, nil, nil, tonumber(size) or C_Container.GetContainerNumSlots(bag), true
+		return nil, 0, nil, nil, tonumber(size) or GetContainerNumSlots(bag), true
 	end
 
-	return nil, C_Container.GetContainerNumFreeSlots(bag), nil, nil, owned and C_Container.GetContainerNumSlots(bag) or 0, isCached
+	return nil, GetContainerNumFreeSlots(bag), nil, nil, owned and GetContainerNumSlots(bag) or 0, isCached
 end
 
 function Lib:GetBagType(player, bag)
@@ -223,7 +236,7 @@ function Lib:GetItemInfo(player, bag, slot)
 		return icon, count, locked, quality, nil, nil, link
 
 	else
-		local info = C_Container.GetContainerItemInfo(bag, slot)
+		local info = C_Container_GetContainerItemInfo(bag, slot)
 		if not info then return end
 		if info.hyperlink and not info.quality or info.quality < 0 then
 			info.quality = self:GetItemQuality(info.hyperlink)

@@ -144,4 +144,19 @@ read_globals = {
 	"TEXTURE_ITEM_QUEST_BORDER",
 	"UIDROPDOWNMENU_MENU_VALUE",
 	"YES",
+
+	-- compat shim
+	"SetBankAutosortDisabled",
+	"SetBackpackAutosortDisabled",
+	"GetBankAutosortDisabled",
+	"GetBackpackAutosortDisabled",
+	"ContainerIDToInventoryID",
+	"GetContainerItemInfo",
+	"GetContainerItemCooldown",
+	"GetContainerItemQuestInfo",
+	"GetContainerNumSlots",
+	"SortReagentBankBags",
+	"SortBankBags",
+	"SortBags",
+	"IsBattlePayItem",
 }

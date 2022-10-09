@@ -14,9 +14,14 @@ Inventorian.Bag.prototype = Bag
 
 local NUM_TOTAL_EQUIPPED_BAG_SLOTS = NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
 
-local ContainerFrameFilterDropDown_OnLoad = ContainerFrameFilterDropDown_OnLoad
+local SetBankAutosortDisabled = C_Container.SetBankAutosortDisabled or SetBankAutosortDisabled
+local SetBackpackAutosortDisabled = C_Container.SetBackpackAutosortDisabled or SetBackpackAutosortDisabled
+local GetBankAutosortDisabled = C_Container.GetBankAutosortDisabled or GetBankAutosortDisabled
+local GetBackpackAutosortDisabled = C_Container.GetBackpackAutosortDisabled or GetBackpackAutosortDisabled
+local ContainerIDToInventoryID = C_Container.ContainerIDToInventoryID or ContainerIDToInventoryID
 
-if WoW10 then
+local ContainerFrameFilterDropDown_OnLoad
+do
 	local function OnBagFilterClicked(bagID, filterID, value)
 		C_Container.SetBagSlotFlag(bagID, filterID, value)
 		ContainerFrameSettingsManager:SetFilterFlag(bagID, filterID, value)
@@ -36,18 +41,18 @@ if WoW10 then
 		info.text = BAG_FILTER_IGNORE
 		info.func = function(_, _, _, value)
 			if id == -1 then -- bank
-				C_Container.SetBankAutosortDisabled(not value)
+				SetBankAutosortDisabled(not value)
 			elseif id == 0 then -- backback
-				C_Container.SetBackpackAutosortDisabled(not value)
+				SetBackpackAutosortDisabled(not value)
 			else
 				C_Container.SetBagSlotFlag(id, Enum.BagSlotFlags.DisableAutoSort, not value)
 			end
 		end
 
 		if id == -1 then -- bank
-			info.checked = C_Container.GetBankAutosortDisabled()
+			info.checked = GetBankAutosortDisabled()
 		elseif id == 0 then -- backpack
-			info.checked = C_Container.GetBackpackAutosortDisabled()
+			info.checked = GetBackpackAutosortDisabled()
 		else
 			info.checked = C_Container.GetBagSlotFlag(id, Enum.BagSlotFlags.DisableAutoSort)
 		end
@@ -458,7 +463,7 @@ function Bag:IsPurchasable()
 end
 
 function Bag:GetInventorySlot()
-	return self:IsCustomSlot() and C_Container.ContainerIDToInventoryID(self:GetID()) or nil
+	return self:IsCustomSlot() and ContainerIDToInventoryID(self:GetID()) or nil
 end
 
 function Bag:GetInfo()

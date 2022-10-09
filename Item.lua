@@ -7,6 +7,26 @@ local ItemSearch = LibStub("LibItemSearch-Inventorian-1.0")
 local Item = CreateFrame("ItemButton")
 local Item_MT = {__index = Item}
 
+local C_Container_GetContainerItemInfo = C_Container.GetContainerItemInfo
+if not C_Container_GetContainerItemInfo then
+	C_Container_GetContainerItemInfo = function(bag, slot)
+		local icon, itemCount, locked, quality, readable, lootable, itemLink, isFiltered, noValue, itemID, isBound = GetContainerItemInfo(bag, slot)
+		if not icon then return nil end
+
+		return { iconFileID = icon, stackCount = itemCount, isLocked = locked, quality = quality, isReadable = readable, hasLoot = lootable, hyperlink = itemLink, isFiltered = isFiltered, hasNoValue = noValue, itemID = itemID, isBound = isBound }
+	end
+end
+
+local C_Container_GetContainerItemQuestInfo = C_Container.GetContainerItemQuestInfo
+if not C_Container_GetContainerItemQuestInfo then
+	C_Container_GetContainerItemQuestInfo = function(bag, slot)
+		local isQuestItem, questId, isActive = GetContainerItemQuestInfo(bag, slot)
+		return { isQuestItem = isQuestItem, questID = questId, isActive = isActive }
+	end
+end
+
+local IsBattlePayItem = C_Container.IsBattlePayItem or IsBattlePayItem
+
 Inventorian.Item = {}
 Inventorian.Item.prototype = Item
 Inventorian.Item.count = 0
@@ -408,7 +428,7 @@ function Item:GetInfo()
 		end
 	else
 		-- LibItemCache doesn't provide noValue or itemID, so fallback to base API
-		local info = C_Container.GetContainerItemInfo(self.bag, self.slot)
+		local info = C_Container_GetContainerItemInfo(self.bag, self.slot)
 		if info then
 			icon = info.iconFileID
 			count = info.stackCount
@@ -445,7 +465,7 @@ end
 
 function Item:GetQuestInfo()
 	if not self:IsCached() then
-		local info = C_Container.GetContainerItemQuestInfo(self.bag, self.slot)
+		local info = C_Container_GetContainerItemQuestInfo(self.bag, self.slot)
 		if info then
 			return info.isQuestItem, info.questID, info.isActive
 		end
@@ -454,7 +474,7 @@ end
 
 function Item:IsNew()
 	if not self:IsCached() then
-		return C_NewItems.IsNewItem(self.bag, self.slot), C_Container.IsBattlePayItem(self.bag, self.slot)
+		return C_NewItems.IsNewItem(self.bag, self.slot), IsBattlePayItem(self.bag, self.slot)
 	end
 end
 
