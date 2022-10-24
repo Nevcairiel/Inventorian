@@ -75,12 +75,9 @@ read_globals = {
 	"UIParent",
 
 	-- FrameXML API
-	"BackpackTokenFrame_IsShown",
-	"BackpackTokenFrame_Update",
 	"CloseBankFrame",
 	"CloseDropDownMenus",
 	"ContainerFrame_CanContainerUseFilterMenu",
-	"ContainerFrameFilterDropDown_OnLoad",
 	"ContainerFrameItemButton_CalculateItemTooltipAnchors",
 	"ContainerFrameItemButtonMixin",
 	"ContainerFrameMixin",
@@ -89,7 +86,6 @@ read_globals = {
 	"HandleModifiedItemClick",
 	"ItemButtonMixin",
 	"ItemLocation",
-	"ManageBackpackTokenFrame",
 	"Mixin",
 	"MoneyFrame_SetType",
 	"MoneyFrame_Update",
