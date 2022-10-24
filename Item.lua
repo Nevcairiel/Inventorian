@@ -341,6 +341,7 @@ InventorianItemMixin.UpdateTooltip = InventorianItemMixin.OnEnter
 local function CacheOverlay_OnEnter(self)
 	local parent = self:GetParent()
 	if parent:GetItem() then
+		GameTooltip:SetOwner(parent, "ANCHOR_NONE")
 		ContainerFrameItemButton_CalculateItemTooltipAnchors(parent, GameTooltip)
 		GameTooltip:SetHyperlink(parent:GetItem())
 		GameTooltip:Show()
