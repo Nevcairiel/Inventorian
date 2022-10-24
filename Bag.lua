@@ -5,12 +5,10 @@ local WoW10 = select(4, GetBuildInfo()) >= 100000
 
 local ItemCache = LibStub("LibItemCache-1.1")
 
-local Bag = CreateFrame("Button")
-local Bag_MT = {__index = Bag}
+local BagMixin = {}
 
 Inventorian.Bag = {}
 Inventorian.Bag.pool = {}
-Inventorian.Bag.prototype = Bag
 
 local NUM_TOTAL_EQUIPPED_BAG_SLOTS = NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
 
@@ -109,7 +107,7 @@ function Inventorian.Bag:Create()
 		return item
 	end
 	local name = ("InventorianBag%d"):format(BagID)
-	local bag = setmetatable(CreateFrame("Button", name), Bag_MT)
+	local bag = Mixin(CreateFrame("Button", name), BagMixin)
 
 	bag:SetSize(30, 30)
 
@@ -165,14 +163,14 @@ function Inventorian.Bag:Create()
 	return bag
 end
 
-function Bag:Free()
+function BagMixin:Free()
 	Inventorian.Bag.pool[self] = true
 	self:Hide()
 	self:SetParent(nil)
 	self:UnregisterAllEvents()
 end
 
-function Bag:Set(parent, id)
+function BagMixin:Set(parent, id)
 	self:SetID(id)
 	self:SetParent(parent)
 
@@ -205,11 +203,11 @@ function Bag:Set(parent, id)
 end
 
 -- ContainerFrameMixin compat
-function Bag:GetBagID()
+function BagMixin:GetBagID()
 	return self:GetID()
 end
 
-function Bag:OnEvent(event, ...)
+function BagMixin:OnEvent(event, ...)
 	if event == "BANKFRAME_OPENED" or event == "BANKFRAME_CLOSED" then
 		self:Update()
 	elseif not self:IsCached() then
@@ -227,7 +225,7 @@ function Bag:OnEvent(event, ...)
 	end
 end
 
-function Bag:OnClick(button)
+function BagMixin:OnClick(button)
 	local link = self:GetInfo()
 	if link and HandleModifiedItemClick(link) then
 		return
@@ -253,11 +251,11 @@ function Bag:OnClick(button)
 	end
 end
 
-function Bag:OnDrag()
+function BagMixin:OnDrag()
 	self:Pickup()
 end
 
-function Bag:OnEnter()
+function BagMixin:OnEnter()
 	if self:GetRight() > (GetScreenWidth() / 2) then
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT")
 	else
@@ -268,18 +266,18 @@ function Bag:OnEnter()
 	self:HighlightItems()
 end
 
-function Bag:OnLeave()
+function BagMixin:OnLeave()
 	if GameTooltip:IsOwned(self) then
 		GameTooltip:Hide()
 	end
 	self:ClearHighlightItems()
 end
 
-function Bag:OnShow()
+function BagMixin:OnShow()
 	self:Update()
 end
 
-function Bag:Update()
+function BagMixin:Update()
 	if not self:IsVisible() or not self:GetParent() then return end
 
 	self:UpdateLock()
@@ -288,13 +286,13 @@ function Bag:Update()
 	self:UpdateFilterIcon()
 end
 
-function Bag:UpdateLock()
+function BagMixin:UpdateLock()
 	if self:IsCustomSlot() then
 		SetItemButtonDesaturated(self, self:IsLocked())
 	end
 end
 
-function Bag:UpdateCursor()
+function BagMixin:UpdateCursor()
 	if not self:IsCustomSlot() then return end
 
 	if not self:IsCached() and CursorCanGoInSlot(self:GetInventorySlot()) then
@@ -304,7 +302,7 @@ function Bag:UpdateCursor()
 	end
 end
 
-function Bag:UpdateSlotInfo()
+function BagMixin:UpdateSlotInfo()
 	if not self:IsCustomSlot() then return end
 
 	local link, count, texture = self:GetInfo()
@@ -328,7 +326,7 @@ function Bag:UpdateSlotInfo()
 	self:SetCount(count)
 end
 
-function Bag:UpdateFilterIcon()
+function BagMixin:UpdateFilterIcon()
 	local id = self:GetID()
 
 	self.FilterIcon:Hide()
@@ -337,7 +335,7 @@ function Bag:UpdateFilterIcon()
 	end
 end
 
-function Bag:SetCount(count)
+function BagMixin:SetCount(count)
 	count = count or 0
 
 	if count > 1 then
@@ -352,20 +350,20 @@ function Bag:SetCount(count)
 	end
 end
 
-function Bag:Pickup()
+function BagMixin:Pickup()
 	PickupBagFromSlot(self:GetInventorySlot())
 end
 
-function Bag:HighlightItems()
+function BagMixin:HighlightItems()
 	self:GetParent().itemContainer:HighlightBag(self:GetID())
 end
 
-function Bag:ClearHighlightItems()
+function BagMixin:ClearHighlightItems()
 	self:GetParent().itemContainer:HighlightBag(nil)
 end
 
 --show the purchase slot dialog
-function Bag:PurchaseSlot()
+function BagMixin:PurchaseSlot()
 	if not StaticPopupDialogs["CONFIRM_BUY_BANK_SLOT_INVENTORIAN"] then
 		StaticPopupDialogs["CONFIRM_BUY_BANK_SLOT_INVENTORIAN"] = {
 			text = CONFIRM_BUY_BANK_SLOT,
@@ -391,7 +389,7 @@ function Bag:PurchaseSlot()
 	StaticPopup_Show("CONFIRM_BUY_BANK_SLOT_INVENTORIAN")
 end
 
-function Bag:UpdateTooltip()
+function BagMixin:UpdateTooltip()
 	GameTooltip:ClearLines()
 
 	if self:IsBackpack() then
@@ -407,7 +405,7 @@ function Bag:UpdateTooltip()
 	GameTooltip:Show()
 end
 
-function Bag:UpdateBagTooltip()
+function BagMixin:UpdateBagTooltip()
 	if not GameTooltip:SetInventoryItem("player", self:GetInventorySlot()) then
 		if self:IsPurchasable() then
 			GameTooltip:SetText(BANK_BAG_PURCHASE, 1, 1, 1)
@@ -422,56 +420,56 @@ end
 -----------------------------------------------------------------------
 -- Various information getters
 
-function Bag:GetPlayer()
+function BagMixin:GetPlayer()
 	return self:GetParent():GetPlayerName()
 end
 
-function Bag:IsCached()
+function BagMixin:IsCached()
 	return self:GetParent():IsCached()
 end
 
-function Bag:IsBackpack()
+function BagMixin:IsBackpack()
 	return (self:GetID() == BACKPACK_CONTAINER)
 end
 
-function Bag:IsBank()
+function BagMixin:IsBank()
 	return (self:GetID() == BANK_CONTAINER)
 end
 
-function Bag:IsReagentBank()
+function BagMixin:IsReagentBank()
 	return (self:GetID() == REAGENTBANK_CONTAINER)
 end
 
-function Bag:IsReagentBag()
+function BagMixin:IsReagentBag()
 	return self:IsBackpackBag() and self:GetID() > NUM_BAG_SLOTS
 end
 
-function Bag:IsBackpackBag()
+function BagMixin:IsBackpackBag()
 	return (self:GetID() > 0 and self:GetID() <= NUM_TOTAL_EQUIPPED_BAG_SLOTS)
 end
 
-function Bag:IsBankBag()
+function BagMixin:IsBankBag()
 	return (self:GetID() > NUM_TOTAL_EQUIPPED_BAG_SLOTS and self:GetID() <= (NUM_TOTAL_EQUIPPED_BAG_SLOTS + NUM_BANKBAGSLOTS))
 end
 
-function Bag:IsCustomSlot()
+function BagMixin:IsCustomSlot()
 	return self:IsBackpackBag() or self:IsBankBag()
 end
 
-function Bag:IsPurchasable()
+function BagMixin:IsPurchasable()
 	return not self:IsCached() and (self:GetID() - NUM_TOTAL_EQUIPPED_BAG_SLOTS) > GetNumBankSlots()
 end
 
-function Bag:GetInventorySlot()
+function BagMixin:GetInventorySlot()
 	return self:IsCustomSlot() and ContainerIDToInventoryID(self:GetID()) or nil
 end
 
-function Bag:GetInfo()
+function BagMixin:GetInfo()
 	local link, freeSlots, icon, slot, numSlots = ItemCache:GetBagInfo(self:GetPlayer(), self:GetID())
 	return link, 0, icon
 end
 
-function Bag:IsLocked()
+function BagMixin:IsLocked()
 	if self:IsCached() then
 		return false
 	end

@@ -3,16 +3,14 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Inventorian")
 
 local ItemCache = LibStub("LibItemCache-1.1")
 
-local ItemContainer = CreateFrame("Frame")
-local ItemContainer_MT = {__index = ItemContainer}
+local ItemContainerMixin = {}
 
 local Events = Inventorian:GetModule("Events")
 
 Inventorian.ItemContainer = {}
 Inventorian.ItemContainer.defaults = {}
-Inventorian.ItemContainer.prototype = ItemContainer
 function Inventorian.ItemContainer:Create(parent)
-	local frame = setmetatable(CreateFrame("Frame", nil, parent), ItemContainer_MT)
+	local frame = Mixin(CreateFrame("Frame", nil, parent), ItemContainerMixin)
 
 	-- settings
 	frame.items = {}
@@ -35,12 +33,12 @@ local function ToBag(index)
 	return (index > 0 and floor(index / 100)) or ceil(index / 100)
 end
 
-function ItemContainer:SetBags(bags)
+function ItemContainerMixin:SetBags(bags)
 	self.bags = bags
 	self:UpdateBags()
 end
 
-function ItemContainer:OnShow()
+function ItemContainerMixin:OnShow()
 	self:GenerateItemButtons()
 
 	Events.Register(self, "ITEM_SLOT_ADD", "ITEM_SLOT_UPDATE")
@@ -51,30 +49,30 @@ function ItemContainer:OnShow()
 	Events.Register(self, "ITEM_LOCK_CHANGED")
 end
 
-function ItemContainer:OnHide()
+function ItemContainerMixin:OnHide()
 	Events.UnregisterAll(self)
 end
 
-function ItemContainer:ITEM_SLOT_UPDATE(event, bag, slot)
+function ItemContainerMixin:ITEM_SLOT_UPDATE(event, bag, slot)
 	if self:UpdateSlot(bag, slot) then
 		self:Layout()
 	end
 end
 
-function ItemContainer:ITEM_SLOT_REMOVE(event, bag, slot)
+function ItemContainerMixin:ITEM_SLOT_REMOVE(event, bag, slot)
 	if self:RemoveSlot(bag, slot) then
 		self:Layout()
 	end
 end
 
-function ItemContainer:ITEM_SLOT_UPDATE_COOLDOWN(event, bag, slot)
+function ItemContainerMixin:ITEM_SLOT_UPDATE_COOLDOWN(event, bag, slot)
 	local item = self.items[ToIndex(bag, slot)]
 	if item then
 		item:UpdateCooldown()
 	end
 end
 
-function ItemContainer:ITEM_LOCK_CHANGED(event, bag, slot)
+function ItemContainerMixin:ITEM_LOCK_CHANGED(event, bag, slot)
 	if not slot then return end
 
 	local item = self.items[ToIndex(bag, slot)]
@@ -83,7 +81,7 @@ function ItemContainer:ITEM_LOCK_CHANGED(event, bag, slot)
 	end
 end
 
-function ItemContainer:RemoveAllItems()
+function ItemContainerMixin:RemoveAllItems()
 	local items = self.items
 	for i, item in pairs(items) do
 		item:Free()
@@ -92,7 +90,7 @@ function ItemContainer:RemoveAllItems()
 	self.itemCount = 0
 end
 
-function ItemContainer:ItemFilter(bag, slot, link)
+function ItemContainerMixin:ItemFilter(bag, slot, link)
 	-- check for the bag
 	local hasBag = false
 	for _, bagID in pairs(self.bags) do
@@ -107,38 +105,38 @@ function ItemContainer:ItemFilter(bag, slot, link)
 	return true
 end
 
-function ItemContainer:Search(text)
+function ItemContainerMixin:Search(text)
 	if text == "" then text = nil end
 	self.searchText = text
 	self:UpdateSearch()
 end
 
-function ItemContainer:UpdateSearch()
+function ItemContainerMixin:UpdateSearch()
 	for idx, item in pairs(self.items) do
 		item:UpdateSearch(self.searchText)
 	end
 end
 
-function ItemContainer:HighlightBag(bag)
+function ItemContainerMixin:HighlightBag(bag)
 	self.highlightBag = bag
 	for _, item in pairs(self.items) do
 		item:Highlight(item:GetBag() == bag)
 	end
 end
 
-function ItemContainer:UpdateBags()
+function ItemContainerMixin:UpdateBags()
 	self:RemoveAllItems()
 	self:GenerateItemButtons()
 end
 
-function ItemContainer:UpdateSlot(bag, slot)
+function ItemContainerMixin:UpdateSlot(bag, slot)
 	if self:ItemFilter(bag, slot) then
 		return self:AddSlot(bag, slot)
 	end
 	return self:RemoveSlot(bag, slot)
 end
 
-function ItemContainer:AddSlot(bag, slot)
+function ItemContainerMixin:AddSlot(bag, slot)
 	local index = ToIndex(bag, slot)
 
 	if self.items[index] then
@@ -151,7 +149,7 @@ function ItemContainer:AddSlot(bag, slot)
 	end
 end
 
-function ItemContainer:RemoveSlot(bag, slot)
+function ItemContainerMixin:RemoveSlot(bag, slot)
 	local index = ToIndex(bag, slot)
 
 	if self.items[index] then
@@ -162,7 +160,7 @@ function ItemContainer:RemoveSlot(bag, slot)
 	end
 end
 
-function ItemContainer:Layout()
+function ItemContainerMixin:Layout()
 	local width, height = self:GetWidth(), self:GetHeight()
 	local spacing = 2
 	local count = self.itemCount
@@ -199,7 +197,7 @@ function ItemContainer:Layout()
 	end
 end
 
-function ItemContainer:GenerateItemButtons()
+function ItemContainerMixin:GenerateItemButtons()
 	if not self:IsVisible() then return end
 
 	-- track if anything changed
@@ -234,7 +232,7 @@ end
 -----------------------------------------------------------------------
 -- Various information getters
 
-function ItemContainer:GetBagSize(bag)
+function ItemContainerMixin:GetBagSize(bag)
 	local link, numFreeSlots, icon, slot, numSlots = ItemCache:GetBagInfo(self:GetParent():GetPlayerName(), bag)
 	return numSlots >= 0 and numSlots or 0
 end

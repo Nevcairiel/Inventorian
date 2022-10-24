@@ -3,8 +3,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Inventorian")
 
 local ItemCache = LibStub("LibItemCache-1.1")
 
-local Frame = CreateFrame("Frame")
-local Frame_MT = {__index = Frame}
+local FrameMixin = {}
 
 local LibWindow = LibStub("LibWindow-1.1")
 local Events = Inventorian:GetModule("Events")
@@ -28,11 +27,15 @@ MoneyTypeInfo["INVENTORIAN"] = {
 	showSmallerCoins = "Backpack"
 };
 
+local function OnDepositClick(button)
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
+	DepositReagentBank()
+end
+
 Inventorian.Frame = {}
 Inventorian.Frame.defaults = {}
-Inventorian.Frame.prototype = Frame
 function Inventorian.Frame:Create(name, titleText, settings, config)
-	local frame = setmetatable(CreateFrame("Frame", name, UIParent, "InventorianFrameTemplate"), Frame_MT)
+	local frame = Mixin(CreateFrame("Frame", name, UIParent, "InventorianFrameTemplate"), FrameMixin)
 
 	-- settings
 	frame.config = config
@@ -57,7 +60,7 @@ function Inventorian.Frame:Create(name, titleText, settings, config)
 	frame.DepositButton:SetText(REAGENTBANK_DEPOSIT)
 	frame.DepositButton:SetSize(256, 24)
 	frame.DepositButton:SetPoint("BOTTOM", 0, 31)
-	frame.DepositButton:SetScript("OnClick", frame.OnDepositClick)
+	frame.DepositButton:SetScript("OnClick", OnDepositClick)
 	frame.DepositButton:Hide()
 
 	frame:CreateTabs()
@@ -86,7 +89,7 @@ function Inventorian.Frame:Create(name, titleText, settings, config)
 	return frame
 end
 
-function Frame.OnTabClick(tab)
+local function OnTabClick(tab)
 	local frame = tab:GetParent()
 	local tabID = tab:GetID()
 	if frame.selectedTab ~= tabID then
@@ -129,14 +132,14 @@ function Frame.OnTabClick(tab)
 	frame:UpdateBags()
 end
 
-function Frame:CreateTabs()
+function FrameMixin:CreateTabs()
 	local numConfigs = #self.config
 	if numConfigs <= 1 then return end
 
 	self.tabs = {}
 	for i = 1, numConfigs do
 		local tab = CreateFrame("Button", self:GetName() .. "Tab" .. i, self, "InventorianFrameTabButtonTemplate")
-		tab:SetScript("OnClick", self.OnTabClick)
+		tab:SetScript("OnClick", OnTabClick)
 		tab:SetID(i)
 		tab:SetText(self.config[i].title)
 
@@ -153,7 +156,7 @@ function Frame:CreateTabs()
 	PanelTemplates_SetTab(self, 1)
 end
 
-function Frame:ShowTokenFrame()
+function FrameMixin:ShowTokenFrame()
 	self:SetHeight(self.settings.height + TOKEN_CONTAINER_HEIGHT)
 	BackpackTokenFrame:SetParent(self)
 	BackpackTokenFrame:ClearAllPoints()
@@ -165,7 +168,7 @@ function Frame:ShowTokenFrame()
 	self.Money:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 6, 9 + TOKEN_CONTAINER_HEIGHT)
 end
 
-function Frame:HideTokenFrame()
+function FrameMixin:HideTokenFrame()
 	self:SetHeight(self.settings.height)
 	BackpackTokenFrame:Hide()
 
@@ -185,7 +188,7 @@ function Inventorian.Frame.ManageBackpackTokenFrame(backpack)
 	end
 end
 
-function Frame:OnShow()
+function FrameMixin:OnShow()
 	PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
 	self:SetPortrait()
 
@@ -200,7 +203,7 @@ function Frame:OnShow()
 	end
 end
 
-function Frame:OnHide()
+function FrameMixin:OnHide()
 	PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE)
 
 	if self:IsBank() then
@@ -226,7 +229,7 @@ function Frame:OnHide()
 	end
 end
 
-function Frame:OnBagToggleClick(toggle, button)
+function FrameMixin:OnBagToggleClick(toggle, button)
 	if button == "LeftButton" then
 		_G[toggle:GetName() .. "Icon"]:SetTexCoord(0.075, 0.925, 0.075, 0.925)
 		self:ToggleBagFrame()
@@ -237,7 +240,7 @@ function Frame:OnBagToggleClick(toggle, button)
 	end
 end
 
-function Frame:OnSortClick(frame, button)
+function FrameMixin:OnSortClick(frame, button)
 	if self:IsCached() then return end
 	if button == "LeftButton" then
 		PlaySound(SOUNDKIT.UI_BAG_SORTING_01)
@@ -249,11 +252,11 @@ function Frame:OnSortClick(frame, button)
 			SortBags()
 		end
 	elseif button == "RightButton" then
-		self.OnDepositClick(frame)
+		OnDepositClick(frame)
 	end
 end
 
-function Frame:OnSortButtonEnter(button)
+function FrameMixin:OnSortButtonEnter(button)
 	GameTooltip:SetOwner(button, "ANCHOR_LEFT")
 	GameTooltip:SetText(BAG_CLEANUP_BAGS, 1, 1, 1)
 	GameTooltip:AddLine(L["<Left-Click> to automatically sort this bag"])
@@ -261,7 +264,7 @@ function Frame:OnSortButtonEnter(button)
 	GameTooltip:Show()
 end
 
-function Frame:OnBagToggleEnter(toggle)
+function FrameMixin:OnBagToggleEnter(toggle)
 	GameTooltip:SetOwner(toggle, "ANCHOR_LEFT")
 	GameTooltip:SetText(L["Bags"], 1, 1, 1)
 	GameTooltip:AddLine(L["<Left-Click> to toggle the bag display"])
@@ -271,18 +274,13 @@ function Frame:OnBagToggleEnter(toggle)
 	GameTooltip:Show()
 end
 
-function Frame.OnDepositClick(button)
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
-	DepositReagentBank()
-end
-
-function Frame:OnEvent(event, ...)
+function FrameMixin:OnEvent(event, ...)
 	if event == "UNIT_PORTRAIT_UPDATE" and self:IsShown() and not self:GetPortrait().classIcon then
 		self:SetPortraitToUnit("player")
 	end
 end
 
-function Frame:OnSizeChanged(width, height)
+function FrameMixin:OnSizeChanged(width, height)
 	if BackpackTokenFrame:IsShown() and BackpackTokenFrame:GetParent() == self then
 		height = height - TOKEN_CONTAINER_HEIGHT
 	end
@@ -294,7 +292,7 @@ function Frame:OnSizeChanged(width, height)
 	self:UpdateItemContainer()
 end
 
-function Frame:SetPortrait()
+function FrameMixin:SetPortrait()
 	if self:IsCached() and self:GetPlayerName() ~= ItemCache.PLAYER then
 		local classToken = ItemCache:GetPlayerInfo(self:GetPlayerName())
 		self:SetPortraitTextureRaw("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes")
@@ -307,11 +305,11 @@ function Frame:SetPortrait()
 	end
 end
 
-function Frame:OnPortraitClick(portrait)
+function FrameMixin:OnPortraitClick(portrait)
 	self:TogglePlayerDropdown(portrait, 15, 10)
 end
 
-function Frame:OnPortraitEnter(portrait)
+function FrameMixin:OnPortraitEnter(portrait)
 	GameTooltip:SetOwner(portrait, "ANCHOR_RIGHT")
 	GameTooltip:SetText(self:GetPlayerName(), 1, 1, 1)
 	if ItemCache:HasCache() then
@@ -322,11 +320,11 @@ function Frame:OnPortraitEnter(portrait)
 	GameTooltip:Show()
 end
 
-function Frame:OnSearchTextChanged()
+function FrameMixin:OnSearchTextChanged()
 	self.itemContainer:Search(self.SearchBox:GetText())
 end
 
-function Frame:UpdateTitleText()
+function FrameMixin:UpdateTitleText()
 	if self:IsCached() then
 		self.TitleContainer.TitleText:SetFormattedText(self.titleText .. " (%s)", self:GetPlayerName(), L["Cached"])
 	else
@@ -334,13 +332,13 @@ function Frame:UpdateTitleText()
 	end
 end
 
-function Frame:ToggleBagFrame()
+function FrameMixin:ToggleBagFrame()
 	self.settings.showBags = not self.settings.showBags
 	--self:UpdateBagToggleHighlight()
 	self:UpdateBags()
 end
 
-function Frame:UpdateBags()
+function FrameMixin:UpdateBags()
 	for i, bag in pairs(self.bagButtons) do
 		self.bagButtons[i] = nil
 		bag:Free()
@@ -374,7 +372,7 @@ function Frame:UpdateBags()
 	end
 end
 
-function Frame:UpdateItemContainer(force)
+function FrameMixin:UpdateItemContainer(force)
 	local width = self:GetWidth() + ITEM_CONTAINER_OFFSET_W
 	local height = self:GetHeight() + ITEM_CONTAINER_OFFSET_H
 	if self.settings.showBags then
@@ -396,7 +394,7 @@ function Frame:UpdateItemContainer(force)
 	end
 end
 
-function Frame:Update()
+function FrameMixin:Update()
 	self:UpdateBags()
 	self.itemContainer:UpdateBags()
 	self:UpdateTitleText()
@@ -413,13 +411,13 @@ function Frame:Update()
 	self.cachedView = self:IsCached()
 end
 
-function Frame:UpdateCachedView()
+function FrameMixin:UpdateCachedView()
 	if self.cachedView ~= self:IsCached() then
 		self:Update()
 	end
 end
 
-function Frame:ToggleFrame(auto)
+function FrameMixin:ToggleFrame(auto)
 	if self:IsShown() then
 		self:HideFrame(auto)
 	else
@@ -427,7 +425,7 @@ function Frame:ToggleFrame(auto)
 	end
 end
 
-function Frame:ShowFrame(auto)
+function FrameMixin:ShowFrame(auto)
 	if self:IsCached() and not ItemCache:HasCache() then
 		Inventorian:Print("No Cache available, please enable BagBrother to enable this functionality")
 		return
@@ -444,7 +442,7 @@ function Frame:ShowFrame(auto)
 	self:UpdateCachedView()
 end
 
-function Frame:HideFrame(auto)
+function FrameMixin:HideFrame(auto)
 	if self:IsShown() then
 		if not auto or self.autoShown then
 			self:Hide()
@@ -516,7 +514,7 @@ do
 		return PlayerDropdown
 	end
 
-	function Frame:TogglePlayerDropdown(anchor, offsetX, offsetY)
+	function FrameMixin:TogglePlayerDropdown(anchor, offsetX, offsetY)
 		if ItemCache:HasCache() then
 			ActiveFrame = self
 			ToggleDropDownMenu(1, nil, GetPlayerDropdown(), anchor, offsetX, offsetY)
@@ -528,7 +526,7 @@ end
 -----------------------------------------------------------------------
 -- Various information getters
 
-function Frame:SetPlayer(player)
+function FrameMixin:SetPlayer(player)
 	if not player or not ItemCache:IsPlayerCached(player) then
 		self.playerName = nil
 	else
@@ -537,7 +535,7 @@ function Frame:SetPlayer(player)
 	self:Update()
 end
 
-function Frame:GetPlayerName()
+function FrameMixin:GetPlayerName()
 	local name = self.playerName or PLAYER_NAME
 
 	-- only return the realm name if its not the current realm
@@ -548,18 +546,18 @@ function Frame:GetPlayerName()
 	return name
 end
 
-function Frame:IsCached()
+function FrameMixin:IsCached()
 	return ItemCache:IsPlayerCached(self:GetPlayerName()) or ((self:IsBank() or self:IsReagentBank()) and not self:AtBank())
 end
 
-function Frame:IsBank()
+function FrameMixin:IsBank()
 	return self.currentConfig.isBank
 end
 
-function Frame:IsReagentBank()
+function FrameMixin:IsReagentBank()
 	return self.currentConfig.isReagentBank
 end
 
-function Frame:AtBank()
+function FrameMixin:AtBank()
 	return Events.atBank
 end
