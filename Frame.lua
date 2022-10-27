@@ -50,6 +50,8 @@ function Inventorian.Frame:Create(name, titleText, settings, config)
 		frame:SetResizeBounds(250, 260)
 	end
 
+	frame.PortraitContainer.portrait:SetPoint("TOPLEFT", -5, 8)
+
 	-- components
 	frame.itemContainer = Inventorian.ItemContainer:Create(frame)
 	frame.itemContainer:SetPoint("TOPLEFT", 10, -68)
