@@ -197,7 +197,7 @@
 				</Anchors>
 
 				<Layers>
-					<Layer level="BACKGROUND">
+					<Layer level="ARTWORK">
 						<Texture parentKey="Icon" name="$parentIcon" file="Interface\Buttons\Button-Backpack-Up">
 							<Size x="20" y="20"/>
 							<Anchors>
