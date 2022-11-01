@@ -173,6 +173,7 @@ function Events:BAG_NEW_ITEMS_UPDATED(event)
 	for bag = 0, NUM_BAG_SLOTS do
 		self:UpdateItems(bag)
 	end
+	self:UpdateItems(KEYRING_CONTAINER)
 end
 
 function Events:PLAYERBANKSLOTS_CHANGED()
