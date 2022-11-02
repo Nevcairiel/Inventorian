@@ -75,6 +75,7 @@ read_globals = {
 	"UIParent",
 
 	-- FrameXML API
+	"ClearItemButtonOverlay",
 	"CloseBankFrame",
 	"CloseDropDownMenus",
 	"ContainerFrame_CanContainerUseFilterMenu",
