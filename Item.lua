@@ -154,12 +154,11 @@ function InventorianItemMixin:SetItem(itemLink)
 end
 
 function InventorianItemMixin:SetTexture(icon)
+	SetItemButtonTexture(self, icon)
 	if icon then
-		SetItemButtonTexture(self, icon)
 		self.icon:SetAlpha(1)
 	else
-		SetItemButtonTexture(self, [[Interface\PaperDoll\UI-Backpack-EmptySlot]])
-		self.icon:SetAlpha(0.66)
+		self.icon:SetAlpha(0.8)
 	end
 end
 
