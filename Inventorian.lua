@@ -62,6 +62,8 @@ function Inventorian:OnEnable()
 	self:SetupBagHooks()
 
 	self:RegisterChatCommand("inventorian", "HandleSlash")
+
+	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_EQUIP_REAGENT_BAG, true);
 end
 
 function Inventorian:HandleSlash(cmd)

@@ -62,6 +62,7 @@ read_globals = {
 	"PutItemInBag",
 	"ReagentBankButtonIDToInvSlotID",
 	"ResetCursor",
+	"SetCVarBitfield",
 	"UnitName",
 
 	-- FrameXML frames
@@ -142,6 +143,8 @@ read_globals = {
 	"TEXTURE_ITEM_QUEST_BORDER",
 	"UIDROPDOWNMENU_MENU_VALUE",
 	"YES",
+
+	"LE_FRAME_TUTORIAL_EQUIP_REAGENT_BAG",
 
 	-- compat shim
 	"SetBankAutosortDisabled",
