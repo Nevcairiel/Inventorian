@@ -1,30 +1,4 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-	<Button name="InventorianFrameTabButtonTemplate" inherits="PanelTabButtonTemplate" virtual="true">
-		<Scripts>
-			<OnLoad>
-				self:SetFrameLevel(self:GetFrameLevel() + 4)
-				self:RegisterEvent("DISPLAY_SIZE_CHANGED")
-			</OnLoad>
-			<OnEvent>
-				if (self:IsVisible()) then
-					PanelTemplates_TabResize(self, 0, nil, 36, self:GetParent().maxTabWidth or 88)
-				end
-			</OnEvent>
-			<OnShow>
-				PanelTemplates_TabResize(self, 0, nil, 36, self:GetParent().maxTabWidth or 88)
-			</OnShow>
-			<OnEnter>
-				local buttonText = _G[self:GetName().."Text"]
-				if (buttonText and buttonText:IsTruncated()) then
-					GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-					GameTooltip:SetText(buttonText:GetText())
-				end
-			</OnEnter>
-			<OnLeave>
-				GameTooltip_Hide()
-			</OnLeave>
-		</Scripts>
-	</Button>
 	<Frame name="InventorianFrameTemplate"
 	       resizable="true" clampedToScreen="true" enableMouse="true" movable="true"
 	       topLevel="true" frameStrata="HIGH" parent="UIParent" hidden="true"

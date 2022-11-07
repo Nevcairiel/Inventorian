@@ -138,9 +138,14 @@ function FrameMixin:CreateTabs()
 	local numConfigs = #self.config
 	if numConfigs <= 1 then return end
 
+	-- tab settings
+	self.tabPadding = 0
+	self.minTabWidth = 62
+	self.maxTabWidth = 88
+
 	self.tabs = {}
 	for i = 1, numConfigs do
-		local tab = CreateFrame("Button", self:GetName() .. "Tab" .. i, self, "InventorianFrameTabButtonTemplate")
+		local tab = CreateFrame("Button", self:GetName() .. "Tab" .. i, self, "PanelTabButtonTemplate")
 		tab:SetScript("OnClick", OnTabClick)
 		tab:SetID(i)
 		tab:SetText(self.config[i].title)
@@ -148,7 +153,7 @@ function FrameMixin:CreateTabs()
 		if i > 1 then
 			tab:SetPoint("LEFT", self.tabs[i-1], "RIGHT", -16, 0)
 		else
-			tab:SetPoint("CENTER", self, "BOTTOMLEFT", 50, -14)
+			tab:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 19, -30)
 		end
 
 		self.tabs[i] = tab
