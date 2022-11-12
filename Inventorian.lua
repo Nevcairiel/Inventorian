@@ -151,6 +151,10 @@ function Inventorian:SetupBagHooks()
 
 	-- noop out container anchor update
 	UpdateContainerFrameAnchors = function() end
+
+	-- stop the bank from being a UI Panel
+	BankFrame:SetAttribute("UIPanelLayout-defined", true)
+	BankFrame:SetAttribute("UIPanelLayout-area", nil)
 end
 
 function Inventorian:PLAYER_INTERACTION_MANAGER_FRAME_SHOW(event, id)
