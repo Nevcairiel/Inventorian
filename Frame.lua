@@ -63,6 +63,7 @@ function Inventorian.Frame:Create(name, titleText, settings, config)
 	frame.DepositButton:SetSize(256, 24)
 	frame.DepositButton:SetPoint("BOTTOM", 0, 31)
 	frame.DepositButton:SetScript("OnClick", OnDepositClick)
+	frame.DepositButton:SetFrameLevel(frame:GetFrameLevel() + 5)
 	frame.DepositButton:Hide()
 
 	frame:CreateTabs()
