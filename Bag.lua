@@ -19,40 +19,11 @@ do
 		ContainerFrameSettingsManager:SetFilterFlag(bagID, filterID, value)
 	end
 
-	local function AddButtons_BagCleanup(containerFrame, level)
-		local info = UIDropDownMenu_CreateInfo()
-
-		info.text = BAG_FILTER_CLEANUP
-		info.isTitle = 1
-		info.notCheckable = 1
-		UIDropDownMenu_AddButton(info, level)
-
-		local id = containerFrame:GetBagID()
-
-		info = UIDropDownMenu_CreateInfo()
-		info.text = BAG_FILTER_IGNORE
-		info.func = function(_, _, _, value)
-			if id == -1 then -- bank
-				C_Container.SetBankAutosortDisabled(not value)
-			elseif id == 0 then -- backback
-				C_Container.SetBackpackAutosortDisabled(not value)
-			else
-				C_Container.SetBagSlotFlag(id, Enum.BagSlotFlags.DisableAutoSort, not value)
-			end
-		end
-
-		if id == -1 then -- bank
-			info.checked = C_Container.GetBankAutosortDisabled()
-		elseif id == 0 then -- backpack
-			info.checked = C_Container.GetBackpackAutosortDisabled()
-		else
-			info.checked = C_Container.GetBagSlotFlag(id, Enum.BagSlotFlags.DisableAutoSort)
-		end
-
-		UIDropDownMenu_AddButton(info, level);
-	end
-
 	local function AddButtons_BagFilters(bagID, level)
+		if not ContainerFrame_CanContainerUseFilterMenu(bagID) then
+			return
+		end
+
 		local info = UIDropDownMenu_CreateInfo()
 		info.text = BAG_FILTER_ASSIGN_TO
 		info.isTitle = 1
@@ -73,19 +44,43 @@ do
 		end
 	end
 
+	local function AddButtons_BagCleanup(bagID, level)
+		local info = UIDropDownMenu_CreateInfo()
+
+		info.text = BAG_FILTER_CLEANUP
+		info.isTitle = 1
+		info.notCheckable = 1
+		UIDropDownMenu_AddButton(info, level)
+
+		info = UIDropDownMenu_CreateInfo()
+		info.text = BAG_FILTER_IGNORE
+		info.func = function(_, _, _, value)
+			if bagID == -1 then -- bank
+				C_Container.SetBankAutosortDisabled(not value)
+			elseif bagID == 0 then -- backback
+				C_Container.SetBackpackAutosortDisabled(not value)
+			else
+				C_Container.SetBagSlotFlag(bagID, Enum.BagSlotFlags.DisableAutoSort, not value)
+			end
+		end
+
+		if bagID == -1 then -- bank
+			info.checked = C_Container.GetBankAutosortDisabled()
+		elseif bagID == 0 then -- backpack
+			info.checked = C_Container.GetBackpackAutosortDisabled()
+		else
+			info.checked = C_Container.GetBagSlotFlag(bagID, Enum.BagSlotFlags.DisableAutoSort)
+		end
+
+		UIDropDownMenu_AddButton(info, level)
+	end
+
 	local ContainerFrameFilterDropDown_Initialize = function(self, level, addFiltersForAllBags)
 		local frame = self:GetParent()
-		local id = frame:GetID()
+		local bagID = frame:GetID()
 
-		if id < 0 then
-			return
-		end
-
-		if ContainerFrame_CanContainerUseFilterMenu(id) then
-			AddButtons_BagFilters(id, level)
-		end
-
-		AddButtons_BagCleanup(frame, level)
+		AddButtons_BagFilters(bagID, level)
+		AddButtons_BagCleanup(bagID, level)
 	end
 
 	ContainerFrameFilterDropDown_OnLoad = function(dropdown)
