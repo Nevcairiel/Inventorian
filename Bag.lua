@@ -12,12 +12,6 @@ Inventorian.Bag.pool = {}
 
 local NUM_TOTAL_EQUIPPED_BAG_SLOTS = NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
 
-local SetBankAutosortDisabled = C_Container.SetBankAutosortDisabled or SetBankAutosortDisabled
-local SetBackpackAutosortDisabled = C_Container.SetBackpackAutosortDisabled or SetBackpackAutosortDisabled
-local GetBankAutosortDisabled = C_Container.GetBankAutosortDisabled or GetBankAutosortDisabled
-local GetBackpackAutosortDisabled = C_Container.GetBackpackAutosortDisabled or GetBackpackAutosortDisabled
-local ContainerIDToInventoryID = C_Container.ContainerIDToInventoryID or ContainerIDToInventoryID
-
 local ContainerFrameFilterDropDown_OnLoad
 do
 	local function OnBagFilterClicked(bagID, filterID, value)
@@ -39,18 +33,18 @@ do
 		info.text = BAG_FILTER_IGNORE
 		info.func = function(_, _, _, value)
 			if id == -1 then -- bank
-				SetBankAutosortDisabled(not value)
+				C_Container.SetBankAutosortDisabled(not value)
 			elseif id == 0 then -- backback
-				SetBackpackAutosortDisabled(not value)
+				C_Container.SetBackpackAutosortDisabled(not value)
 			else
 				C_Container.SetBagSlotFlag(id, Enum.BagSlotFlags.DisableAutoSort, not value)
 			end
 		end
 
 		if id == -1 then -- bank
-			info.checked = GetBankAutosortDisabled()
+			info.checked = C_Container.GetBankAutosortDisabled()
 		elseif id == 0 then -- backpack
-			info.checked = GetBackpackAutosortDisabled()
+			info.checked = C_Container.GetBackpackAutosortDisabled()
 		else
 			info.checked = C_Container.GetBagSlotFlag(id, Enum.BagSlotFlags.DisableAutoSort)
 		end
@@ -461,7 +455,7 @@ function BagMixin:IsPurchasable()
 end
 
 function BagMixin:GetInventorySlot()
-	return self:IsCustomSlot() and ContainerIDToInventoryID(self:GetID()) or nil
+	return self:IsCustomSlot() and C_Container.ContainerIDToInventoryID(self:GetID()) or nil
 end
 
 function BagMixin:GetInfo()

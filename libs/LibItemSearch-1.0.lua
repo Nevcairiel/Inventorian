@@ -17,7 +17,7 @@
 		<op>				:=  : | = | == | != | ~= | < | > | <= | >=
 --]]
 
-local Lib = LibStub:NewLibrary('LibItemSearch-Inventorian-1.0', 1)
+local Lib = LibStub:NewLibrary('LibItemSearch-Inventorian-1.0', 2)
 if not Lib then
   return
 else

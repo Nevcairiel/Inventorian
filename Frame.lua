@@ -12,10 +12,6 @@ local ITEM_CONTAINER_OFFSET_W = -22
 local ITEM_CONTAINER_OFFSET_H = -95
 local TOKEN_CONTAINER_HEIGHT = 20
 
-local SortReagentBankBags = C_Container.SortReagentBankBags or SortReagentBankBags
-local SortBankBags = C_Container.SortBankBags or SortBankBags
-local SortBags = C_Container.SortBags or SortBags
-
 local PLAYER_NAME = string.format("%s - %s", UnitName("player"), GetRealmName())
 
 MoneyTypeInfo["INVENTORIAN"] = {
@@ -253,11 +249,11 @@ function FrameMixin:OnSortClick(frame, button)
 	if button == "LeftButton" then
 		PlaySound(SOUNDKIT.UI_BAG_SORTING_01)
 		if self:IsReagentBank() then
-			SortReagentBankBags()
+			C_Container.SortReagentBankBags()
 		elseif self:IsBank() then
-			SortBankBags()
+			C_Container.SortBankBags()
 		else
-			SortBags()
+			C_Container.SortBags()
 		end
 	elseif button == "RightButton" then
 		OnDepositClick(frame)

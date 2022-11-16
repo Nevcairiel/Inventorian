@@ -15,31 +15,20 @@ along with the addon. If not, see <http://www.gnu.org/licenses/gpl-3.0.txt>.
 This file is part of BagBrother.
 --]]
 
-local GetContainerNumSlots = C_Container.GetContainerNumSlots or GetContainerNumSlots
-local C_Container_GetContainerItemInfo = C_Container.GetContainerItemInfo
-if not C_Container_GetContainerItemInfo then
-	C_Container_GetContainerItemInfo = function(bag, slot)
-		local icon, itemCount, locked, quality, readable, lootable, itemLink, isFiltered, noValue, itemID, isBound = GetContainerItemInfo(bag, slot)
-		if not icon then return nil end
-
-		return { iconFileID = icon, stackCount = itemCount, isLocked = locked, quality = quality, isReadable = readable, hasLoot = lootable, hyperlink = itemLink, isFiltered = isFiltered, hasNoValue = noValue, itemID = itemID, isBound = isBound }
-	end
-end
-local ContainerIDToInventoryID = C_Container.ContainerIDToInventoryID or ContainerIDToInventoryID
 
 function BagBrother:SaveBag(bag, onlyItems)
-	local size = GetContainerNumSlots(bag)
+	local size = C_Container.GetContainerNumSlots(bag)
 	if size > 0 then
 		local items = {}
 		for slot = 1, size do
-			local info = C_Container_GetContainerItemInfo(bag, slot)
+			local info = C_Container.GetContainerItemInfo(bag, slot)
 			if info then
 				items[slot] = self:ParseItem(info.hyperlink, info.stackCount)
 			end
 		end
 
 		if not onlyItems then
-			self:SaveEquip(ContainerIDToInventoryID(bag), size)
+			self:SaveEquip(C_Container.ContainerIDToInventoryID(bag), size)
 		end
 
 		self.Player[bag] = items

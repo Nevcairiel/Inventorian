@@ -145,19 +145,4 @@ read_globals = {
 	"YES",
 
 	"LE_FRAME_TUTORIAL_EQUIP_REAGENT_BAG",
-
-	-- compat shim
-	"SetBankAutosortDisabled",
-	"SetBackpackAutosortDisabled",
-	"GetBankAutosortDisabled",
-	"GetBackpackAutosortDisabled",
-	"ContainerIDToInventoryID",
-	"GetContainerItemInfo",
-	"GetContainerItemCooldown",
-	"GetContainerItemQuestInfo",
-	"GetContainerNumSlots",
-	"SortReagentBankBags",
-	"SortBankBags",
-	"SortBags",
-	"IsBattlePayItem",
 }
