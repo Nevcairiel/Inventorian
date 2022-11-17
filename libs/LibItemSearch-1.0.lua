@@ -17,7 +17,7 @@
 		<op>				:=  : | = | == | != | ~= | < | > | <= | >=
 --]]
 
-local Lib = LibStub:NewLibrary('LibItemSearch-Inventorian-1.0', 2)
+local Lib = LibStub:NewLibrary('LibItemSearch-Inventorian-1.0', 3)
 if not Lib then
   return
 else
@@ -320,8 +320,6 @@ Lib:RegisterTypedSearch{
 --[[ Tooltip searches ]]--
 
 local tooltipCache = setmetatable({}, {__index = function(t, k) local v = {} t[k] = v return v end})
-local tooltipScanner = _G['LibItemSearchTooltipScanner'] or CreateFrame('GameTooltip', 'LibItemSearchTooltipScanner', UIParent, 'GameTooltipTemplate')
-tooltipScanner:SetOwner(UIParent, 'ANCHOR_NONE')
 
 local function stripColor(text)
 	if not text or type(text) ~= "string" then return nil end
@@ -345,14 +343,13 @@ local function link_FindSearchInTooltip(itemLink, search, nolimit)
 		return cachedResult
 	end
 
-	--no match?, pull in the resut from tooltip parsing
-	tooltipScanner:SetOwner(UIParent, 'ANCHOR_NONE')
-	tooltipScanner:SetHyperlink(itemLink)
+	local info = C_TooltipInfo.GetHyperlink(itemLink, nil, nil, true)
 
 	local result = false
-	local maxLines = nolimit and tooltipScanner:NumLines() or math.min(4, tooltipScanner:NumLines())
+	local maxLines = nolimit and #info.lines or math.min(4, #info.lines)
 	for i = 2, maxLines do
-		local text = stripColor(_G[tooltipScanner:GetName() .. 'TextLeft' .. i]:GetText())
+		TooltipUtil.SurfaceArgs(info.lines[i])
+		local text = info.lines[i].leftText
 		if text == search then
 			result = true
 			break
