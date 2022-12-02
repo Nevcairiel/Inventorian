@@ -17,7 +17,7 @@
 		<op>				:=  : | = | == | != | ~= | < | > | <= | >=
 --]]
 
-local Lib = LibStub:NewLibrary('LibItemSearch-Inventorian-1.0', 3)
+local Lib = LibStub:NewLibrary('LibItemSearch-Inventorian-1.0', 4)
 if not Lib then
   return
 else
@@ -439,7 +439,7 @@ Lib:RegisterTypedSearch{
 	onlyTags = true,
 
 	canSearch = function(self, _, search)
-		return not operator and search
+		return search
 	end,
 
 	findItem = function(self, itemLink, _, search)
@@ -449,12 +449,13 @@ Lib:RegisterTypedSearch{
 		end
 
 		-- load tooltip
-		tooltipScanner:SetOwner(UIParent, 'ANCHOR_NONE')
-		tooltipScanner:SetHyperlink(itemLink)
+		local info = C_TooltipInfo.GetHyperlink(itemLink, nil, nil, true)
 
 		local i = 1
-		while i <= tooltipScanner:NumLines() do
-			local text =  _G[tooltipScanner:GetName() .. 'TextLeft' .. i]:GetText():lower()
+		local maxLines = #info.lines
+		while i <= maxLines do
+			TooltipUtil.SurfaceArgs(info.lines[i])
+			local text = info.lines[i].leftText:lower()
 			if text:find(search) then
 				return true
 			end
