@@ -37,14 +37,26 @@ function Inventorian.Frame:Create(name, titleText, settings, config)
 	frame.bagButtons = {}
 
 	if frame:IsBank() then
-		frame:SetMinResize(275, 325)
+		if frame.SetResizeBounds then
+			frame:SetResizeBounds(275, 325)
+		else
+			frame:SetMinResize(275, 325)
+		end
 		frame.KeyRingButton:Hide()
 	else
-		frame:SetMinResize(250, 260)
+		if frame.SetResizeBounds then
+			frame:SetResizeBounds(250, 260)
+		else
+			frame:SetMinResize(250, 260)
+		end
 	end
 
 	if frame:IsKeyring() then
-		frame:SetMinResize(200, 200)
+		if frame.SetResizeBounds then
+			frame:SetResizeBounds(200, 200)
+		else
+			frame:SetMinResize(200, 200)
+		end
 		frame.KeyRingButton:Hide()
 
 		frame.Money:Hide()
