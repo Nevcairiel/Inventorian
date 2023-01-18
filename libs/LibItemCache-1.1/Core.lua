@@ -15,7 +15,7 @@ along with this library. If not, see <http://www.gnu.org/licenses/>.
 This file is part of LibItemCache.
 --]]
 
-local Lib = LibStub:NewLibrary('LibItemCache-1.1', 24)
+local Lib = LibStub:NewLibrary('LibItemCache-1.1-Classic', 25)
 if not Lib then
 	return
 end
@@ -29,6 +29,18 @@ local Cache = function(method, ...)
 	end
 end
 
+local ContainerIDToInventoryID = C_Container.ContainerIDToInventoryID or ContainerIDToInventoryID
+local GetContainerNumFreeSlots = C_Container.GetContainerNumFreeSlots or GetContainerNumFreeSlots
+local GetContainerNumSlots = C_Container.GetContainerNumSlots or GetContainerNumSlots
+local C_Container_GetContainerItemInfo = C_Container.GetContainerItemInfo
+if not C_Container_GetContainerItemInfo then
+	C_Container_GetContainerItemInfo = function(bag, slot)
+		local icon, itemCount, locked, quality, readable, lootable, itemLink, isFiltered, noValue, itemID, isBound = GetContainerItemInfo(bag, slot)
+		if not icon then return nil end
+
+		return { iconFileID = icon, stackCount = itemCount, isLocked = locked, quality = quality, isReadable = readable, hasLoot = lootable, hyperlink = itemLink, isFiltered = isFiltered, hasNoValue = noValue, itemID = itemID, isBound = isBound }
+	end
+end
 
 --[[ Startup ]]--
 
@@ -211,12 +223,13 @@ function Lib:GetItemInfo(player, bag, slot)
 		return icon, count, locked, quality, nil, nil, link
 
 	else
-		local icon, count, locked, quality, readable, lootable, link = GetContainerItemInfo(bag, slot)
-		if link and quality < 0 then
-			quality = self:GetItemQuality(link)
+		local info = C_Container_GetContainerItemInfo(bag, slot)
+		if not info then return end
+		if info.hyperlink and not info.quality or info.quality < 0 then
+			info.quality = self:GetItemQuality(info.hyperlink)
 		end
 
-		return icon, count, locked, quality, readable, lootable, link
+		return info.iconFileID, info.stackConut, info.isLocked, info.quality, info.isReadable, info.hasLoot, info.hyperlink
 	end
 end
 

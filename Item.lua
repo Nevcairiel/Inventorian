@@ -1,11 +1,23 @@
 local _, Inventorian = ...
 local L = LibStub("AceLocale-3.0"):GetLocale("Inventorian")
 
-local ItemCache = LibStub("LibItemCache-1.1")
+local ItemCache = LibStub("LibItemCache-1.1-Classic")
 local ItemSearch = LibStub("LibItemSearch-Inventorian-1.0")
 
 local Item = CreateFrame("Button")
 local Item_MT = {__index = Item}
+
+local C_Container_GetContainerItemInfo = C_Container.GetContainerItemInfo
+if not C_Container_GetContainerItemInfo then
+	C_Container_GetContainerItemInfo = function(bag, slot)
+		local icon, itemCount, locked, quality, readable, lootable, itemLink, isFiltered, noValue, itemID, isBound = GetContainerItemInfo(bag, slot)
+		if not icon then return nil end
+
+		return { iconFileID = icon, stackCount = itemCount, isLocked = locked, quality = quality, isReadable = readable, hasLoot = lootable, hyperlink = itemLink, isFiltered = isFiltered, hasNoValue = noValue, itemID = itemID, isBound = isBound }
+	end
+end
+
+local IsBattlePayItem = C_Container.IsBattlePayItem or IsBattlePayItem
 
 Inventorian.Item = {}
 Inventorian.Item.prototype = Item
@@ -404,7 +416,18 @@ function Item:GetInfo()
 		icon, count, locked, quality, readable, lootable, link = ItemCache:GetItemInfo(player, self.bag, self.slot)
 	else
 		-- LibItemCache doesn't provide noValue or itemID, so fallback to base API
-		icon, count, locked, quality, readable, lootable, link, _, noValue, itemID = GetContainerItemInfo(self.bag, self.slot)
+		local info = C_Container_GetContainerItemInfo(self.bag, self.slot)
+		if info then
+			icon = info.iconFileID
+			count = info.stackCount
+			locked = info.isLocked
+			quality = info.quality
+			readable = info.isReadable
+			lootable = info.hasLoot
+			link = info.hyperlink
+			noValue = info.hasNoValue
+			itemID = info.itemID
+		end
 		if link and quality < 0 then
 			quality = select(3, GetItemInfo(link))
 		end
@@ -427,7 +450,7 @@ end
 
 function Item:IsNew()
 	if not self:IsCached() then
-		return C_NewItems.IsNewItem(self.bag, self.slot), IsBattlePayItem(self.bag, self.slot)
+		return C_NewItems.IsNewItem(self.bag, self.slot), nil --IsBattlePayItem(self.bag, self.slot)
 	end
 end
 

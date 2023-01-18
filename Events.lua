@@ -24,7 +24,20 @@ local _, Inventorian = ...
 local Events = Inventorian:NewModule("Events", "AceEvent-3.0")
 Events.Fire = LibStub("CallbackHandler-1.0"):New(Events, "Register", "Unregister", "UnregisterAll").Fire
 
-local ItemCache = LibStub("LibItemCache-1.1")
+local ItemCache = LibStub("LibItemCache-1.1-Classic")
+
+local C_Container_GetContainerItemInfo = C_Container.GetContainerItemInfo
+if not C_Container_GetContainerItemInfo then
+	C_Container_GetContainerItemInfo = function(bag, slot)
+		local icon, itemCount, locked, quality, readable, lootable, itemLink, isFiltered, noValue, itemID, isBound = GetContainerItemInfo(bag, slot)
+		if not icon then return nil end
+
+		return { iconFileID = icon, stackCount = itemCount, isLocked = locked, quality = quality, isReadable = readable, hasLoot = lootable, hyperlink = itemLink, isFiltered = isFiltered, hasNoValue = noValue, itemID = itemID, isBound = isBound }
+	end
+end
+
+local GetContainerItemCooldown = C_Container.GetContainerItemCooldown or GetContainerItemCooldown
+local GetContainerNumSlots = C_Container.GetContainerNumSlots or GetContainerNumSlots
 
 local function ToIndex(bag, slot)
 	return (bag < 0 and bag * 100 - slot) or (bag * 100 + slot)
@@ -53,23 +66,25 @@ function Events:GenericEvent(event, ...)
 	self:Fire(event, ...)
 end
 
+local emptyItemTbl = {}
+
 -- items
 function Events:AddItem(bag, slot)
 	local index = ToIndex(bag,slot)
 	if not slots[index] then slots[index] = {} end
 
 	local data = slots[index]
-	local texture, count, locked, quality, readable, lootable, link = GetContainerItemInfo(bag, slot)
+	local info = C_Container_GetContainerItemInfo(bag, slot) or emptyItemTbl
 	local start, duration, enable = GetContainerItemCooldown(bag, slot)
-	local onCooldown = (start > 0 and duration > 0 and enable > 0)
+	local onCooldown = (start and start > 0 and duration and duration > 0 and enable and enable > 0)
 
-	data[1] = link
-	data[2] = count
-	data[3] = locked
+	data[1] = info.hyperlink
+	data[2] = info.stackCount
+	data[3] = info.isLocked
 	data[4] = onCooldown
 	data[5] = start
 
-	self:Fire("ITEM_SLOT_ADD", bag, slot, link, count, locked, onCooldown)
+	self:Fire("ITEM_SLOT_ADD", bag, slot, info.hyperlink, info.stackCount, info.isLocked, onCooldown)
 end
 
 function Events:RemoveItem(bag, slot)
@@ -90,18 +105,18 @@ function Events:UpdateItem(bag, slot)
 		local prevLink = data[1]
 		local prevCount = data[2]
 
-		local texture, count, locked, quality, readable, lootable, link = GetContainerItemInfo(bag, slot)
+		local info = C_Container_GetContainerItemInfo(bag, slot) or emptyItemTbl
 		local start, duration, enable = GetContainerItemCooldown(bag, slot)
-		local onCooldown = (start > 0 and duration > 0 and enable > 0)
+		local onCooldown = (start and start > 0 and duration and duration > 0 and enable and enable > 0)
 
-		if prevLink ~= link or prevCount ~= count then
-			data[1] = link
-			data[2] = count
-			data[3] = locked
+		if prevLink ~= info.hyperlink or prevCount ~= info.stackCount then
+			data[1] = info.hyperlink
+			data[2] = info.stackCount
+			data[3] = info.isLocked
 			data[4] = onCooldown
 			data[5] = start
 
-			self:Fire("ITEM_SLOT_UPDATE", bag, slot, link, count, locked, onCooldown)
+			self:Fire("ITEM_SLOT_UPDATE", bag, slot,  info.hyperlink, info.stackCount, info.isLocked, onCooldown)
 		end
 	end
 end
@@ -118,7 +133,7 @@ function Events:UpdateCooldown(bag, slot)
 
 	if data and data[1] then
 		local start, duration, enable = GetContainerItemCooldown(bag, slot)
-		local onCooldown = (start > 0 and duration > 0 and enable > 0)
+		local onCooldown = (start and start > 0 and duration and duration > 0 and enable and enable > 0)
 
 		if data[4] ~= onCooldown or (onCooldown and data[5] ~= start) then
 			data[4] = onCooldown

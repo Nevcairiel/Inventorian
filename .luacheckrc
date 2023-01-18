@@ -36,6 +36,7 @@ read_globals = {
 
 	-- API functions
 	"BankButtonIDToInvSlotID",
+	"C_Container",
 	"C_Item",
 	"C_NewItems",
 	"ContainerIDToInventoryID",
