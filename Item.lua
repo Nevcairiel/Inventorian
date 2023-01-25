@@ -428,7 +428,7 @@ function Item:GetInfo()
 			noValue = info.hasNoValue
 			itemID = info.itemID
 		end
-		if link and quality < 0 then
+		if link and (not quality or quality < 0) then
 			quality = select(3, GetItemInfo(link))
 		end
 	end
