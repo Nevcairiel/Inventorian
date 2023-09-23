@@ -105,7 +105,7 @@ function Bag:OnEvent(event, ...)
 	elseif not self:IsCached() then
 		if event == "ITEM_LOCK_CHANGED" then
 			self:UpdateLock()
-		elseif event == "CURSOR_UPDATE" or event == "CURSOR_CHANGED" then
+		elseif event == "CURSOR_CHANGED" then
 			self:UpdateCursor()
 		elseif event == "BAG_UPDATE" or event == "PLAYERBANKSLOTS_CHANGED" then
 			self:Update()
