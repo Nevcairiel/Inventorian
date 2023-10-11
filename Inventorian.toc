@@ -1,4 +1,4 @@
-## Interface: 100100
+## Interface: 100107
 
 ## Title: Inventorian
 ## Notes: One large inventory.
