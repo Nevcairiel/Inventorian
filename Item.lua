@@ -394,7 +394,7 @@ function InventorianItemMixin:GetInfo()
 	if self:IsCached() then
 		icon, count, locked, quality, readable, lootable, link = ItemCache:GetItemInfo(player, self.bag, self.slot)
 		if link then
-			itemID = GetItemInfoInstant(link)
+			itemID = C_Item.GetItemInfoInstant(link)
 		end
 	else
 		-- LibItemCache doesn't provide noValue or itemID, so fallback to base API
@@ -412,12 +412,12 @@ function InventorianItemMixin:GetInfo()
 			isBound = info.isBound
 		end
 		if link and (not quality or quality < 0) then
-			quality = select(3, GetItemInfo(link))
+			quality = C_Item.GetItemQualityByID(link)
 		end
 	end
 
 	if not icon and (itemID or link) then
-		self.itemID = itemID or GetItemInfoInstant(link)
+		self.itemID = itemID or C_Item.GetItemInfoInstant(link)
 		if self:IsCached() then
 			self:RegisterEvent("ITEM_DATA_LOAD_RESULT")
 			C_Item.RequestLoadItemDataByID(self.itemID)

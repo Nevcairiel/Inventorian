@@ -17,7 +17,7 @@
 		<op>				:=  : | = | == | != | ~= | < | > | <= | >=
 --]]
 
-local Lib = LibStub:NewLibrary('LibItemSearch-Inventorian-1.0', 4)
+local Lib = LibStub:NewLibrary('LibItemSearch-Inventorian-1.0', 5)
 if not Lib then
   return
 else
@@ -207,7 +207,7 @@ Lib:RegisterTypedSearch{
 	end,
 
 	findItem = function(self, item, _, search)
-		local name = GetItemInfo(item)
+		local name = C_Item.GetItemInfo(item)
 		return match(search, name)
 	end
 }
@@ -224,7 +224,7 @@ Lib:RegisterTypedSearch{
 	end,
 
 	findItem = function(self, item, _, search)
-		local type, subType, _, equipSlot = select(6, GetItemInfo(item))
+		local type, subType, _, equipSlot = select(6, C_Item.GetItemInfo(item))
 		return match(search, type, subType, _G[equipSlot])
 	end
 }
@@ -250,7 +250,7 @@ Lib:RegisterTypedSearch{
 	end,
 
 	findItem = function(self, link, operator, num)
-		local quality = select(3, GetItemInfo(link))
+		local quality = select(3, C_Item.GetItemInfo(link))
 		return compare(operator, quality, num)
 	end,
 }
@@ -267,7 +267,7 @@ Lib:RegisterTypedSearch{
 	end,
 
 	findItem = function(self, link, operator, num)
-		local lvl = select(4, GetItemInfo(link))
+		local lvl = select(4, C_Item.GetItemInfo(link))
 		if lvl then
 			return compare(operator, lvl, num)
 		end
@@ -285,7 +285,7 @@ Lib:RegisterTypedSearch{
 	end,
 
 	findItem = function(self, link, operator, num)
-		local lvl = select(5, GetItemInfo(link))
+		local lvl = select(5, C_Item.GetItemInfo(link))
 		if lvl then
 			return compare(operator, lvl, num)
 		end
@@ -312,7 +312,7 @@ Lib:RegisterTypedSearch{
 	end,
 
 	findItem = function(self, link, operator, num)
-		local isCrafting = select(17, GetItemInfo(link))
+		local isCrafting = select(17, C_Item.GetItemInfo(link))
 		return isCrafting
 	end,
 }
@@ -381,7 +381,7 @@ Lib:RegisterTypedSearch{
 		['bop'] = ITEM_BIND_ON_PICKUP,
 		['bou'] = ITEM_BIND_ON_USE,
 		['quest'] = ITEM_BIND_QUEST,
-		[GetItemClassInfo(Enum.ItemClass.Questitem):lower()] = ITEM_BIND_QUEST,
+		[C_Item.GetItemClassInfo(Enum.ItemClass.Questitem):lower()] = ITEM_BIND_QUEST,
 		['boa'] = ITEM_BIND_TO_BNETACCOUNT,
 		['unique'] = ITEM_UNIQUE,
 		[ITEM_UNIQUE:lower()] = ITEM_UNIQUE,
@@ -478,7 +478,7 @@ local function ES_TrySetName(setName, search, exactMatch)
 end
 
 --Addon Support: ItemRack
-if IsAddOnLoaded('ItemRack') then
+if C_AddOns.IsAddOnLoaded('ItemRack') then
 	function ES_FindSets(setList, search, exactMatch)
 		for setName, _ in pairs(ItemRackUser.Sets) do
 			if ES_TrySetName(setName, search, exactMatch) then
@@ -513,7 +513,7 @@ if IsAddOnLoaded('ItemRack') then
 	end
 
 --Addon Support: Wardrobe
-elseif IsAddOnLoaded('Wardrobe') then
+elseif C_AddOns.IsAddOnLoaded('Wardrobe') then
 	function ES_FindSets(setList, search, exactMatch)
 		for _, waOutfit in ipairs(Wardrobe.CurrentConfig.Outfit) do
 			if ES_TrySetName(waOutfit.OutfitName, search, exactMatch) then
@@ -580,7 +580,7 @@ Lib:RegisterTypedSearch{
 
 	findItem = function(self, itemLink, _, search)
 		--this is an item-set search and we know that the only items that can possibly match will be *equippable* items, so we'll short-circuit the response for non-equippable items to speed up searches.
-		if not IsEquippableItem(itemLink) then return false end
+		if not C_Item.IsEquippableItem(itemLink) then return false end
 
 		--default to matching *all* equipment sets if no set name has been provided yet
 		if search == '' then search = '*' end

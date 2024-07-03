@@ -15,7 +15,7 @@ along with this library. If not, see <http://www.gnu.org/licenses/>.
 This file is part of LibItemCache.
 --]]
 
-local Lib = LibStub:NewLibrary('LibItemCache-1.1', 30)
+local Lib = LibStub:NewLibrary('LibItemCache-1.1', 31)
 if not Lib then
 	return
 end
@@ -237,7 +237,7 @@ function Lib:GetItemQuality(link)
 	if link:find('battlepet') then
 		return tonumber(link:match('%d+:%d+:(%d+)'))
 	else
-		return select(3, GetItemInfo(link))
+		return C_Item.GetItemQualityByID(link)
 	end
 end
 
@@ -250,8 +250,8 @@ function Lib:GetItemCounts(player, id)
 	else
 		local vault, guild = select(4, Cache('GetItemCounts', realm, name, id))
 		local id, equip = tonumber(id), 0
-		local total = GetItemCount(id, true)
-		local bags = GetItemCount(id)
+		local total = C_Item.GetItemCount(id, true, false, true)
+		local bags = C_Item.GetItemCount(id)
 
 		for i = 1, INVSLOT_LAST_EQUIPPED do
 			if GetInventoryItemID('player', i) == id then
@@ -280,7 +280,7 @@ function Lib:RestorePetLink(partial)
 	local id, _, quality = strsplit(':', partial)
 	local name, icon = C_PetJournal.GetPetInfoBySpeciesID(id)
 
-	local color = select(4, GetItemQualityColor(quality))
+	local color = select(4, C_Item.GetItemQualityColor(quality))
 	local link = PetLinkFormat:format(color, partial, name)
 
 	return link, icon, tonumber(quality)
@@ -288,8 +288,8 @@ end
 
 function Lib:RestoreItemLink(partial)
 	local partial = 'item:' .. partial
-	local _, link, quality = GetItemInfo(partial)
-	return link or partial, GetItemIcon(link), quality
+	local _, link, quality = C_Item.GetItemInfo(partial)
+	return link or partial, C_Item.GetItemIconByID(link), quality
 end
 
 
