@@ -53,9 +53,6 @@ read_globals = {
 	"GetContainerItemInfo",
 	"GetContainerItemQuestInfo",
 	"GetContainerNumSlots",
-	"GetItemIcon",
-	"GetItemInfo",
-	"GetItemInfoInstant",
 	"GetNumBankSlots",
 	"GetReagentBankCost",
 	"GetRealmName",
@@ -115,6 +112,7 @@ read_globals = {
 	"UISpecialFrames",
 
 	-- FrameXML Constants
+	"Enum",
 	"BACKPACK_CONTAINER",
 	"BACKPACK_TOOLTIP",
 	"BAG_CLEANUP_BAGS",

@@ -145,7 +145,7 @@ function Item:SetItem(itemLink)
 	self.hasItem = itemLink
 
 	if itemLink then
-		local itemID, itemType, itemSubType, itemEquipLoc, icon, itemClassID, itemSubClassID = GetItemInfoInstant(itemLink)
+		local itemID, itemType, itemSubType, itemEquipLoc, icon, itemClassID, itemSubClassID = C_Item.GetItemInfoInstant(itemLink)
 		self.itemClass = itemClassID
 	else
 		self.itemClass = nil
@@ -414,6 +414,9 @@ function Item:GetInfo()
 	local icon, count, locked, quality, readable, lootable, link, _, noValue, itemID
 	if self:IsCached() then
 		icon, count, locked, quality, readable, lootable, link = ItemCache:GetItemInfo(player, self.bag, self.slot)
+		if link then
+			itemID = C_Item.GetItemInfoInstant(link)
+		end
 	else
 		-- LibItemCache doesn't provide noValue or itemID, so fallback to base API
 		local info = C_Container_GetContainerItemInfo(self.bag, self.slot)
@@ -429,15 +432,21 @@ function Item:GetInfo()
 			itemID = info.itemID
 		end
 		if link and (not quality or quality < 0) then
-			quality = select(3, GetItemInfo(link))
+			quality = C_Item.GetItemQualityByID(link)
 		end
 	end
 
-	if not icon and link and (self:IsCached() or not C_Item.IsItemDataCached(ItemLocation:CreateFromBagAndSlot(self.bag, self.slot))) then
-		self.itemID = GetItemInfoInstant(link)
-		if self.itemID then
+	if not icon and (itemID or link) then
+		self.itemID = itemID or C_Item.GetItemInfoInstant(link)
+		if self:IsCached() then
 			self:RegisterEvent("ITEM_DATA_LOAD_RESULT")
 			C_Item.RequestLoadItemDataByID(self.itemID)
+		else
+			local location = ItemLocation:CreateFromBagAndSlot(self.bag, self.slot)
+			if C_Item.DoesItemExist(location) and not C_Item.IsItemDataCached(location) then
+				self:RegisterEvent("ITEM_DATA_LOAD_RESULT")
+				C_Item.RequestLoadItemData(location)
+			end
 		end
 	end
 
@@ -445,7 +454,7 @@ function Item:GetInfo()
 end
 
 function Item:IsQuestItem()
-	return self.itemClass == LE_ITEM_CLASS_QUESTITEM
+	return self.itemClass == Enum.ItemClass.Questitem
 end
 
 function Item:IsNew()

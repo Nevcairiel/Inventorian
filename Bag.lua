@@ -197,7 +197,7 @@ function Bag:UpdateSlotInfo()
 	if link then
 		self.hasItem = link
 
-		SetItemButtonTexture(self, texture or GetItemIcon(link))
+		SetItemButtonTexture(self, texture or C_Item.GetItemIconByID(link))
 		SetItemButtonTextureVertexColor(self, 1, 1, 1)
 	else
 		self.hasItem = nil

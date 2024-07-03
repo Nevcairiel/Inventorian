@@ -207,7 +207,7 @@ Lib:RegisterTypedSearch{
 	end,
 
 	findItem = function(self, item, _, search)
-		local name = GetItemInfo(item)
+		local name = C_Item.GetItemInfo(item)
 		return match(search, name)
 	end
 }
@@ -224,7 +224,7 @@ Lib:RegisterTypedSearch{
 	end,
 
 	findItem = function(self, item, _, search)
-		local type, subType, _, equipSlot = select(6, GetItemInfo(item))
+		local type, subType, _, equipSlot = select(6, C_Item.GetItemInfo(item))
 		return match(search, type, subType, _G[equipSlot])
 	end
 }
@@ -250,7 +250,7 @@ Lib:RegisterTypedSearch{
 	end,
 
 	findItem = function(self, link, operator, num)
-		local quality = select(3, GetItemInfo(link))
+		local quality = select(3, C_Item.GetItemInfo(link))
 		return compare(operator, quality, num)
 	end,
 }
@@ -267,7 +267,7 @@ Lib:RegisterTypedSearch{
 	end,
 
 	findItem = function(self, link, operator, num)
-		local lvl = select(4, GetItemInfo(link))
+		local lvl = select(4, C_Item.GetItemInfo(link))
 		if lvl then
 			return compare(operator, lvl, num)
 		end
@@ -285,7 +285,7 @@ Lib:RegisterTypedSearch{
 	end,
 
 	findItem = function(self, link, operator, num)
-		local lvl = select(5, GetItemInfo(link))
+		local lvl = select(5, C_Item.GetItemInfo(link))
 		if lvl then
 			return compare(operator, lvl, num)
 		end
@@ -312,7 +312,7 @@ Lib:RegisterTypedSearch{
 	end,
 
 	findItem = function(self, link, operator, num)
-		local isCrafting = select(17, GetItemInfo(link))
+		local isCrafting = select(17, C_Item.GetItemInfo(link))
 		return isCrafting
 	end,
 }
@@ -384,7 +384,7 @@ Lib:RegisterTypedSearch{
 		['bop'] = ITEM_BIND_ON_PICKUP,
 		['bou'] = ITEM_BIND_ON_USE,
 		['quest'] = ITEM_BIND_QUEST,
-		[GetItemClassInfo(Enum.ItemClass.Questitem):lower()] = ITEM_BIND_QUEST,
+		[C_Item.GetItemClassInfo(Enum.ItemClass.Questitem):lower()] = ITEM_BIND_QUEST,
 		['boa'] = ITEM_BIND_TO_BNETACCOUNT,
 		['unique'] = ITEM_UNIQUE,
 		[ITEM_UNIQUE:lower()] = ITEM_UNIQUE,
