@@ -499,7 +499,7 @@ do
 
 	local function CreatePlayerDropdown(self, level)
 		if level == 2 then
-			UIDropDownMenu_AddButton({ text = REMOVE, notCheckable = true, func = DeletePlayer}, 2)
+			UIDropDownMenu_AddButton({ text = REMOVE, notCheckable = true, value = UIDROPDOWNMENU_MENU_VALUE, func = DeletePlayer}, 2)
 		else
 			PlayerEntry(ItemCache.PLAYER)
 

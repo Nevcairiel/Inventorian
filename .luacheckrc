@@ -105,6 +105,7 @@ read_globals = {
 	"UIDropDownMenu_AddButton",
 	"UIDropDownMenu_CreateInfo",
 	"UIDropDownMenu_SetInitializeFunction",
+	"UIDROPDOWNMENU_MENU_VALUE",
 	"UISpecialFrames",
 
 	-- FrameXML Constants
