@@ -212,7 +212,11 @@ function FrameMixin:OnHide()
 
 	if self:IsBank() then
 		if self:AtBank() then
-			CloseBankFrame()
+			if C_Bank and C_Bank.CloseBankFrame then
+				C_Bank.CloseBankFrame()
+			else
+				CloseBankFrame()
+			end
 		end
 		BankFrame:Hide()
 	else
@@ -495,7 +499,7 @@ do
 
 	local function CreatePlayerDropdown(self, level)
 		if level == 2 then
-			UIDropDownMenu_AddButton({ text = REMOVE, notCheckable = true, value = UIDROPDOWNMENU_MENU_VALUE, func = DeletePlayer}, 2)
+			UIDropDownMenu_AddButton({ text = REMOVE, notCheckable = true, func = DeletePlayer}, 2)
 		else
 			PlayerEntry(ItemCache.PLAYER)
 

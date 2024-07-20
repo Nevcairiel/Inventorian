@@ -36,11 +36,13 @@ read_globals = {
 
 	-- API functions
 	"BankButtonIDToInvSlotID",
+	"C_Bank.CloseBankFrame",
 	"C_Container",
 	"C_Item",
 	"C_NewItems",
+	"C_PaperDollInfo",
+	"CloseBankFrame",
 	"CreateFrame",
-	"CursorCanGoInSlot",
 	"CursorHasItem",
 	"CursorUpdate",
 	"DepositReagentBank",
@@ -74,7 +76,6 @@ read_globals = {
 
 	-- FrameXML API
 	"ClearItemButtonOverlay",
-	"CloseBankFrame",
 	"CloseDropDownMenus",
 	"ContainerFrame_CanContainerUseFilterMenu",
 	"ContainerFrameItemButton_CalculateItemTooltipAnchors",
@@ -138,7 +139,6 @@ read_globals = {
 	"STATICPOPUP_NUMDIALOGS",
 	"TEXTURE_ITEM_QUEST_BANG",
 	"TEXTURE_ITEM_QUEST_BORDER",
-	"UIDROPDOWNMENU_MENU_VALUE",
 	"YES",
 
 	"LE_FRAME_TUTORIAL_EQUIP_REAGENT_BAG",

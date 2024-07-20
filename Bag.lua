@@ -280,7 +280,7 @@ end
 function BagMixin:UpdateCursor()
 	if not self:IsCustomSlot() then return end
 
-	if not self:IsCached() and CursorCanGoInSlot(self:GetInventorySlot()) then
+	if not self:IsCached() and C_PaperDollInfo.CanCursorCanGoInSlot(self:GetInventorySlot()) then
 		self:LockHighlight()
 	else
 		self:UnlockHighlight()
