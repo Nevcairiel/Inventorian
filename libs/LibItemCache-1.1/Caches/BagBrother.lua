@@ -136,7 +136,7 @@ end
 
 function Cache:DeletePlayer(realm, player)
 	local realm = BrotherBags[realm]
-	local guild = realm[player].guild
+	local guild = realm and realm[player] and realm[player].guild
 	realm[player] = nil
 
 	if guild then
