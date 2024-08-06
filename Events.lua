@@ -24,7 +24,7 @@ local _, Inventorian = ...
 local Events = Inventorian:NewModule("Events", "AceEvent-3.0")
 Events.Fire = LibStub("CallbackHandler-1.0"):New(Events, "Register", "Unregister", "UnregisterAll").Fire
 
-local ItemCache = LibStub("LibItemCache-1.1")
+local ItemCache = LibStub("LibItemCache-1.1-Inventorian")
 
 local NUM_TOTAL_EQUIPPED_BAG_SLOTS = NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
 

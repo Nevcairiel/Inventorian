@@ -16,7 +16,7 @@ This file is part of BagBrother.
 --]]
 
 
-local Brother = CreateFrame('Frame', 'BagBrother')
+local Brother = CreateFrame('Frame', 'InventorianBagBrother')
 Brother:SetScript('OnEvent', function(self, event, ...) self[event](self, ...) end)
 Brother:RegisterEvent('ADDON_LOADED')
 Brother:RegisterEvent('PLAYER_LOGIN')
@@ -35,10 +35,10 @@ function Brother:StartupCache()
 	local Player = UnitName('player')
 	local Realm = GetRealmName()
 
-	BrotherBags = BrotherBags or {}
-	BrotherBags[Realm] = BrotherBags[Realm] or {}
+	Inventorian_BrotherBags = Inventorian_BrotherBags or {}
+	Inventorian_BrotherBags[Realm] = Inventorian_BrotherBags[Realm] or {}
 
-	self.Realm = BrotherBags[Realm]
+	self.Realm = Inventorian_BrotherBags[Realm]
 	self.Realm[Player] = self.Realm[Player] or {equip = {}, BagSize = {}}
 	self.Player = self.Realm[Player]
 	self.Player.BagSize = self.Player.BagSize or {}
@@ -66,6 +66,8 @@ function Brother:SetupEvents()
 	self:RegisterEvent('UNIT_INVENTORY_CHANGED')
 	self:RegisterEvent('PLAYER_MONEY')
 	self:RegisterEvent('BAG_UPDATE')
+	self:RegisterEvent('PLAYERBANKSLOTS_CHANGED')
+	self:RegisterEvent('PLAYERREAGENTBANKSLOTS_CHANGED')
 
 	self:RegisterEvent('PLAYER_INTERACTION_MANAGER_FRAME_SHOW')
 	self:RegisterEvent('PLAYER_INTERACTION_MANAGER_FRAME_HIDE')

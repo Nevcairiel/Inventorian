@@ -15,8 +15,8 @@ along with this library. If not, see <http://www.gnu.org/licenses/>.
 This file is part of LibItemCache.
 --]]
 
-local Lib = LibStub('LibItemCache-1.1')
-if not BagBrother or Lib:HasCache() then
+local Lib = LibStub('LibItemCache-1.1-Inventorian')
+if not InventorianBagBrother or Lib:HasCache() then
 	return
 end
 
@@ -57,39 +57,39 @@ end
 
 function Cache:GetGuildTab(realm, player, tab)
 	local name = self:GetGuild(realm, player)
-	local guild = name and BrotherBags[realm][name .. '*']
+	local guild = name and Inventorian_BrotherBags[realm][name .. '*']
 
 	return guild and guild[tab]
 end
 
 function Cache:GetPersonalBag(realm, player, bag)
-	return BrotherBags[realm][player][bag]
+	return Inventorian_BrotherBags[realm][player][bag]
 end
 
 function Cache:GetBagSize(realm, player, bag)
-	return BrotherBags[realm][player].BagSize[bag]
+	return Inventorian_BrotherBags[realm][player].BagSize[bag]
 end
 
 function Cache:GetBackpackSize(realm, player)
-	return BrotherBags[realm][player].backpackSize
+	return Inventorian_BrotherBags[realm][player].backpackSize
 end
 
 
 --[[ Others ]]--
 
 function Cache:GetGuild(realm, player)
-	return BrotherBags[realm][player].guild
+	return Inventorian_BrotherBags[realm][player].guild
 end
 
 function Cache:GetMoney(realm, player)
-	return BrotherBags[realm][player].money
+	return Inventorian_BrotherBags[realm][player].money
 end
 
 
 --[[ Players ]]--
 
 function Cache:GetPlayer(realm, player)
-	realm = BrotherBags[realm]
+	realm = Inventorian_BrotherBags[realm]
 	player = realm and realm[player]
 
 	if player then
@@ -98,7 +98,7 @@ function Cache:GetPlayer(realm, player)
 end
 
 function Cache:DeletePlayer(realm, player)
-	local realm = BrotherBags[realm]
+	local realm = Inventorian_BrotherBags[realm]
 	local guild = realm and realm[player] and realm[player].guild
 	realm[player] = nil
 
@@ -115,7 +115,7 @@ end
 
 function Cache:GetPlayers(realm)
 	local players = {}
-	for name in pairs(BrotherBags[realm] or {}) do
+	for name in pairs(Inventorian_BrotherBags[realm] or {}) do
 		if not name:find('*$') then
 			tinsert(players, name)
 		end
@@ -129,7 +129,7 @@ end
 
 function Cache:GetRealms()
 	local realms = {}
-	for name in pairs(BrotherBags) do
+	for name in pairs(Inventorian_BrotherBags) do
 		tinsert(realms, name)
 	end
 

@@ -16,7 +16,7 @@ This file is part of BagBrother.
 --]]
 
 
-function BagBrother:SaveBag(bag, onlyItems)
+function InventorianBagBrother:SaveBag(bag, onlyItems)
 	local size = C_Container.GetContainerNumSlots(bag)
 	if size > 0 then
 		local items = {}
@@ -39,14 +39,14 @@ function BagBrother:SaveBag(bag, onlyItems)
 	end
 end
 
-function BagBrother:SaveEquip(i, count)
+function InventorianBagBrother:SaveEquip(i, count)
 	local link = GetInventoryItemLink('player', i)
 	local count = count or GetInventoryItemCount('player', i)
 
 	self.Player.equip[i] = self:ParseItem(link, count)
 end
 
-function BagBrother:ParseItem(link, count)
+function InventorianBagBrother:ParseItem(link, count)
 	if link then
 		local id = tonumber(link:match('item:(%d+):')) -- check for profession window bug
 		if id == 0 and TradeSkillFrame then

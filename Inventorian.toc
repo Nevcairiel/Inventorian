@@ -9,7 +9,7 @@
 ## X-License: All rights reserved.
 ## X-Curse-Project-ID: 85646
 
-## OptionalDeps: Ace3, LibWindow-1.1, BagBrother, Blizzard_TokenUI
+## OptionalDeps: Ace3, LibWindow-1.1, Inventorian_BagBrother, Blizzard_TokenUI
 
 ## SavedVariables: InventorianDB
 

@@ -3,7 +3,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Inventorian")
 
 local WoW10 = select(4, GetBuildInfo()) >= 100000
 
-local ItemCache = LibStub("LibItemCache-1.1")
+local ItemCache = LibStub("LibItemCache-1.1-Inventorian")
 
 local BagMixin = {}
 

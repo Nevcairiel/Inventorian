@@ -27,18 +27,18 @@ local Reagents = Enum.BagIndex.Reagentbank
 
 --[[ Continuous Events ]]--
 
-function BagBrother:BAG_UPDATE(bag)
-	local isBag = bag > Bank and bag <= BagSlots
+function InventorianBagBrother:BAG_UPDATE(bag)
+	local isBag = bag > Bank
 
 	if isBag then
-		self:SaveBag(bag, bag == Backpack)
+		self:SaveBag(bag, bag == Backpack or bag == Reagents or bag >= Enum.BagIndex.AccountBankTab_1)
 		if bag == Backpack then
 			self.Player.backpackSize = C_Container.GetContainerNumSlots(Backpack)
 		end
 	end
 end
 
-function BagBrother:UNIT_INVENTORY_CHANGED(unit)
+function InventorianBagBrother:UNIT_INVENTORY_CHANGED(unit)
 	if unit == 'player' then
 		for i = 1, EquipmentSlots do
 			self:SaveEquip(i)
@@ -46,15 +46,15 @@ function BagBrother:UNIT_INVENTORY_CHANGED(unit)
 	end
 end
 
-function BagBrother:PLAYER_MONEY()
+function InventorianBagBrother:PLAYER_MONEY()
 	self.Player.money = GetMoney()
 end
 
-function BagBrother:PLAYER_ENTERING_WORLD()
+function InventorianBagBrother:PLAYER_ENTERING_WORLD()
 	self.Player.backpackSize = C_Container.GetContainerNumSlots(Backpack)
 end
 
-function BagBrother:PLAYER_INTERACTION_MANAGER_FRAME_SHOW(id)
+function InventorianBagBrother:PLAYER_INTERACTION_MANAGER_FRAME_SHOW(id)
 	if id == Enum.PlayerInteractionType.Banker then
 		self:BANKFRAME_OPENED()
 	elseif id == Enum.PlayerInteractionType.AccountBanker then
@@ -66,7 +66,7 @@ function BagBrother:PLAYER_INTERACTION_MANAGER_FRAME_SHOW(id)
 	end
 end
 
-function BagBrother:PLAYER_INTERACTION_MANAGER_FRAME_HIDE(id)
+function InventorianBagBrother:PLAYER_INTERACTION_MANAGER_FRAME_HIDE(id)
 	if id == Enum.PlayerInteractionType.Banker then
 		self:BANKFRAME_CLOSED()
 	elseif id == Enum.PlayerInteractionType.AccountBanker then
@@ -80,49 +80,56 @@ end
 
 --[[ Bank Events ]]--
 
-function BagBrother:BANKFRAME_OPENED()
+function InventorianBagBrother:BANKFRAME_OPENED()
 	self.atBank = true
+	for i = Enum.BagIndex.BankBag_1, Enum.BagIndex.BankBag_7 do
+		self:SaveBag(i)
+	end
+	for i = Enum.BagIndex.AccountBankTab_1, Enum.BagIndex.AccountBankTab_5 do
+		self:SaveBag(i, true)
+	end
+
+	if IsReagentBankUnlocked() then
+		self:SaveBag(Reagents, true)
+	end
+
+	self:SaveBag(Bank, true)
 end
 
-function BagBrother:ACCOUNT_BANKFRAME_OPENED()
+function InventorianBagBrother:ACCOUNT_BANKFRAME_OPENED()
 	self.atAccountBank = true
-end
-
-function BagBrother:BANKFRAME_CLOSED()
-	if self.atBank then
-		for i = Enum.BagIndex.BankBag_1, Enum.BagIndex.BankBag_7 do
-			self:SaveBag(i)
-		end
-		for i = Enum.BagIndex.AccountBankTab_1, Enum.BagIndex.AccountBankTab_5 do
-			self:SaveBag(i, true)
-		end
-
-		if IsReagentBankUnlocked() then
-			self:SaveBag(Reagents, true)
-		end
-
-		self:SaveBag(Bank, true)
-		self.atBank = nil
+	for i = Enum.BagIndex.AccountBankTab_1, Enum.BagIndex.AccountBankTab_5 do
+		self:SaveBag(i, true)
 	end
 end
 
-function BagBrother:ACCOUNT_BANKFRAME_CLOSED()
-	if self.atAccountBank then
-		for i = Enum.BagIndex.AccountBankTab_1, Enum.BagIndex.AccountBankTab_5 do
-			self:SaveBag(i, true)
-		end
+function InventorianBagBrother:BANKFRAME_CLOSED()
+	self.atBank = nil
+end
 
-		self.atAccountBank = nil
+function InventorianBagBrother:ACCOUNT_BANKFRAME_CLOSED()
+	self.atAccountBank = nil
+end
+
+function InventorianBagBrother:PLAYERBANKSLOTS_CHANGED()
+	if self.atBank then
+		self:SaveBag(Bank, true)
+	end
+end
+
+function InventorianBagBrother:PLAYERREAGENTBANKSLOTS_CHANGED()
+	if self.atBank then
+		self:SaveBag(Reagents, true)
 	end
 end
 
 --[[ Void Storage Events ]]--
 
-function BagBrother:VOID_STORAGE_OPEN()
+function InventorianBagBrother:VOID_STORAGE_OPEN()
 	self.atVault = true
 end
 
-function BagBrother:VOID_STORAGE_CLOSE()
+function InventorianBagBrother:VOID_STORAGE_CLOSE()
 	if self.atVault then
 		self.Player.vault = {}
 		self.atVault = nil
@@ -137,19 +144,19 @@ end
 
 --[[ Guild Events ]]--
 
-function BagBrother:GUILDBANKFRAME_OPENED()
+function InventorianBagBrother:GUILDBANKFRAME_OPENED()
 	self.atGuild = true
 end
 
-function BagBrother:GUILDBANKFRAME_CLOSED()
+function InventorianBagBrother:GUILDBANKFRAME_CLOSED()
 	self.atGuild = nil
 end
 
-function BagBrother:GUILD_ROSTER_UPDATE()
+function InventorianBagBrother:GUILD_ROSTER_UPDATE()
 	self.Player.guild = GetGuildInfo('player')
 end
 
-function BagBrother:GUILDBANKBAGSLOTS_CHANGED()
+function InventorianBagBrother:GUILDBANKBAGSLOTS_CHANGED()
 	if self.atGuild then
 		local id = GetGuildInfo('player') .. '*'
 		local tab = GetCurrentGuildBankTab()

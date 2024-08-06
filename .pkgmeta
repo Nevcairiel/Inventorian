@@ -12,4 +12,4 @@ externals:
     libs/LibWindow-1.1: svn://svn.wowace.com/wow/libwindow-1-1/mainline/trunk/LibWindow-1.1
 
 move-folders:
-    Inventorian/BagBrother: BagBrother
+    Inventorian/BagBrother: Inventorian_BagBrother
