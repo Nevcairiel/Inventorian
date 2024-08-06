@@ -38,6 +38,7 @@ local slots = {}
 function Events:OnEnable()
 	self.firstVisit = true
 	self.atBank = false
+	self.atAccountBank = false
 
 	self:RegisterEvent("BAG_UPDATE")
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN")
@@ -47,6 +48,8 @@ function Events:OnEnable()
 
 	self:RegisterEvent("PLAYER_INTERACTION_MANAGER_FRAME_SHOW")
 	self:RegisterEvent("PLAYER_INTERACTION_MANAGER_FRAME_HIDE")
+
+	self:RegisterEvent("BANK_TABS_CHANGED")
 
 	self:RegisterEvent("ITEM_LOCK_CHANGED", "GenericEvent")
 
@@ -168,6 +171,12 @@ function Events:UpdateBagSizes()
 			self:UpdateBagSize(bag)
 		end
 	end
+
+	if self.atBank or self.atAccountBank then
+		for bag = Enum.BagIndex.AccountBankTab_1, Enum.BagIndex.AccountBankTab_5 do
+			self:UpdateBagSize(bag)
+		end
+	end
 end
 
 -- events
@@ -191,6 +200,10 @@ function Events:PLAYERREAGENTBANKSLOTS_CHANGED()
 	self:UpdateItems(REAGENTBANK_CONTAINER)
 end
 
+function Events:BANK_TABS_CHANGED()
+	self:UpdateBagSizes()
+end
+
 function Events:BANKFRAME_OPENED()
 	self.atBank = true
 	ItemCache.AtBank = true
@@ -206,20 +219,39 @@ function Events:BANKFRAME_OPENED()
 	self:Fire("BANK_OPENED")
 end
 
+function Events:ACCOUNT_BANKFRAME_OPENED()
+	self.atAccountBank = true
+	ItemCache.AtAccountBank = true
+
+	if self.firstVisit then
+		self.firstVisit = nil
+
+		self:UpdateBagSize(BANK_CONTAINER)
+		self:UpdateBagSize(REAGENTBANK_CONTAINER)
+		self:UpdateBagSizes()
+	end
+
+	self:Fire("ACCOUNT_BANK_OPENED")
+end
+
 function Events:BANKFRAME_CLOSED()
 	self.atBank = false
 	ItemCache.AtBank = false
+	self.atAccountBank = false
+	ItemCache.AtAccountBank = false
 	self:Fire("BANK_CLOSED")
 end
 
 function Events:PLAYER_INTERACTION_MANAGER_FRAME_SHOW(event, id)
 	if id == Enum.PlayerInteractionType.Banker then
 		self:BANKFRAME_OPENED()
+	elseif id == Enum.PlayerInteractionType.AccountBanker then
+		self:ACCOUNT_BANKFRAME_OPENED()
 	end
 end
 
 function Events:PLAYER_INTERACTION_MANAGER_FRAME_HIDE(event, id)
-	if id == Enum.PlayerInteractionType.Banker then
+	if id == Enum.PlayerInteractionType.Banker or id == Enum.PlayerInteractionType.AccountBanker then
 		self:BANKFRAME_CLOSED()
 	end
 end

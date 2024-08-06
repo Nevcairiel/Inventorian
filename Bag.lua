@@ -100,8 +100,8 @@ function Inventorian.Bag:Create()
 
 	bag:SetSize(30, 30)
 
-	local icon = bag:CreateTexture(name .. "IconTexture", "BORDER")
-	icon:SetAllPoints(bag)
+	bag.Icon = bag:CreateTexture(name .. "IconTexture", "BORDER")
+	bag.Icon:SetAllPoints(bag)
 
 	bag.count = bag:CreateFontString(name .. "Count", "OVERLAY")
 	bag.count:SetFontObject("NumberFontNormalSmall")
@@ -137,6 +137,12 @@ function Inventorian.Bag:Create()
 	bag.FilterIcon.Icon:SetPoint("CENTER")
 	bag.FilterIcon:Hide()
 
+	bag.SelectedTexture = bag:CreateTexture(nil, "OVERLAY")
+	bag.SelectedTexture:SetBlendMode("ADD")
+	bag.SelectedTexture:SetTexture("Interface\\Buttons\\CheckButtonHilight")
+	bag.SelectedTexture:SetAllPoints(bag)
+	bag.SelectedTexture:Hide()
+
 	bag:RegisterForClicks("AnyUp")
 	bag:RegisterForDrag("LeftButton")
 
@@ -154,6 +160,7 @@ end
 
 function BagMixin:Free()
 	Inventorian.Bag.pool[self] = true
+	self.tabData = nil
 	self:Hide()
 	self:SetParent(nil)
 	self:UnregisterAllEvents()
@@ -162,9 +169,13 @@ end
 function BagMixin:Set(parent, id)
 	self:SetID(id)
 	self:SetParent(parent)
+	self:SetSelected(false)
 
 	if self:IsBank() or self:IsReagentBank() or self:IsBackpack() then
 		SetItemButtonTexture(self, [[Interface\Buttons\Button-Backpack-Up]])
+		SetItemButtonTextureVertexColor(self, 1, 1, 1)
+	elseif self:IsAccountBag() then
+		self.Icon:SetAtlas("Garr_Building-AddFollowerPlus", TextureKitConstants.UseAtlasSize)
 		SetItemButtonTextureVertexColor(self, 1, 1, 1)
 	else
 		self:Update()
@@ -185,6 +196,17 @@ function BagMixin:Set(parent, id)
 			self:RegisterEvent("BAG_SLOT_FLAGS_UPDATED")
 		end
 	end
+end
+
+function BagMixin:SetWarbandData(data)
+	if not self:IsAccountBag() then return end
+	self.tabData = data
+
+	self.Icon:SetTexture(self.tabData.icon or QUESTION_MARK_ICON)
+end
+
+function BagMixin:SetSelected(selected)
+	self.SelectedTexture:SetShown(selected)
 end
 
 -- ContainerFrameMixin compat
@@ -220,7 +242,23 @@ function BagMixin:OnClick(button)
 		return
 	end
 
-	if button == "RightButton" then
+	if self:IsAccountBag() then
+		if button == "RightButton" and self.tabData then
+			if not self:GetParent().TabSettingsMenu then
+				self:GetParent().TabSettingsMenu = CreateFrame("Frame", nil, self:GetParent(), "BankPanelTabSettingsMenuTemplate")
+				self:GetParent().TabSettingsMenu:SetPoint("TOPLEFT", self:GetParent(), "TOPRIGHT", 40, 5)
+				self:GetParent().TabSettingsMenu.GetBankFrame = function() return self:GetParent() end
+				self:GetParent().TabSettingsMenu:Hide()
+			end
+			self:GetParent().TabSettingsMenu:TriggerEvent(BankPanelTabSettingsMenuMixin.Event.OpenTabSettingsRequested, self.tabData.ID)
+		elseif self.tabData then
+			self:GetParent().selectedWarbandBag = self.tabData.ID
+			self:GetParent():SetCurrentBags()
+			self:GetParent():UpdateBags()
+		elseif self:IsPurchasable() then
+			self:PurchaseSlotWarband()
+		end
+	elseif button == "RightButton" then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		ToggleDropDownMenu(1, nil, self.FilterDropDown, self, 0, 0);
 	elseif self:IsPurchasable() then
@@ -374,6 +412,11 @@ function BagMixin:PurchaseSlot()
 	StaticPopup_Show("CONFIRM_BUY_BANK_SLOT_INVENTORIAN")
 end
 
+function BagMixin:PurchaseSlotWarband()
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
+	StaticPopup_Show("CONFIRM_BUY_BANK_TAB", nil, nil, { bankType = Enum.BankType.Account })
+end
+
 function BagMixin:UpdateTooltip()
 	GameTooltip:ClearLines()
 
@@ -383,6 +426,17 @@ function BagMixin:UpdateTooltip()
 		GameTooltip:SetText(BANK, 1, 1, 1)
 	elseif self:IsReagentBank() then
 		GameTooltip:SetText(REAGENT_BANK, 1, 1, 1)
+	elseif self:IsAccountBag() then
+		if self.tabData then
+			BankPanelTabMixin.ShowTooltip(self)
+		elseif self:IsPurchasable() then
+			GameTooltip:SetText(BANK_BAG_PURCHASE, 1, 1, 1)
+			GameTooltip:AddLine(L["Click to purchase"])
+			local tabCost = C_Bank.FetchNextPurchasableBankTabCost(Enum.BankType.Account)
+			if tabCost then
+				SetTooltipMoney(GameTooltip, tabCost)
+			end
+		end
 	else
 		self:UpdateBagTooltip()
 	end
@@ -437,12 +491,22 @@ function BagMixin:IsBankBag()
 	return (self:GetID() > NUM_TOTAL_EQUIPPED_BAG_SLOTS and self:GetID() <= (NUM_TOTAL_EQUIPPED_BAG_SLOTS + NUM_BANKBAGSLOTS))
 end
 
+function BagMixin:IsAccountBag()
+	return (self:GetID() >= Enum.BagIndex.AccountBankTab_1 and self:GetID() <= Enum.BagIndex.AccountBankTab_5)
+end
+
 function BagMixin:IsCustomSlot()
 	return self:IsBackpackBag() or self:IsBankBag()
 end
 
 function BagMixin:IsPurchasable()
-	return not self:IsCached() and (self:GetID() - NUM_TOTAL_EQUIPPED_BAG_SLOTS) > GetNumBankSlots()
+	if self:IsCached() then
+		return false
+	end
+	if self:IsAccountBag() then
+		return C_Bank.FetchNumPurchasedBankTabs(Enum.BankType.Account) < 5 and C_Bank.CanPurchaseBankTab(Enum.BankType.Account)
+	end
+	return self:IsBankBag() and (self:GetID() - NUM_TOTAL_EQUIPPED_BAG_SLOTS) > GetNumBankSlots()
 end
 
 function BagMixin:GetInventorySlot()

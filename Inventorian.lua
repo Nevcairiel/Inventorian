@@ -53,12 +53,29 @@ local BANK_CONFIG =
 		bags = { REAGENTBANK_CONTAINER },
 		isBank = true,
 		isReagentBank = true,
+	},
+	{
+		title = ACCOUNT_QUEST_LABEL,
+		bags = { Enum.BagIndex.AccountBankTab_1, Enum.BagIndex.AccountBankTab_2, Enum.BagIndex.AccountBankTab_3, Enum.BagIndex.AccountBankTab_4, Enum.BagIndex.AccountBankTab_5 },
+		isBank = true,
+		isAccountBank = true,
+	},
+}
+local ACCOUNT_BANK_CONFIG =
+{
+	{
+		title = ACCOUNT_QUEST_LABEL,
+		bags = { Enum.BagIndex.AccountBankTab_1, Enum.BagIndex.AccountBankTab_2, Enum.BagIndex.AccountBankTab_3, Enum.BagIndex.AccountBankTab_4, Enum.BagIndex.AccountBankTab_5 },
+		isBank = true,
+		isAccountBank = true,
 	}
 }
+
 
 function Inventorian:OnEnable()
 	self.bag = Inventorian.Frame:Create("InventorianBagFrame", L["%s's Inventory"], db.bag, BAG_CONFIG)
 	self.bank = Inventorian.Frame:Create("InventorianBankFrame", L["%s's Bank"], db.bank, BANK_CONFIG)
+	self.accountbank = Inventorian.Frame:Create("InventorianAccountBankFrame", L["%s's Account Bank"], db.bank, ACCOUNT_BANK_CONFIG)
 	self:SetupBagHooks()
 
 	self:RegisterChatCommand("inventorian", "HandleSlash")
@@ -99,8 +116,13 @@ function Inventorian:AutoShowBank()
 	self.bank:ShowFrame(true)
 end
 
+function Inventorian:AutoShowAccountBank()
+	self.accountbank:ShowFrame(true)
+end
+
 function Inventorian:AutoHideBank()
 	self.bank:HideFrame(true)
+	self.accountbank:HideFrame(true)
 end
 
 function Inventorian:UpdateBag()
@@ -133,6 +155,11 @@ function Inventorian:SetupBagHooks()
 	local Events = self:GetModule("Events")
 	Events.Register(self, "BANK_OPENED", function()
 		self:AutoShowBank()
+		self:AutoShowInventory()
+	end)
+
+	Events.Register(self, "ACCOUNT_BANK_OPENED", function()
+		self:AutoShowAccountBank()
 		self:AutoShowInventory()
 	end)
 

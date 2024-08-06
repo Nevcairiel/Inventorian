@@ -51,7 +51,6 @@ function Inventorian.Frame:Create(name, titleText, settings, config)
 	-- components
 	frame.itemContainer = Inventorian.ItemContainer:Create(frame)
 	frame.itemContainer:SetPoint("TOPLEFT", 10, -68)
-	frame.itemContainer:SetBags(config[1].bags)
 	frame.itemContainer:Show()
 
 	frame.DepositButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
@@ -70,6 +69,12 @@ function Inventorian.Frame:Create(name, titleText, settings, config)
 	frame:SetScript("OnEvent", frame.OnEvent)
 	frame:SetScript("OnSizeChanged", frame.OnSizeChanged)
 
+	-- bag events
+	if frame:IsBank() then
+		frame:RegisterEvent("BANK_TABS_CHANGED")
+		frame:RegisterEvent("BANK_TAB_SETTINGS_UPDATED")
+	end
+
 	-- non-bag events
 	frame:RegisterUnitEvent("UNIT_PORTRAIT_UPDATE", "player")
 
@@ -81,7 +86,7 @@ function Inventorian.Frame:Create(name, titleText, settings, config)
 	LibWindow.RestorePosition(frame)
 
 	frame:UpdateTitleText()
-	frame:UpdateBags()
+	frame:SetCurrentBags()
 
 	tinsert(UISpecialFrames, name)
 
@@ -97,16 +102,17 @@ local function OnTabClick(tab)
 
 	PanelTemplates_SetTab(frame, tabID)
 	frame.currentConfig = frame.config[tabID]
-	frame.itemContainer:SetBags(frame.currentConfig.bags)
+	frame:SetCurrentBags()
 
-	-- hack for the reagent bank to behave properly when right-clicking inventory items
+	-- hack for the warbank and reagent bank to behave properly when right-clicking inventory items
 	if frame:IsBank() and frame:AtBank() then
-		if tabID == 2 then
+		local bankTabIndex = frame:IsReagentBank() and 2 or frame:IsAccountBank() and 3 or 1
+		BankFrame.selectedTab = bankTabIndex
+		BankFrame.activeTabIndex = bankTabIndex
+		if frame:IsReagentBank() or frame:IsAccountBank() then
 			BankFrame:Show()
-			BankFrame.selectedTab = 2
 		else
 			BankFrame:Hide()
-			BankFrame.selectedTab = 1
 		end
 	end
 
@@ -160,6 +166,16 @@ function FrameMixin:CreateTabs()
 	PanelTemplates_SetTab(self, 1)
 end
 
+function FrameMixin:SetCurrentBags()
+	if self:IsAccountBank() then
+		self.selectedWarbandBag = self.selectedWarbandBag or self.currentConfig.bags[1]
+		self.itemContainer:SetBags({ self.selectedWarbandBag })
+	else
+		self.itemContainer:SetBags(self.currentConfig.bags)
+	end
+	self:UpdateBags()
+end
+
 function FrameMixin:ShowTokenFrame()
 	self:SetHeight(self.settings.height + TOKEN_CONTAINER_HEIGHT)
 	BackpackTokenFrame:SetParent(self)
@@ -197,7 +213,10 @@ function FrameMixin:OnShow()
 	self:SetPortrait()
 
 	if self:IsBank() and not self:IsCached() then
-		if self.selectedTab == 2 then
+		local bankTabIndex = self:IsReagentBank() and 2 or self:IsAccountBank() and 3 or 1
+		BankFrame.selectedTab = bankTabIndex
+		BankFrame.activeTabIndex = bankTabIndex
+		if self:IsReagentBank() or self:IsAccountBank() then
 			BankFrame:Show()
 		end
 	end
@@ -234,6 +253,11 @@ function FrameMixin:OnHide()
 	-- reset to the default player when hiding
 	if self.playerName then
 		self:SetPlayer(nil)
+	end
+
+	-- hide tab settings
+	if self.TabSettingsMenu then
+		self.TabSettingsMenu:Hide()
 	end
 end
 
@@ -285,6 +309,9 @@ end
 function FrameMixin:OnEvent(event, ...)
 	if event == "UNIT_PORTRAIT_UPDATE" and self:IsShown() and not self:GetPortrait().classIcon then
 		self:SetPortraitToUnit("player")
+	end
+	if event == "BANK_TABS_CHANGED" or event == "BANK_TAB_SETTINGS_UPDATED" then
+		self:SetCurrentBags()
 	end
 end
 
@@ -352,11 +379,21 @@ function FrameMixin:UpdateBags()
 		bag:Free()
 	end
 
-	if self.settings.showBags then
+	if self:IsAccountBank() or self.settings.showBags then
 		for _, bagID in ipairs(self.currentConfig.bags) do
 			local bag = Inventorian.Bag:Create()
 			bag:Set(self, bagID)
 			tinsert(self.bagButtons, bag)
+		end
+
+		if self:IsAccountBank() then
+			local tabData = C_Bank.FetchPurchasedBankTabData(Enum.BankType.Account)
+			for index, data in ipairs(tabData) do
+				if self.bagButtons[index] then
+					self.bagButtons[index]:SetWarbandData(data)
+				end
+				self.bagButtons[index]:SetSelected(self.selectedWarbandBag == data.ID)
+			end
 		end
 
 		for i, bag in ipairs(self.bagButtons) do
@@ -383,7 +420,7 @@ end
 function FrameMixin:UpdateItemContainer(force)
 	local width = self:GetWidth() + ITEM_CONTAINER_OFFSET_W
 	local height = self:GetHeight() + ITEM_CONTAINER_OFFSET_H
-	if self.settings.showBags then
+	if self.settings.showBags or self:IsAccountBank() then
 		width = width - 36
 	end
 
@@ -532,6 +569,28 @@ do
 end
 
 -----------------------------------------------------------------------
+-- Bank Panel helpers
+
+function FrameMixin:GetBankType()
+	return self:IsAccountBank() and Enum.BankType.Account or Enum.BankType.Character
+end
+
+function FrameMixin:IsBankTypeLocked()
+	return false
+end
+
+function FrameMixin:GetTabData(tabID)
+	local purchasedTabData = C_Bank.FetchPurchasedBankTabData(self:GetBankType())
+	if not purchasedTabData then return end
+
+	for index, tabData in ipairs(purchasedTabData) do
+		if tabData.ID == tabID then
+			return tabData
+		end
+	end
+end
+
+-----------------------------------------------------------------------
 -- Various information getters
 
 function FrameMixin:SetPlayer(player)
@@ -555,7 +614,7 @@ function FrameMixin:GetPlayerName()
 end
 
 function FrameMixin:IsCached()
-	return ItemCache:IsPlayerCached(self:GetPlayerName()) or ((self:IsBank() or self:IsReagentBank()) and not self:AtBank())
+	return ItemCache:IsPlayerCached(self:GetPlayerName()) or (self:IsBank() and not self:AtBank())
 end
 
 function FrameMixin:IsBank()
@@ -566,6 +625,10 @@ function FrameMixin:IsReagentBank()
 	return self.currentConfig.isReagentBank
 end
 
+function FrameMixin:IsAccountBank()
+	return self.currentConfig.isAccountBank
+end
+
 function FrameMixin:AtBank()
-	return Events.atBank
+	return (self:IsAccountBank() and Events.atAccountBank) or Events.atBank
 end

@@ -15,6 +15,7 @@ ignore = {
 }
 
 globals = {
+	"BankFrame.activeTabIndex",
 	"BankFrame.selectedTab",
 	"MoneyTypeInfo",
 	"StaticPopupDialogs",
@@ -36,7 +37,7 @@ read_globals = {
 
 	-- API functions
 	"BankButtonIDToInvSlotID",
-	"C_Bank.CloseBankFrame",
+	"C_Bank",
 	"C_Container",
 	"C_Item",
 	"C_NewItems",
@@ -75,6 +76,8 @@ read_globals = {
 	"UIParent",
 
 	-- FrameXML API
+	"BankPanelTabMixin",
+	"BankPanelTabSettingsMenuMixin",
 	"ClearItemButtonOverlay",
 	"CloseDropDownMenus",
 	"ContainerFrame_CanContainerUseFilterMenu",
@@ -109,6 +112,7 @@ read_globals = {
 	"UISpecialFrames",
 
 	-- FrameXML Constants
+	"ACCOUNT_QUEST_LABEL",
 	"BACKPACK_CONTAINER",
 	"BACKPACK_TOOLTIP",
 	"BAG_CLEANUP_BAGS",
@@ -131,6 +135,7 @@ read_globals = {
 	"NUM_BANKBAGSLOTS",
 	"NUM_CONTAINER_FRAMES",
 	"NUM_TOTAL_EQUIPPED_BAG_SLOTS",
+	"QUESTION_MARK_ICON",
 	"RAID_CLASS_COLORS",
 	"REAGENT_BANK",
 	"REAGENTBANK_CONTAINER",
@@ -141,6 +146,7 @@ read_globals = {
 	"TEXTURE_ITEM_QUEST_BANG",
 	"TEXTURE_ITEM_QUEST_BORDER",
 	"YES",
+	"TextureKitConstants",
 
 	"LE_FRAME_TUTORIAL_EQUIP_REAGENT_BAG",
 }
