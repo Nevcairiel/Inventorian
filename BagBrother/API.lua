@@ -32,8 +32,10 @@ function BagBrother:SaveBag(bag, onlyItems)
 		end
 
 		self.Player[bag] = items
+		self.Player.BagSize[bag] = size
 	else
 		self.Player[bag] = nil
+		self.Player.BagSize[bag] = nil
 	end
 end
 

@@ -66,49 +66,12 @@ function Cache:GetPersonalBag(realm, player, bag)
 	return BrotherBags[realm][player][bag]
 end
 
+function Cache:GetBagSize(realm, player, bag)
+	return BrotherBags[realm][player].BagSize[bag]
+end
+
 function Cache:GetBackpackSize(realm, player)
 	return BrotherBags[realm][player].backpackSize
-end
-
-
---[[ Item Counts ]]--
-
-function Cache:GetItemCounts(realm, player, id)
-	local personal = BrotherBags[realm][player]
-	local equipment = self:GetItemCount(personal.equip, id, true)
-	local vault = self:GetItemCount(personal.vault, id, true)
-
-	local bank = self:GetItemCount(personal[BANK_CONTAINER], id) + self:GetItemCount(personal[REAGENTBANK_CONTAINER], id)
-	local bags, guild = 0, 0
-
-	for i = BACKPACK_CONTAINER, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
-		bags = bags + self:GetItemCount(personal[i], id)
-	end
-
-	for i = FIRST_BANK_SLOT, LAST_BANK_SLOT do
-		bank = bank + self:GetItemCount(personal[i], id)
-    end
-
-    for i = 1, GetNumGuildBankTabs() do
-	guild = guild + self:GetItemCount(self:GetGuildTab(realm, player, i), id)
-    end
-
-	return equipment, bags, bank, vault, guild
-end
-
-function Cache:GetItemCount(bag, id, unique)
-	local count = 0
-	local id = '^'..id
-
-	if bag then
-		for i,item in pairs(bag) do
-			if type(i) == 'number' and item:find(id) then
-				count = count + (not unique and tonumber(item:match(ITEM_COUNT)) or 1)
-			end
-		end
-	end
-
-	return count
 end
 
 

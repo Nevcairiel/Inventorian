@@ -39,8 +39,9 @@ function Brother:StartupCache()
 	BrotherBags[Realm] = BrotherBags[Realm] or {}
 
 	self.Realm = BrotherBags[Realm]
-	self.Realm[Player] = self.Realm[Player] or {equip = {}}
+	self.Realm[Player] = self.Realm[Player] or {equip = {}, BagSize = {}}
 	self.Player = self.Realm[Player]
+	self.Player.BagSize = self.Player.BagSize or {}
 end
 
 function Brother:SetupCharacter()

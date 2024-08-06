@@ -20,11 +20,9 @@ local BagSlots = NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
 local BankSlots = NUM_BANKBAGSLOTS
 local VaultSlots = 80 * 2
 
-local FirstBankSlot = 1 + BagSlots
-local LastBankSlot = BankSlots + BagSlots
-local Backpack = BACKPACK_CONTAINER
-local Bank = BANK_CONTAINER
-local Reagents = REAGENTBANK_CONTAINER
+local Backpack = Enum.BagIndex.Backpack
+local Bank = Enum.BagIndex.Bank
+local Reagents = Enum.BagIndex.Reagentbank
 
 
 --[[ Continuous Events ]]--
@@ -59,6 +57,8 @@ end
 function BagBrother:PLAYER_INTERACTION_MANAGER_FRAME_SHOW(id)
 	if id == Enum.PlayerInteractionType.Banker then
 		self:BANKFRAME_OPENED()
+	elseif id == Enum.PlayerInteractionType.AccountBanker then
+		self:ACCOUNT_BANKFRAME_OPENED()
 	elseif id == Enum.PlayerInteractionType.GuildBanker then
 		self:GUILDBANKFRAME_OPENED()
 	elseif id == Enum.PlayerInteractionType.VoidStorageBanker then
@@ -69,6 +69,8 @@ end
 function BagBrother:PLAYER_INTERACTION_MANAGER_FRAME_HIDE(id)
 	if id == Enum.PlayerInteractionType.Banker then
 		self:BANKFRAME_CLOSED()
+	elseif id == Enum.PlayerInteractionType.AccountBanker then
+		self:ACCOUNT_BANKFRAME_CLOSED()
 	elseif id == Enum.PlayerInteractionType.GuildBanker then
 		self:GUILDBANKFRAME_CLOSED()
 	elseif id == Enum.PlayerInteractionType.VoidStorageBanker then
@@ -82,10 +84,17 @@ function BagBrother:BANKFRAME_OPENED()
 	self.atBank = true
 end
 
+function BagBrother:ACCOUNT_BANKFRAME_OPENED()
+	self.atAccountBank = true
+end
+
 function BagBrother:BANKFRAME_CLOSED()
 	if self.atBank then
-		for i = FirstBankSlot, LastBankSlot do
+		for i = Enum.BagIndex.BankBag_1, Enum.BagIndex.BankBag_7 do
 			self:SaveBag(i)
+		end
+		for i = Enum.BagIndex.AccountBankTab_1, Enum.BagIndex.AccountBankTab_5 do
+			self:SaveBag(i, true)
 		end
 
 		if IsReagentBankUnlocked() then
@@ -97,6 +106,15 @@ function BagBrother:BANKFRAME_CLOSED()
 	end
 end
 
+function BagBrother:ACCOUNT_BANKFRAME_CLOSED()
+	if self.atAccountBank then
+		for i = Enum.BagIndex.AccountBankTab_1, Enum.BagIndex.AccountBankTab_5 do
+			self:SaveBag(i, true)
+		end
+
+		self.atAccountBank = nil
+	end
+end
 
 --[[ Void Storage Events ]]--
 

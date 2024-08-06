@@ -159,7 +159,13 @@ function Lib:GetBagInfo(player, bag)
 		else
 			owned = IsReagentBankUnlocked()
 		end
-
+    elseif bag >= Enum.BagIndex.AccountBankTab_1 and bag <= Enum.BagIndex.AccountBankTab_5 then
+		if isCached then
+			owned = Cache('GetBag', realm, player, bag)
+			return nil, 0, nil, nil, owned and Cache('GetBagSize', realm, player, bag) or 0, true
+		else
+			owned = C_Bank.FetchNumPurchasedBankTabs(Enum.BankType.Account) > (bag - Enum.BagIndex.AccountBankTab_1)
+		end
 	elseif bag ~= BACKPACK_CONTAINER and bag ~= BANK_CONTAINER then
 		local slot = C_Container.ContainerIDToInventoryID(bag)
 
@@ -190,8 +196,9 @@ function Lib:GetBagType(player, bag)
 	end
 
 	local vault = bag == 'vault'
-	local bank = bag == BANK_CONTAINER or bag == REAGENTBANK_CONTAINER or kind == 'number' and bag > NUM_TOTAL_EQUIPPED_BAG_SLOTS
-	local cached = self:IsPlayerCached(player) or vault and not self.AtVault or bank and not self.AtBank
+	local accountBank = kind == 'number' and bag >= Enum.BagIndex.AccountBankTab_1 and bag <= Enum.BagIndex.AccountBankTab_5
+	local bank = bag == BANK_CONTAINER or bag == REAGENTBANK_CONTAINER or kind == 'number' and bag > NUM_TOTAL_EQUIPPED_BAG_SLOTS and not accountBank
+	local cached = self:IsPlayerCached(player) or vault and not self.AtVault or accountBank and not (self.AtAccountBank or self.AtBank) or bank and not self.AtBank
 
 	return cached, bank, vault
 end
@@ -240,29 +247,6 @@ function Lib:GetItemQuality(link)
 		return C_Item.GetItemQualityByID(link)
 	end
 end
-
-
-function Lib:GetItemCounts(player, id)
-	local realm, name = self:GetPlayerAddress(player)
-
-	if self:IsPlayerCached(player) then
-		return Cache('GetItemCounts', realm, name, id)
-	else
-		local vault, guild = select(4, Cache('GetItemCounts', realm, name, id))
-		local id, equip = tonumber(id), 0
-		local total = C_Item.GetItemCount(id, true, false, true)
-		local bags = C_Item.GetItemCount(id)
-
-		for i = 1, INVSLOT_LAST_EQUIPPED do
-			if GetInventoryItemID('player', i) == id then
-				equip = equip + 1
-			end
-		end
-
-		return equip, bags - equip, total - bags, vault or 0, guild or 0
-	end
-end
-
 
 --[[ Partial Links ]]--
 
