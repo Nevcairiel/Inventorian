@@ -387,12 +387,23 @@ function FrameMixin:UpdateBags()
 		end
 
 		if self:IsAccountBank() then
-			local tabData = C_Bank.FetchPurchasedBankTabData(Enum.BankType.Account)
-			for index, data in ipairs(tabData) do
-				if self.bagButtons[index] then
-					self.bagButtons[index]:SetWarbandData(data)
+			if self:IsCached() then
+				for index, button in ipairs(self.bagButtons) do
+					local link, numFreeSlots, icon, slot, numSlots = ItemCache:GetBagInfo(self:GetPlayerName(), button:GetID())
+					if numSlots and numSlots > 0 then
+						local data = { ID = button:GetID() }
+						button:SetWarbandData(data)
+					end
+					button:SetSelected(self.selectedWarbandBag == button:GetID())
 				end
-				self.bagButtons[index]:SetSelected(self.selectedWarbandBag == data.ID)
+			else
+				local tabData = C_Bank.FetchPurchasedBankTabData(Enum.BankType.Account)
+				for index, data in ipairs(tabData) do
+					if self.bagButtons[index] then
+						self.bagButtons[index]:SetWarbandData(data)
+					end
+					self.bagButtons[index]:SetSelected(self.selectedWarbandBag == data.ID)
+				end
 			end
 		end
 

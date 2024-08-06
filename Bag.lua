@@ -238,12 +238,8 @@ function BagMixin:OnClick(button)
 		return
 	end
 
-	if self:IsCached() then
-		return
-	end
-
 	if self:IsAccountBag() then
-		if button == "RightButton" and self.tabData then
+		if button == "RightButton" and self.tabData and not self:IsCached() then
 			if not self:GetParent().TabSettingsMenu then
 				self:GetParent().TabSettingsMenu = CreateFrame("Frame", nil, self:GetParent(), "BankPanelTabSettingsMenuTemplate")
 				self:GetParent().TabSettingsMenu:SetPoint("TOPLEFT", self:GetParent(), "TOPRIGHT", 40, 5)
@@ -258,6 +254,8 @@ function BagMixin:OnClick(button)
 		elseif self:IsPurchasable() then
 			self:PurchaseSlotWarband()
 		end
+	elseif self:IsCached() then
+		return
 	elseif button == "RightButton" then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		ToggleDropDownMenu(1, nil, self.FilterDropDown, self, 0, 0);
