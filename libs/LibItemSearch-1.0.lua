@@ -348,7 +348,6 @@ local function link_FindSearchInTooltip(itemLink, search, nolimit)
 	local result = false
 	local maxLines = nolimit and #info.lines or math.min(4, #info.lines)
 	for i = 2, maxLines do
-		TooltipUtil.SurfaceArgs(info.lines[i])
 		local text = info.lines[i].leftText
 		if text == search then
 			result = true
@@ -454,7 +453,6 @@ Lib:RegisterTypedSearch{
 		local i = 1
 		local maxLines = #info.lines
 		while i <= maxLines do
-			TooltipUtil.SurfaceArgs(info.lines[i])
 			local text = info.lines[i].leftText:lower()
 			if text:find(search) then
 				return true
