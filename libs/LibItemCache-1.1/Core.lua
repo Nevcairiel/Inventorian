@@ -273,7 +273,7 @@ end
 function Lib:RestoreItemLink(partial)
 	local partial = 'item:' .. partial
 	local _, link, quality = C_Item.GetItemInfo(partial)
-	return link or partial, C_Item.GetItemIconByID(link), quality
+	return link or partial, C_Item.GetItemIconByID(link or partial), quality
 end
 
 
