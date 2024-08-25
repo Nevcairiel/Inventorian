@@ -29,6 +29,12 @@ local Reagents = Enum.BagIndex.Reagentbank
 
 function InventorianBagBrother:BAG_UPDATE(bag)
 	local isBag = bag > Bank
+	local isBank = bag == Bank or bag >= Enum.BagIndex.BankBag_1 and bag <= Enum.BagIndex.BankBag_7
+	local isAccountBank = bag >= Enum.BagIndex.AccountBankTab_1 and bag <= Enum.BagIndex.AccountBankTab_5
+
+	if (isBank and not self.atBank) or (isAccountBank and not (self.atBank or self.atAccountBank)) then
+		return
+	end
 
 	if isBag then
 		self:SaveBag(bag, bag == Backpack or bag == Reagents or bag >= Enum.BagIndex.AccountBankTab_1)
