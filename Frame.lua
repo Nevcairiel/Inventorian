@@ -61,6 +61,28 @@ function Inventorian.Frame:Create(name, titleText, settings, config)
 	frame.DepositButton:SetFrameLevel(frame:GetFrameLevel() + 5)
 	frame.DepositButton:Hide()
 
+	if frame:IsBank() then
+		frame.MoneyDepositButton = Mixin(CreateFrame("Button", nil, frame, "BankPanelMoneyFrameButtonTemplate"), BankPanelDepositMoneyButtonMixin)
+		frame.MoneyDepositButton.GetBankFrame = function() return frame end
+		frame.MoneyDepositButton:SetText(BANK_DEPOSIT_MONEY_BUTTON_LABEL)
+		frame.MoneyDepositButton:SetScript("OnClick", frame.MoneyDepositButton.OnClick)
+		frame.MoneyDepositButton:SetFrameLevel(frame:GetFrameLevel() + 5)
+		frame.MoneyDepositButton:SetPoint("BOTTOMRIGHT", frame, -6, 6)
+		frame.MoneyDepositButton:Hide()
+
+		frame.MoneyWithdrawButton = Mixin(CreateFrame("Button", nil, frame, "BankPanelMoneyFrameButtonTemplate"), BankPanelWithdrawMoneyButtonMixin)
+		frame.MoneyWithdrawButton.GetBankFrame = function() return frame end
+		frame.MoneyWithdrawButton:SetText(BANK_WITHDRAW_MONEY_BUTTON_LABEL)
+		frame.MoneyWithdrawButton:SetScript("OnClick", frame.MoneyWithdrawButton.OnClick)
+		frame.MoneyWithdrawButton:SetFrameLevel(frame:GetFrameLevel() + 5)
+		frame.MoneyWithdrawButton:SetPoint("RIGHT", frame.MoneyDepositButton, "LEFT", 0, 0)
+		frame.MoneyWithdrawButton:Hide()
+
+		frame.Money:ClearAllPoints()
+		frame.Money:SetPoint("BOTTOMRIGHT", frame.MoneyWithdrawButton, "BOTTOMLEFT", 0, 3)
+		frame.Money:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 6, 9)
+	end
+
 	frame:CreateTabs()
 
 	-- scripts
@@ -135,6 +157,7 @@ local function OnTabClick(tab)
 	end
 
 	frame:UpdateBags()
+	frame:UpdateMoneyFrame()
 end
 
 function FrameMixin:CreateTabs()
@@ -174,6 +197,7 @@ function FrameMixin:SetCurrentBags()
 		self.itemContainer:SetBags(self.currentConfig.bags)
 	end
 	self:UpdateBags()
+	self:UpdateMoneyFrame()
 end
 
 function FrameMixin:ShowTokenFrame()
@@ -450,19 +474,46 @@ function FrameMixin:UpdateItemContainer(force)
 	end
 end
 
+function FrameMixin:UpdateMoneyFrame()
+	-- update the money frame
+	local showDepositButtons = false
+	if self:IsAccountBank() then
+		MoneyFrame_SetType(self.Money, "ACCOUNT")
+		showDepositButtons = not self:IsCached()
+	else
+		if self:IsCached() then
+			MoneyFrame_SetType(self.Money, "INVENTORIAN")
+		else
+			MoneyFrame_SetType(self.Money, "PLAYER")
+		end
+	end
+	MoneyFrame_UpdateMoney(self.Money)
+
+	if showDepositButtons then
+		self.MoneyDepositButton:Show()
+		self.MoneyWithdrawButton:Show()
+
+		self.Money:ClearAllPoints()
+		self.Money:SetPoint("BOTTOMRIGHT", self.MoneyWithdrawButton, "BOTTOMLEFT", 0, 3)
+		self.Money:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 6, 9)
+	else
+		if self.MoneyDepositButton then
+			self.MoneyDepositButton:Hide()
+			self.MoneyWithdrawButton:Hide()
+		end
+
+		self.Money:ClearAllPoints()
+		self.Money:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -6, 9)
+		self.Money:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 6, 9)
+	end
+end
+
 function FrameMixin:Update()
 	self:UpdateBags()
 	self.itemContainer:UpdateBags()
 	self:UpdateTitleText()
 	self:SetPortrait()
-
-	-- update the money frame
-	if self:IsCached() then
-		MoneyFrame_SetType(self.Money, "INVENTORIAN")
-	else
-		MoneyFrame_SetType(self.Money, "PLAYER")
-	end
-	MoneyFrame_UpdateMoney(self.Money)
+	self:UpdateMoneyFrame()
 
 	self.cachedView = self:IsCached()
 end
@@ -587,6 +638,9 @@ function FrameMixin:GetBankType()
 end
 
 function FrameMixin:IsBankTypeLocked()
+	if self:IsAccountBank() then
+		return not C_PlayerInfo.HasAccountInventoryLock()
+	end
 	return false
 end
 

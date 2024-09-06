@@ -42,6 +42,7 @@ read_globals = {
 	"C_Item",
 	"C_NewItems",
 	"C_PaperDollInfo",
+	"C_PlayerInfo",
 	"CloseBankFrame",
 	"CreateFrame",
 	"CursorHasItem",
@@ -76,8 +77,10 @@ read_globals = {
 	"UIParent",
 
 	-- FrameXML API
+	"BankPanelDepositMoneyButtonMixin",
 	"BankPanelTabMixin",
 	"BankPanelTabSettingsMenuMixin",
+	"BankPanelWithdrawMoneyButtonMixin",
 	"ClearItemButtonOverlay",
 	"CloseDropDownMenus",
 	"ContainerFrame_CanContainerUseFilterMenu",
@@ -125,6 +128,8 @@ read_globals = {
 	"BANK",
 	"BANK_BAG_PURCHASE",
 	"BANK_CONTAINER",
+	"BANK_DEPOSIT_MONEY_BUTTON_LABEL",
+	"BANK_WITHDRAW_MONEY_BUTTON_LABEL",
 	"CLASS_ICON_TCOORDS",
 	"CONFIRM_BUY_BANK_SLOT",
 	"Enum",
