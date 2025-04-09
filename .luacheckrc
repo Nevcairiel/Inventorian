@@ -85,6 +85,7 @@ read_globals = {
 	"UIParent",
 
 	-- FrameXML API
+	"AddMoneyTypeInfo",
 	"BackpackTokenFrame_IsShown",
 	"BackpackTokenFrame_Update",
 	"CloseBankFrame",

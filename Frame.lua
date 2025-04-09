@@ -14,14 +14,25 @@ local ITEM_CONTAINER_OFFSET_H = -95
 
 local PLAYER_NAME = string.format("%s - %s", UnitName("player"), GetRealmName())
 
-MoneyTypeInfo["INVENTORIAN"] = {
-	UpdateFunc = function(self)
-		return ItemCache:GetPlayerMoney(self:GetParent():GetPlayerName())
-	end,
+if AddMoneyTypeInfo then
+	AddMoneyTypeInfo("INVENTORIAN", {
+		UpdateFunc = function(self)
+			return ItemCache:GetPlayerMoney(self:GetParent():GetPlayerName())
+		end,
 
-	collapse = 1,
-	showSmallerCoins = "Backpack"
-};
+		collapse = 1,
+		showSmallerCoins = "Backpack"
+	})
+else
+	MoneyTypeInfo["INVENTORIAN"] = {
+		UpdateFunc = function(self)
+			return ItemCache:GetPlayerMoney(self:GetParent():GetPlayerName())
+		end,
+
+		collapse = 1,
+		showSmallerCoins = "Backpack"
+	};
+end
 
 Inventorian.Frame = {}
 Inventorian.Frame.defaults = {}
