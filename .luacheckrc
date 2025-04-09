@@ -17,7 +17,6 @@ ignore = {
 globals = {
 	"BankFrame.activeTabIndex",
 	"BankFrame.selectedTab",
-	"MoneyTypeInfo",
 	"StaticPopupDialogs",
 	"UpdateContainerFrameAnchors",
 }
@@ -77,6 +76,7 @@ read_globals = {
 	"UIParent",
 
 	-- FrameXML API
+	"AddMoneyTypeInfo",
 	"BankPanelDepositMoneyButtonMixin",
 	"BankPanelTabMixin",
 	"BankPanelTabSettingsMenuMixin",

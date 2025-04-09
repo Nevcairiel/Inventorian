@@ -14,14 +14,14 @@ local TOKEN_CONTAINER_HEIGHT = 20
 
 local PLAYER_NAME = string.format("%s - %s", UnitName("player"), GetRealmName())
 
-MoneyTypeInfo["INVENTORIAN"] = {
-	UpdateFunc = function(self)
-		return ItemCache:GetPlayerMoney(self:GetParent():GetPlayerName())
-	end,
+AddMoneyTypeInfo("INVENTORIAN", {
+		UpdateFunc = function(self)
+			return ItemCache:GetPlayerMoney(self:GetParent():GetPlayerName())
+		end,
 
-	collapse = 1,
-	showSmallerCoins = "Backpack"
-};
+		collapse = 1,
+		showSmallerCoins = "Backpack"
+	})
 
 local function OnDepositClick(button)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
