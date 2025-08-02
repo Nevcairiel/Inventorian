@@ -27,11 +27,10 @@ do
 		UIDropDownMenu_AddButton(info, level)
 
 		info = UIDropDownMenu_CreateInfo()
-		local activeBagFilter = ContainerFrameSettingsManager:GetFilterFlag(bagID)
 
 		for i, flag in ContainerFrameUtil_EnumerateBagGearFilters() do
 			info.text = BAG_FILTER_LABELS[flag]
-			info.checked = activeBagFilter == flag
+			info.checked = C_Container.GetBagSlotFlag(bagID, flag)
 			info.func = function(_, _, _, value)
 				return OnBagFilterClicked(bagID, flag, not value)
 			end
@@ -43,32 +42,50 @@ do
 	local function AddButtons_BagCleanup(bagID, level)
 		local info = UIDropDownMenu_CreateInfo()
 
-		info.text = BAG_FILTER_CLEANUP
+		info.text = BAG_FILTER_IGNORE
 		info.isTitle = 1
 		info.notCheckable = 1
 		UIDropDownMenu_AddButton(info, level)
 
-		info = UIDropDownMenu_CreateInfo()
-		info.text = BAG_FILTER_IGNORE
-		info.func = function(_, _, _, value)
-			if bagID == -1 then -- bank
-				C_Container.SetBankAutosortDisabled(not value)
-			elseif bagID == 0 then -- backback
-				C_Container.SetBackpackAutosortDisabled(not value)
-			else
-				C_Container.SetBagSlotFlag(bagID, Enum.BagSlotFlags.DisableAutoSort, not value)
+		do
+			info = UIDropDownMenu_CreateInfo()
+			info.text = BAG_FILTER_CLEANUP
+			info.func = function(_, _, _, value)
+				if bagID == Enum.BagIndex.Backpack then -- backback
+					C_Container.SetBackpackAutosortDisabled(not value)
+				else
+					C_Container.SetBagSlotFlag(bagID, Enum.BagSlotFlags.DisableAutoSort, not value)
+				end
 			end
+
+			if bagID == Enum.BagIndex.Backpack then -- backpack
+				info.checked = C_Container.GetBackpackAutosortDisabled()
+			else
+				info.checked = C_Container.GetBagSlotFlag(bagID, Enum.BagSlotFlags.DisableAutoSort)
+			end
+
+			UIDropDownMenu_AddButton(info, level)
 		end
 
-		if bagID == -1 then -- bank
-			info.checked = C_Container.GetBankAutosortDisabled()
-		elseif bagID == 0 then -- backpack
-			info.checked = C_Container.GetBackpackAutosortDisabled()
-		else
-			info.checked = C_Container.GetBagSlotFlag(bagID, Enum.BagSlotFlags.DisableAutoSort)
-		end
+		if not ((bagID >= Enum.BagIndex.CharacterBankTab_1 and bagID <= Enum.BagIndex.CharacterBankTab_6) or (bagID >= Enum.BagIndex.AccountBankTab_1 and bagID <= Enum.BagIndex.AccountBankTab_5)) then
+			info = UIDropDownMenu_CreateInfo()
+			info.text = SELL_ALL_JUNK_ITEMS_EXCLUDE_FLAG
+			info.func = function(_, _, _, value)
+				if bagID == Enum.BagIndex.Backpack then -- backback
+					C_Container.SetBackpackSellJunkDisabled(not value)
+				else
+					C_Container.SetBagSlotFlag(bagID, Enum.BagSlotFlags.ExcludeJunkSell, not value)
+				end
+			end
 
-		UIDropDownMenu_AddButton(info, level)
+			if bagID == Enum.BagIndex.Backpack then -- backpack
+				info.checked = C_Container.GetBackpackSellJunkDisabled()
+			else
+				info.checked = C_Container.GetBagSlotFlag(bagID, Enum.BagSlotFlags.ExcludeJunkSell)
+			end
+
+			UIDropDownMenu_AddButton(info, level)
+		end
 	end
 
 	local ContainerFrameFilterDropDown_Initialize = function(self, level, addFiltersForAllBags)
