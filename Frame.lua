@@ -60,16 +60,18 @@ function Inventorian.Frame:Create(name, titleText, settings, config)
 	frame.itemContainer:SetPoint("TOPLEFT", 10, -68)
 	frame.itemContainer:Show()
 
-	frame.DepositButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-	frame.DepositButton:SetText(REAGENTBANK_DEPOSIT)
-	frame.DepositButton:SetSize(256, 24)
-	frame.DepositButton:SetPoint("BOTTOM", 0, 31)
-	frame.DepositButton:SetScript("OnClick", OnDepositClick)
-	frame.DepositButton:SetFrameLevel(frame:GetFrameLevel() + 5)
-	frame.DepositButton:Hide()
-
 	if frame:IsBank() then
+		frame.DepositButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+		frame.DepositButton:SetText(CHARACTER_BANK_DEPOSIT_BUTTON_LABEL)
+		frame.DepositButton:SetSize(256, 24)
+		frame.DepositButton:SetPoint("BOTTOM", 0, 31)
+		frame.DepositButton:SetScript("OnClick", OnDepositClick)
+		frame.DepositButton:SetFrameLevel(frame:GetFrameLevel() + 5)
 		frame.DepositButton:Show()
+
+		frame.DepositReagents = CreateFrame("CheckButton", nil, frame, "InventorianBankPanelIncludeReagentsCheckboxTemplate")
+		frame.DepositReagents:SetPoint("LEFT", frame.DepositButton, "RIGHT", 10, 0)
+		frame.DepositReagents:Hide()
 
 		frame.MoneyDepositButton = Mixin(CreateFrame("Button", nil, frame, "BankPanelMoneyFrameButtonTemplate"), BankPanelDepositMoneyButtonMixin)
 		frame.MoneyDepositButton.GetBankPanel = function() return frame end
@@ -139,6 +141,11 @@ local function OnTabClick(tab)
 	if frame:IsBank() and frame:AtBank() then
 		BankFrame:Show()
 		BankFrame.BankPanel.bankType = frame:GetActiveBankType()
+	end
+
+	if frame:IsBank() then
+		frame.DepositReagents:SetEnabledState(frame:IsAccountBank())
+		frame.DepositButton:SetText(frame:IsAccountBank() and ACCOUNT_BANK_DEPOSIT_BUTTON_LABEL or CHARACTER_BANK_DEPOSIT_BUTTON_LABEL)
 	end
 
 	frame:UpdateBags()
@@ -241,6 +248,11 @@ function FrameMixin:OnShow()
 	if self:IsBank() and not self:IsCached() then
 		BankFrame.BankPanel:Show()
 		BankFrame.BankPanel.bankType = self:GetActiveBankType()
+	end
+
+	if self:IsBank() then
+		self.DepositReagents:SetEnabledState(self:IsAccountBank())
+		self.DepositButton:SetText(self:IsAccountBank() and ACCOUNT_BANK_DEPOSIT_BUTTON_LABEL or CHARACTER_BANK_DEPOSIT_BUTTON_LABEL)
 	end
 
 	if not self:IsBank() then
@@ -437,10 +449,14 @@ function FrameMixin:UpdateBags()
 	self:UpdateItemContainer()
 
 	if self:IsCached() then
-		self.DepositButton:Disable()
+		if self.DepositButton then
+			self.DepositButton:Disable()
+		end
 		self.SortButton:Disable()
 	else
-		self.DepositButton:Enable()
+		if self.DepositButton then
+			self.DepositButton:Enable()
+		end
 		self.SortButton:Enable()
 	end
 end
@@ -452,7 +468,7 @@ function FrameMixin:UpdateItemContainer(force)
 		width = width - 36
 	end
 
-	if self.DepositButton:IsShown() then
+	if self.DepositButton and self.DepositButton:IsShown() then
 		height = height - 26
 	end
 

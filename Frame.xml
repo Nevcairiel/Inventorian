@@ -1,4 +1,17 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<CheckButton name="InventorianBankPanelIncludeReagentsCheckboxTemplate" inherits="BankPanelCheckboxTemplate" mixin="BankPanelIncludeReagentsCheckboxMixin" virtual="true">
+		<Size x="24" y="23"/>
+		<KeyValues>
+			<KeyValue key="text" value="BANK_DEPOSIT_INCLUDE_REAGENTS_CHECKBOX_LABEL" type="global"/>
+			<KeyValue key="textWidth" value="180" type="number"/>
+			<KeyValue key="maxTextLines" value="2" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</CheckButton>
+
 	<Frame name="InventorianFrameTemplate"
 	       resizable="true" clampedToScreen="true" enableMouse="true" movable="true"
 	       topLevel="true" frameStrata="HIGH" parent="UIParent" hidden="true"
