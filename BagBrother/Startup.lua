@@ -66,8 +66,6 @@ function Brother:SetupEvents()
 	self:RegisterEvent('UNIT_INVENTORY_CHANGED')
 	self:RegisterEvent('PLAYER_MONEY')
 	self:RegisterEvent('BAG_UPDATE')
-	self:RegisterEvent('PLAYERBANKSLOTS_CHANGED')
-	self:RegisterEvent('PLAYERREAGENTBANKSLOTS_CHANGED')
 
 	self:RegisterEvent('PLAYER_INTERACTION_MANAGER_FRAME_SHOW')
 	self:RegisterEvent('PLAYER_INTERACTION_MANAGER_FRAME_HIDE')

@@ -26,8 +26,6 @@ Events.Fire = LibStub("CallbackHandler-1.0"):New(Events, "Register", "Unregister
 
 local ItemCache = LibStub("LibItemCache-1.1-Inventorian")
 
-local NUM_TOTAL_EQUIPPED_BAG_SLOTS = NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
-
 local function ToIndex(bag, slot)
 	return (bag < 0 and bag * 100 - slot) or (bag * 100 + slot)
 end
@@ -44,7 +42,6 @@ function Events:OnEnable()
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN")
 	self:RegisterEvent("BAG_NEW_ITEMS_UPDATED")
 	self:RegisterEvent("PLAYERBANKSLOTS_CHANGED")
-	self:RegisterEvent("PLAYERREAGENTBANKSLOTS_CHANGED")
 
 	self:RegisterEvent("PLAYER_INTERACTION_MANAGER_FRAME_SHOW")
 	self:RegisterEvent("PLAYER_INTERACTION_MANAGER_FRAME_HIDE")
@@ -162,12 +159,12 @@ function Events:UpdateBagSize(bag)
 end
 
 function Events:UpdateBagSizes()
+	for bag = Enum.BagIndex.Bag_1, Enum.BagIndex.ReagentBag do
+		self:UpdateBagSize(bag)
+	end
+
 	if self.atBank then
-		for bag = 1, NUM_TOTAL_EQUIPPED_BAG_SLOTS + GetNumBankSlots() do
-			self:UpdateBagSize(bag)
-		end
-	else
-		for bag = 1, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
+		for bag = Enum.BagIndex.CharacterBankTab_1, Enum.BagIndex.CharacterBankTab_6 do
 			self:UpdateBagSize(bag)
 		end
 	end
@@ -193,11 +190,6 @@ end
 
 function Events:PLAYERBANKSLOTS_CHANGED()
 	self:UpdateBagSizes()
-	self:UpdateItems(BANK_CONTAINER)
-end
-
-function Events:PLAYERREAGENTBANKSLOTS_CHANGED()
-	self:UpdateItems(REAGENTBANK_CONTAINER)
 end
 
 function Events:BANK_TABS_CHANGED()
@@ -211,8 +203,6 @@ function Events:BANKFRAME_OPENED()
 	if self.firstVisit then
 		self.firstVisit = nil
 
-		self:UpdateBagSize(BANK_CONTAINER)
-		self:UpdateBagSize(REAGENTBANK_CONTAINER)
 		self:UpdateBagSizes()
 	end
 
@@ -226,8 +216,6 @@ function Events:ACCOUNT_BANKFRAME_OPENED()
 	if self.firstVisit then
 		self.firstVisit = nil
 
-		self:UpdateBagSize(BANK_CONTAINER)
-		self:UpdateBagSize(REAGENTBANK_CONTAINER)
 		self:UpdateBagSizes()
 	end
 

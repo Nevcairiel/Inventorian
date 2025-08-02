@@ -153,12 +153,6 @@ function Lib:GetBagInfo(player, bag)
 		end
 		return GetGuildBankTabInfo(tab)
 
-	elseif bag == REAGENTBANK_CONTAINER then
-		if isCached then
-			owned = Cache('GetBag', realm, player, bag)
-		else
-			owned = IsReagentBankUnlocked()
-		end
     elseif bag >= Enum.BagIndex.AccountBankTab_1 and bag <= Enum.BagIndex.AccountBankTab_5 then
 		if isCached then
 			owned = Cache('GetBag', realm, player, bag)
@@ -166,7 +160,14 @@ function Lib:GetBagInfo(player, bag)
 		else
 			owned = C_Bank.FetchNumPurchasedBankTabs(Enum.BankType.Account) > (bag - Enum.BagIndex.AccountBankTab_1)
 		end
-	elseif bag ~= BACKPACK_CONTAINER and bag ~= BANK_CONTAINER then
+	elseif bag >= Enum.BagIndex.CharacterBankTab_1 and bag <= Enum.BagIndex.CharacterBankTab_6 then
+		if isCached then
+			owned = Cache('GetBag', realm, player, bag)
+			return nil, 0, nil, nil, owned and Cache('GetBagSize', realm, player, bag) or 0, true
+		else
+			owned = C_Bank.FetchNumPurchasedBankTabs(Enum.BankType.Character) > (bag - Enum.BagIndex.CharacterBankTab_1)
+		end
+	elseif bag ~= BACKPACK_CONTAINER then
 		local slot = C_Container.ContainerIDToInventoryID(bag)
 
 		if isCached then
@@ -195,33 +196,26 @@ function Lib:GetBagType(player, bag)
 		return not self.AtGuild or self:GetPlayerGuild(player) ~= self:GetPlayerGuild(self.PLAYER), nil,nil, tab
 	end
 
-	local vault = bag == 'vault'
 	local accountBank = kind == 'number' and bag >= Enum.BagIndex.AccountBankTab_1 and bag <= Enum.BagIndex.AccountBankTab_5
-	local bank = bag == BANK_CONTAINER or bag == REAGENTBANK_CONTAINER or kind == 'number' and bag > NUM_TOTAL_EQUIPPED_BAG_SLOTS and not accountBank
-	local cached = self:IsPlayerCached(player) or vault and not self.AtVault or accountBank and not (self.AtAccountBank or self.AtBank) or bank and not self.AtBank
+	local bank = kind == 'number' and bag >= Enum.BagIndex.CharacterBankTab_1 and bag <= Enum.BagIndex.CharacterBankTab_6
+	local cached = self:IsPlayerCached(player) or accountBank and not (self.AtAccountBank or self.AtBank) or bank and not self.AtBank
 
-	return cached, bank, vault
+	return cached, bank, accountBank
 end
 
 
 --[[ Items ]]--
 
 function Lib:GetItemInfo(player, bag, slot)
-	local isCached, _, isVault, tab = self:GetBagType(player, bag)
+	local isCached, _, _, tab = self:GetBagType(player, bag)
 
 	if isCached then
 		local realm, player = self:GetPlayerAddress(player)
 		local data, count = Cache('GetItem', realm, player, bag, tab, slot)
 		local link, icon, quality = self:RestoreLink(data)
 
-		if isVault then
-			return link, icon, nil, nil, nil, true
-		else
-			return icon, tonumber(count) or 1, nil, quality, nil, nil, link, true
-		end
+		return icon, tonumber(count) or 1, nil, quality, nil, nil, link, true
 
-	elseif isVault then
-		return GetVoidItemInfo(1, slot)
 	elseif tab then
 		local link = GetGuildBankItemLink(tab, slot)
 		local icon, count, locked = GetGuildBankItemInfo(tab, slot)
@@ -236,7 +230,7 @@ function Lib:GetItemInfo(player, bag, slot)
 			info.quality = self:GetItemQuality(info.hyperlink)
 		end
 
-		return info.iconFileID, info.stackConut, info.isLocked, info.quality, info.isReadable, info.hasLoot, info.hyperlink
+		return info.iconFileID, info.stackCount, info.isLocked, info.quality, info.isReadable, info.hasLoot, info.hyperlink
 	end
 end
 

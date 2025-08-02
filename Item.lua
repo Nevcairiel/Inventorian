@@ -289,18 +289,7 @@ function InventorianItemMixin:OnEnter()
 		self.cacheOverlay:Show()
 		self.cacheOverlay:GetScript("OnEnter")(self.cacheOverlay)
 	else
-		if self:IsBank() or self:IsReagentBank() then
-			if self:GetItem() then
-				local id = self:IsBank() and BankButtonIDToInvSlotID(self:GetID()) or ReagentBankButtonIDToInvSlotID(self:GetID())
-				GameTooltip:SetOwner(self, "ANCHOR_NONE")
-				ContainerFrameItemButton_CalculateItemTooltipAnchors(self, GameTooltip)
-				GameTooltip:SetInventoryItem("player", id)
-				GameTooltip:Show()
-				CursorUpdate(self)
-			end
-		else
-			ContainerFrameItemButtonMixin.OnEnter(self)
-		end
+		ContainerFrameItemButtonMixin.OnEnter(self)
 	end
 end
 
@@ -446,12 +435,4 @@ function InventorianItemMixin:IsNew()
 	if not self:IsCached() then
 		return C_NewItems.IsNewItem(self.bag, self.slot), C_Container.IsBattlePayItem(self.bag, self.slot)
 	end
-end
-
-function InventorianItemMixin:IsBank()
-	return self.bag == BANK_CONTAINER
-end
-
-function InventorianItemMixin:IsReagentBank()
-	return self.bag == REAGENTBANK_CONTAINER
 end

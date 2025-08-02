@@ -24,8 +24,14 @@ AddMoneyTypeInfo("INVENTORIAN", {
 	})
 
 local function OnDepositClick(button)
+	local parent = button:GetParent()
+	local bankType
+	if parent and parent.GetActiveBankType then
+		bankType = parent:GetActiveBankType()
+	end
+
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION)
-	DepositReagentBank()
+	C_Bank.AutoDepositItemsIntoBank(bankType or Enum.BankType.Character)
 end
 
 Inventorian.Frame = {}
@@ -39,6 +45,7 @@ function Inventorian.Frame:Create(name, titleText, settings, config)
 	frame.titleText = titleText
 	frame.currentConfig = config[1]
 	frame.bagButtons = {}
+	frame.selectedBag = {}
 
 	if frame:IsBank() then
 		frame:SetResizeBounds(275, 325)
@@ -62,8 +69,10 @@ function Inventorian.Frame:Create(name, titleText, settings, config)
 	frame.DepositButton:Hide()
 
 	if frame:IsBank() then
+		frame.DepositButton:Show()
+
 		frame.MoneyDepositButton = Mixin(CreateFrame("Button", nil, frame, "BankPanelMoneyFrameButtonTemplate"), BankPanelDepositMoneyButtonMixin)
-		frame.MoneyDepositButton.GetBankFrame = function() return frame end
+		frame.MoneyDepositButton.GetBankPanel = function() return frame end
 		frame.MoneyDepositButton:SetText(BANK_DEPOSIT_MONEY_BUTTON_LABEL)
 		frame.MoneyDepositButton:SetScript("OnClick", frame.MoneyDepositButton.OnClick)
 		frame.MoneyDepositButton:SetFrameLevel(frame:GetFrameLevel() + 5)
@@ -71,7 +80,7 @@ function Inventorian.Frame:Create(name, titleText, settings, config)
 		frame.MoneyDepositButton:Hide()
 
 		frame.MoneyWithdrawButton = Mixin(CreateFrame("Button", nil, frame, "BankPanelMoneyFrameButtonTemplate"), BankPanelWithdrawMoneyButtonMixin)
-		frame.MoneyWithdrawButton.GetBankFrame = function() return frame end
+		frame.MoneyWithdrawButton.GetBankPanel = function() return frame end
 		frame.MoneyWithdrawButton:SetText(BANK_WITHDRAW_MONEY_BUTTON_LABEL)
 		frame.MoneyWithdrawButton:SetScript("OnClick", frame.MoneyWithdrawButton.OnClick)
 		frame.MoneyWithdrawButton:SetFrameLevel(frame:GetFrameLevel() + 5)
@@ -128,32 +137,8 @@ local function OnTabClick(tab)
 
 	-- hack for the warbank and reagent bank to behave properly when right-clicking inventory items
 	if frame:IsBank() and frame:AtBank() then
-		local bankTabIndex = frame:IsReagentBank() and 2 or frame:IsAccountBank() and 3 or 1
-		BankFrame.selectedTab = bankTabIndex
-		BankFrame.activeTabIndex = bankTabIndex
-		if frame:IsReagentBank() or frame:IsAccountBank() then
-			BankFrame:Show()
-		else
-			BankFrame:Hide()
-		end
-	end
-
-	ReagentBankFrameUnlockInfo:Hide()
-	frame.DepositButton:Hide()
-	if frame:IsReagentBank() then
-		if not IsReagentBankUnlocked() then
-			local UnlockInfo = ReagentBankFrameUnlockInfo
-			UnlockInfo:SetParent(frame.itemContainer)
-			UnlockInfo:SetFrameLevel(frame.itemContainer:GetFrameLevel() + 10)
-			UnlockInfo:ClearAllPoints()
-			UnlockInfo:SetPoint("TOPLEFT", -8, 1)
-			UnlockInfo:SetPoint("BOTTOMRIGHT", 8, -1)
-			UnlockInfo:Show()
-
-			MoneyFrame_Update(UnlockInfo.CostMoneyFrame, GetReagentBankCost())
-		end
-
-		frame.DepositButton:Show()
+		BankFrame:Show()
+		BankFrame.BankPanel.bankType = frame:GetActiveBankType()
 	end
 
 	frame:UpdateBags()
@@ -189,10 +174,27 @@ function FrameMixin:CreateTabs()
 	PanelTemplates_SetTab(self, 1)
 end
 
+function FrameMixin:SetSelectedBag(bagIndex)
+	local tabIndex = self.selectedTab or 0
+	self.selectedBag[tabIndex] = bagIndex
+end
+
+function FrameMixin:GetSelectedBag()
+	local tabIndex = self.selectedTab or 0
+	return self.selectedBag[tabIndex]
+end
+
 function FrameMixin:SetCurrentBags()
-	if self:IsAccountBank() then
-		self.selectedWarbandBag = self.selectedWarbandBag or self.currentConfig.bags[1]
-		self.itemContainer:SetBags({ self.selectedWarbandBag })
+	if self:IsBank() then
+		local tabIndex = self.selectedTab or 0
+		self.selectedBag[tabIndex] = self.selectedBag[tabIndex] or self.currentConfig.bags[1]
+
+		-- verify that the selected bag is valid, or reset it to the first
+		if not tContains(self.currentConfig.bags, self.selectedBag[tabIndex]) then
+			self.selectedBag[tabIndex] = self.currentConfig.bags[1]
+		end
+
+		self.itemContainer:SetBags({ self.selectedBag[tabIndex] })
 	else
 		self.itemContainer:SetBags(self.currentConfig.bags)
 	end
@@ -237,12 +239,8 @@ function FrameMixin:OnShow()
 	self:SetPortrait()
 
 	if self:IsBank() and not self:IsCached() then
-		local bankTabIndex = self:IsReagentBank() and 2 or self:IsAccountBank() and 3 or 1
-		BankFrame.selectedTab = bankTabIndex
-		BankFrame.activeTabIndex = bankTabIndex
-		if self:IsReagentBank() or self:IsAccountBank() then
-			BankFrame:Show()
-		end
+		BankFrame.BankPanel:Show()
+		BankFrame.BankPanel.bankType = self:GetActiveBankType()
 	end
 
 	if not self:IsBank() then
@@ -255,13 +253,9 @@ function FrameMixin:OnHide()
 
 	if self:IsBank() then
 		if self:AtBank() then
-			if C_Bank and C_Bank.CloseBankFrame then
-				C_Bank.CloseBankFrame()
-			else
-				CloseBankFrame()
-			end
+			C_Bank.CloseBankFrame()
 		end
-		BankFrame:Hide()
+		BankFrame.BankPanel:Hide()
 	else
 		if BackpackTokenFrame then
 			BackpackTokenFrame:Hide()
@@ -300,10 +294,8 @@ function FrameMixin:OnSortClick(frame, button)
 	if self:IsCached() then return end
 	if button == "LeftButton" then
 		PlaySound(SOUNDKIT.UI_BAG_SORTING_01)
-		if self:IsReagentBank() then
-			C_Container.SortReagentBankBags()
-		elseif self:IsBank() then
-			C_Container.SortBankBags()
+		if self:IsBank() then
+			C_Container.SortBank(self:GetActiveBankType())
 		else
 			C_Container.SortBags()
 		end
@@ -403,30 +395,30 @@ function FrameMixin:UpdateBags()
 		bag:Free()
 	end
 
-	if self:IsAccountBank() or self.settings.showBags then
+	if self:IsBank() or self.settings.showBags then
 		for _, bagID in ipairs(self.currentConfig.bags) do
 			local bag = Inventorian.Bag:Create()
 			bag:Set(self, bagID)
 			tinsert(self.bagButtons, bag)
 		end
 
-		if self:IsAccountBank() then
+		if self:IsBank() then
 			if self:IsCached() then
 				for index, button in ipairs(self.bagButtons) do
 					local link, numFreeSlots, icon, slot, numSlots = ItemCache:GetBagInfo(self:GetPlayerName(), button:GetID())
 					if numSlots and numSlots > 0 then
 						local data = { ID = button:GetID() }
-						button:SetWarbandData(data)
+						button:SetBankBagData(data)
 					end
-					button:SetSelected(self.selectedWarbandBag == button:GetID())
+					button:SetSelected(self:GetSelectedBag() == button:GetID())
 				end
 			else
-				local tabData = C_Bank.FetchPurchasedBankTabData(Enum.BankType.Account)
+				local tabData = C_Bank.FetchPurchasedBankTabData(self:IsAccountBank() and Enum.BankType.Account or Enum.BankType.Character)
 				for index, data in ipairs(tabData) do
 					if self.bagButtons[index] then
-						self.bagButtons[index]:SetWarbandData(data)
+						self.bagButtons[index]:SetBankBagData(data)
 					end
-					self.bagButtons[index]:SetSelected(self.selectedWarbandBag == data.ID)
+					self.bagButtons[index]:SetSelected(self:GetSelectedBag() == data.ID)
 				end
 			end
 		end
@@ -439,6 +431,7 @@ function FrameMixin:UpdateBags()
 				bag:SetPoint("TOPRIGHT", -12, -66)
 			end
 			bag:Show()
+			bag:UpdatePurchaseOverlay()
 		end
 	end
 	self:UpdateItemContainer()
@@ -455,7 +448,7 @@ end
 function FrameMixin:UpdateItemContainer(force)
 	local width = self:GetWidth() + ITEM_CONTAINER_OFFSET_W
 	local height = self:GetHeight() + ITEM_CONTAINER_OFFSET_H
-	if self.settings.showBags or self:IsAccountBank() then
+	if self.settings.showBags or self:IsBank() then
 		width = width - 36
 	end
 
@@ -633,7 +626,7 @@ end
 -----------------------------------------------------------------------
 -- Bank Panel helpers
 
-function FrameMixin:GetBankType()
+function FrameMixin:GetActiveBankType()
 	return self:IsAccountBank() and Enum.BankType.Account or Enum.BankType.Character
 end
 
@@ -645,7 +638,7 @@ function FrameMixin:IsBankTypeLocked()
 end
 
 function FrameMixin:GetTabData(tabID)
-	local purchasedTabData = C_Bank.FetchPurchasedBankTabData(self:GetBankType())
+	local purchasedTabData = C_Bank.FetchPurchasedBankTabData(self:GetActiveBankType())
 	if not purchasedTabData then return end
 
 	for index, tabData in ipairs(purchasedTabData) do
@@ -684,10 +677,6 @@ end
 
 function FrameMixin:IsBank()
 	return self.currentConfig.isBank
-end
-
-function FrameMixin:IsReagentBank()
-	return self.currentConfig.isReagentBank
 end
 
 function FrameMixin:IsAccountBank()

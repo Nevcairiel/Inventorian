@@ -21,11 +21,6 @@ if not InventorianBagBrother or Lib:HasCache() then
 end
 
 local Cache = Lib:NewCache()
-local NUM_TOTAL_EQUIPPED_BAG_SLOTS = NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
-local LAST_BANK_SLOT = NUM_TOTAL_EQUIPPED_BAG_SLOTS + NUM_BANKBAGSLOTS
-local FIRST_BANK_SLOT = NUM_TOTAL_EQUIPPED_BAG_SLOTS + 1
-local ITEM_COUNT = ';(%d+)$'
-
 
 --[[ Items ]]--
 

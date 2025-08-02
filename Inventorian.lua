@@ -33,11 +33,11 @@ local BAG_CONFIG =
 {
 	{
 		title = BAGSLOT,
-		bags = { BACKPACK_CONTAINER, 1, 2, 3, 4 }
+		bags = { Enum.BagIndex.Backpack, Enum.BagIndex.Bag_1, Enum.BagIndex.Bag_2, Enum.BagIndex.Bag_3, Enum.BagIndex.Bag_4 }
 	},
 	{
 		title = L["Reagents"],
-		bags = { 5 },
+		bags = { Enum.BagIndex.ReagentBag },
 		isReagentBag = true,
 	}
 }
@@ -45,14 +45,8 @@ local BANK_CONFIG =
 {
 	{
 		title = BANK,
-		bags = { BANK_CONTAINER, 6, 7, 8, 9, 10, 11, 12 },
+		bags = { Enum.BagIndex.CharacterBankTab_1, Enum.BagIndex.CharacterBankTab_2, Enum.BagIndex.CharacterBankTab_3, Enum.BagIndex.CharacterBankTab_4, Enum.BagIndex.CharacterBankTab_5, Enum.BagIndex.CharacterBankTab_6 },
 		isBank = true,
-	},
-	{
-		title = L["Reagents"],
-		bags = { REAGENTBANK_CONTAINER },
-		isBank = true,
-		isReagentBank = true,
 	},
 	{
 		title = ACCOUNT_QUEST_LABEL,

@@ -16,20 +16,15 @@ This file is part of BagBrother.
 --]]
 
 local EquipmentSlots = INVSLOT_LAST_EQUIPPED
-local BagSlots = NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
-local BankSlots = NUM_BANKBAGSLOTS
-local VaultSlots = 80 * 2
 
 local Backpack = Enum.BagIndex.Backpack
-local Bank = Enum.BagIndex.Bank
-local Reagents = Enum.BagIndex.Reagentbank
 
 
 --[[ Continuous Events ]]--
 
 function InventorianBagBrother:BAG_UPDATE(bag)
 	local isBag = bag > Bank
-	local isBank = bag == Bank or bag >= Enum.BagIndex.BankBag_1 and bag <= Enum.BagIndex.BankBag_7
+	local isBank = bag >= Enum.BagIndex.CharacterBankTab_1 and bag <= Enum.BagIndex.CharacterBankTab_6
 	local isAccountBank = bag >= Enum.BagIndex.AccountBankTab_1 and bag <= Enum.BagIndex.AccountBankTab_5
 
 	if (isBank and not self.atBank) or (isAccountBank and not (self.atBank or self.atAccountBank)) then
@@ -37,7 +32,7 @@ function InventorianBagBrother:BAG_UPDATE(bag)
 	end
 
 	if isBag then
-		self:SaveBag(bag, bag == Backpack or bag == Reagents or bag >= Enum.BagIndex.AccountBankTab_1)
+		self:SaveBag(bag, bag == Backpack or isBank or isAccountBank)
 		if bag == Backpack then
 			self.Player.backpackSize = C_Container.GetContainerNumSlots(Backpack)
 		end
@@ -67,8 +62,6 @@ function InventorianBagBrother:PLAYER_INTERACTION_MANAGER_FRAME_SHOW(id)
 		self:ACCOUNT_BANKFRAME_OPENED()
 	elseif id == Enum.PlayerInteractionType.GuildBanker then
 		self:GUILDBANKFRAME_OPENED()
-	elseif id == Enum.PlayerInteractionType.VoidStorageBanker then
-		self:VOID_STORAGE_OPEN()
 	end
 end
 
@@ -79,8 +72,6 @@ function InventorianBagBrother:PLAYER_INTERACTION_MANAGER_FRAME_HIDE(id)
 		self:ACCOUNT_BANKFRAME_CLOSED()
 	elseif id == Enum.PlayerInteractionType.GuildBanker then
 		self:GUILDBANKFRAME_CLOSED()
-	elseif id == Enum.PlayerInteractionType.VoidStorageBanker then
-		self:VOID_STORAGE_CLOSE()
 	end
 end
 
@@ -88,18 +79,12 @@ end
 
 function InventorianBagBrother:BANKFRAME_OPENED()
 	self.atBank = true
-	for i = Enum.BagIndex.BankBag_1, Enum.BagIndex.BankBag_7 do
-		self:SaveBag(i)
+	for i = Enum.BagIndex.CharacterBankTab_1, Enum.BagIndex.CharacterBankTab_6 do
+		self:SaveBag(i, true)
 	end
 	for i = Enum.BagIndex.AccountBankTab_1, Enum.BagIndex.AccountBankTab_5 do
 		self:SaveBag(i, true)
 	end
-
-	if IsReagentBankUnlocked() then
-		self:SaveBag(Reagents, true)
-	end
-
-	self:SaveBag(Bank, true)
 end
 
 function InventorianBagBrother:ACCOUNT_BANKFRAME_OPENED()
@@ -116,37 +101,6 @@ end
 function InventorianBagBrother:ACCOUNT_BANKFRAME_CLOSED()
 	self.atAccountBank = nil
 end
-
-function InventorianBagBrother:PLAYERBANKSLOTS_CHANGED()
-	if self.atBank then
-		self:SaveBag(Bank, true)
-	end
-end
-
-function InventorianBagBrother:PLAYERREAGENTBANKSLOTS_CHANGED()
-	if self.atBank then
-		self:SaveBag(Reagents, true)
-	end
-end
-
---[[ Void Storage Events ]]--
-
-function InventorianBagBrother:VOID_STORAGE_OPEN()
-	self.atVault = true
-end
-
-function InventorianBagBrother:VOID_STORAGE_CLOSE()
-	if self.atVault then
-		self.Player.vault = {}
-		self.atVault = nil
-
-		for i = 1, VaultSlots do
-			local id = GetVoidItemInfo(1, i)
-    		self.Player.vault[i] = id and tostring(id) or nil
-  		end
-  	end
-end
-
 
 --[[ Guild Events ]]--
 
