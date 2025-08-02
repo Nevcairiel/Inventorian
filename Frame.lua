@@ -511,9 +511,14 @@ function FrameMixin:UpdateMoneyFrame()
 			self.MoneyWithdrawButton:Hide()
 		end
 
+		local offset = 0
+		if BackpackTokenFrame:IsShown() and BackpackTokenFrame:GetParent() == self then
+			offset = TOKEN_CONTAINER_HEIGHT
+		end
+
 		self.Money:ClearAllPoints()
-		self.Money:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -6, 9)
-		self.Money:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 6, 9)
+		self.Money:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -6, 9 + offset)
+		self.Money:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 6, 9 + offset)
 	end
 end
 
