@@ -21,8 +21,6 @@ Brother:SetScript('OnEvent', function(self, event, ...) self[event](self, ...) e
 Brother:RegisterEvent('ADDON_LOADED')
 Brother:RegisterEvent('PLAYER_LOGIN')
 
-local NUM_TOTAL_EQUIPPED_BAG_SLOTS = NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
-
 --[[ Cache Loaded ]]--
 
 function Brother:ADDON_LOADED()

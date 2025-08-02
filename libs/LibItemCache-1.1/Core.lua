@@ -20,8 +20,6 @@ if not Lib then
 	return
 end
 
-local NUM_TOTAL_EQUIPPED_BAG_SLOTS = NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
-
 local PetLinkFormat = '|c%s|Hbattlepet:%sx0|h[%s]|h|r'
 local PetDataFormat = '^' .. strrep('%d+:', 6) .. '%d+$'
 
