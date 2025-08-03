@@ -245,6 +245,11 @@ function FrameMixin:OnShow()
 	PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
 	self:SetPortrait()
 
+	-- open at the firs tab/bag
+	if self.tabs then PanelTemplates_SetTab(self, 1) end
+	self.currentConfig = self.config[1]
+	self.selectedBag = {}
+
 	if self:IsBank() and not self:IsCached() then
 		BankFrame.BankPanel:Show()
 		BankFrame.BankPanel.bankType = self:GetActiveBankType()
@@ -258,6 +263,8 @@ function FrameMixin:OnShow()
 	if not self:IsBank() then
 		BackpackTokenFrame:Update()
 	end
+
+	self:SetCurrentBags()
 end
 
 function FrameMixin:OnHide()
