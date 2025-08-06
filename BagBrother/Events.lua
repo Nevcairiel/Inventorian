@@ -23,7 +23,7 @@ local Backpack = Enum.BagIndex.Backpack
 --[[ Continuous Events ]]--
 
 function InventorianBagBrother:BAG_UPDATE(bag)
-	local isBag = bag > Bank
+	local isBag = bag >= Backpack
 	local isBank = bag >= Enum.BagIndex.CharacterBankTab_1 and bag <= Enum.BagIndex.CharacterBankTab_6
 	local isAccountBank = bag >= Enum.BagIndex.AccountBankTab_1 and bag <= Enum.BagIndex.AccountBankTab_5
 
