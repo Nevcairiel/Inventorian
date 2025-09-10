@@ -3,6 +3,7 @@
 ## Notes: Stores your characters inventory, bank, vault and guild bank, so that you may view them from anywhere.
 ## Author: Jaliborc (João Cardoso)
 ## SavedVariables: Inventorian_BrotherBags
+## Group: Inventorian
 
 Startup.lua
 Events.lua
