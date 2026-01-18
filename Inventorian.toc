@@ -1,5 +1,4 @@
-## Interface: 11507
-## Interface-Cata: 40402
+## Interface: 11508,20505,50503
 
 ## Title: Inventorian
 ## Notes: One large inventory.
