@@ -1,4 +1,4 @@
-## Interface: 110200
+## Interface: 110207,120000,120001
 ## Title: Inventorian_BagBrother
 ## Notes: Stores your characters inventory, bank, vault and guild bank, so that you may view them from anywhere.
 ## Author: Jaliborc (João Cardoso)
