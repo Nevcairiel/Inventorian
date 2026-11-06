@@ -2,6 +2,9 @@ local _, Inventorian = ...
 Inventorian = LibStub("AceAddon-3.0"):NewAddon(Inventorian, "Inventorian", "AceEvent-3.0", "AceHook-3.0", "AceConsole-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Inventorian")
 
+local WoWForever = (WOW_PROJECT_ID == WOW_PROJECT_CAMELOT)
+local HasAccountBank = not WoWForever
+
 local db
 local defaults = {
 	profile = {
@@ -69,7 +72,9 @@ local ACCOUNT_BANK_CONFIG =
 function Inventorian:OnEnable()
 	self.bag = Inventorian.Frame:Create("InventorianBagFrame", L["%s's Inventory"], db.bag, BAG_CONFIG)
 	self.bank = Inventorian.Frame:Create("InventorianBankFrame", L["%s's Bank"], db.bank, BANK_CONFIG)
-	self.accountbank = Inventorian.Frame:Create("InventorianAccountBankFrame", L["%s's Account Bank"], db.bank, ACCOUNT_BANK_CONFIG)
+	if HasAccountBank then
+		self.accountbank = Inventorian.Frame:Create("InventorianAccountBankFrame", L["%s's Account Bank"], db.bank, ACCOUNT_BANK_CONFIG)
+	end
 	self:SetupBagHooks()
 
 	self:RegisterChatCommand("inventorian", "HandleSlash")
@@ -152,10 +157,12 @@ function Inventorian:SetupBagHooks()
 		self:AutoShowInventory()
 	end)
 
-	Events.Register(self, "ACCOUNT_BANK_OPENED", function()
-		self:AutoShowAccountBank()
-		self:AutoShowInventory()
-	end)
+	if HasAccountBank then
+		Events.Register(self, "ACCOUNT_BANK_OPENED", function()
+			self:AutoShowAccountBank()
+			self:AutoShowInventory()
+		end)
+	end
 
 	Events.Register(self, "BANK_CLOSED", function()
 		self:AutoHideBank()
