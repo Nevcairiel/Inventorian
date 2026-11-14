@@ -67,11 +67,19 @@ local ACCOUNT_BANK_CONFIG =
 		isAccountBank = true,
 	}
 }
+local FOREVER_BANK_CONFIG =
+{
+	{
+		title = BANK,
+		bags = { Enum.BagIndex.CharacterBankTab_1, Enum.BagIndex.CharacterBankTab_2, Enum.BagIndex.CharacterBankTab_3, Enum.BagIndex.CharacterBankTab_4, Enum.BagIndex.CharacterBankTab_5, Enum.BagIndex.CharacterBankTab_6, Enum.BagIndex.CharacterBankTab_7, Enum.BagIndex.CharacterBankTab_8, Enum.BagIndex.CharacterBankTab_9 },
+		isBank = true,
+	},
+}
 
 
 function Inventorian:OnEnable()
 	self.bag = Inventorian.Frame:Create("InventorianBagFrame", L["%s's Inventory"], db.bag, BAG_CONFIG)
-	self.bank = Inventorian.Frame:Create("InventorianBankFrame", L["%s's Bank"], db.bank, BANK_CONFIG)
+	self.bank = Inventorian.Frame:Create("InventorianBankFrame", L["%s's Bank"], db.bank, WoWForever and FOREVER_BANK_CONFIG or BANK_CONFIG)
 	if HasAccountBank then
 		self.accountbank = Inventorian.Frame:Create("InventorianAccountBankFrame", L["%s's Account Bank"], db.bank, ACCOUNT_BANK_CONFIG)
 	end
@@ -80,6 +88,10 @@ function Inventorian:OnEnable()
 	self:RegisterChatCommand("inventorian", "HandleSlash")
 
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_EQUIP_REAGENT_BAG, true);
+
+	if WoWForever then
+		EventRegistry:UnregisterCallback("BankPanelMixin.ShowOrHideBagCosts", BankFrame)
+	end
 end
 
 function Inventorian:HandleSlash(cmd)
@@ -121,7 +133,9 @@ end
 
 function Inventorian:AutoHideBank()
 	self.bank:HideFrame(true)
-	self.accountbank:HideFrame(true)
+	if HasAccountBank then
+		self.accountbank:HideFrame(true)
+	end
 end
 
 function Inventorian:UpdateBag()

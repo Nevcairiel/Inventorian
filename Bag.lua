@@ -2,6 +2,7 @@ local _, Inventorian = ...
 local L = LibStub("AceLocale-3.0"):GetLocale("Inventorian")
 
 local ItemCache = LibStub("LibItemCache-1.1-Inventorian")
+local WoWForever = (WOW_PROJECT_ID == WOW_PROJECT_CAMELOT)
 
 local BagMixin = {}
 
@@ -67,7 +68,7 @@ do
 			UIDropDownMenu_AddButton(info, level)
 		end
 
-		if not ((bagID >= Enum.BagIndex.CharacterBankTab_1 and bagID <= Enum.BagIndex.CharacterBankTab_6) or (bagID >= Enum.BagIndex.AccountBankTab_1 and bagID <= Enum.BagIndex.AccountBankTab_5)) then
+		if not ((bagID >= Enum.BagIndex.CharacterBankTab_1 and bagID <= (WoWForever and Enum.BagIndex.CharacterBankTab_9 or Enum.BagIndex.CharacterBankTab_6)) or (bagID >= Enum.BagIndex.AccountBankTab_1 and bagID <= Enum.BagIndex.AccountBankTab_5)) then
 			info = UIDropDownMenu_CreateInfo()
 			info.text = SELL_ALL_JUNK_ITEMS_EXCLUDE_FLAG
 			info.func = function(_, _, _, value)
@@ -455,7 +456,7 @@ function BagMixin:IsBackpackBag()
 end
 
 function BagMixin:IsBankBag()
-	return (self:GetID() >= Enum.BagIndex.CharacterBankTab_1 and self:GetID() <= Enum.BagIndex.CharacterBankTab_6)
+	return (self:GetID() >= Enum.BagIndex.CharacterBankTab_1 and self:GetID() <= (WoWForever and Enum.BagIndex.CharacterBankTab_9 or Enum.BagIndex.CharacterBankTab_6))
 end
 
 function BagMixin:IsAccountBag()
@@ -474,7 +475,7 @@ function BagMixin:IsPurchasable()
 		return C_Bank.FetchNumPurchasedBankTabs(Enum.BankType.Account) < 5 and C_Bank.CanPurchaseBankTab(Enum.BankType.Account)
 	end
 	if self:IsBankBag() then
-		return C_Bank.FetchNumPurchasedBankTabs(Enum.BankType.Character) < 6 and C_Bank.CanPurchaseBankTab(Enum.BankType.Character)
+		return C_Bank.FetchNumPurchasedBankTabs(Enum.BankType.Character) < (WoWForever and 9 or 6) and C_Bank.CanPurchaseBankTab(Enum.BankType.Character)
 	end
 	return false
 end

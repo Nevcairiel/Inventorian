@@ -1,4 +1,4 @@
-## Interface: 120007,120100
+## Interface: 120105,120107,16001
 
 ## Title: Inventorian
 ## Notes: One large inventory.

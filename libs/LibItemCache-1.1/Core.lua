@@ -20,6 +20,8 @@ if not Lib then
 	return
 end
 
+local WoWForever = (WOW_PROJECT_ID == WOW_PROJECT_CAMELOT)
+
 local PetLinkFormat = '|c%s|Hbattlepet:%sx0|h[%s]|h|r'
 local PetDataFormat = '^' .. strrep('%d+:', 6) .. '%d+$'
 
@@ -158,7 +160,7 @@ function Lib:GetBagInfo(player, bag)
 		else
 			owned = C_Bank.FetchNumPurchasedBankTabs(Enum.BankType.Account) > (bag - Enum.BagIndex.AccountBankTab_1)
 		end
-	elseif bag >= Enum.BagIndex.CharacterBankTab_1 and bag <= Enum.BagIndex.CharacterBankTab_6 then
+	elseif bag >= Enum.BagIndex.CharacterBankTab_1 and bag <= (WoWForever and Enum.BagIndex.CharacterBankTab_9 or Enum.BagIndex.CharacterBankTab_6) then
 		if isCached then
 			owned = Cache('GetBag', realm, player, bag)
 			return nil, 0, nil, nil, owned and Cache('GetBagSize', realm, player, bag) or 0, true
@@ -195,7 +197,7 @@ function Lib:GetBagType(player, bag)
 	end
 
 	local accountBank = kind == 'number' and bag >= Enum.BagIndex.AccountBankTab_1 and bag <= Enum.BagIndex.AccountBankTab_5
-	local bank = kind == 'number' and bag >= Enum.BagIndex.CharacterBankTab_1 and bag <= Enum.BagIndex.CharacterBankTab_6
+	local bank = kind == 'number' and bag >= Enum.BagIndex.CharacterBankTab_1 and bag <= (WoWForever and Enum.BagIndex.CharacterBankTab_9 or Enum.BagIndex.CharacterBankTab_6)
 	local cached = self:IsPlayerCached(player) or accountBank and not (self.AtAccountBank or self.AtBank) or bank and not self.AtBank
 
 	return cached, bank, accountBank

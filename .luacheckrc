@@ -78,6 +78,7 @@ read_globals = {
 	"ContainerFrameMixin",
 	"ContainerFrameUtil_EnumerateBagGearFilters",
 	"CooldownFrame_Set",
+	"EventRegistry",
 	"HandleModifiedItemClick",
 	"ItemButtonMixin",
 	"ItemLocation",
@@ -129,6 +130,8 @@ read_globals = {
 	"TEXTURE_ITEM_QUEST_BANG",
 	"TEXTURE_ITEM_QUEST_BORDER",
 	"TextureKitConstants",
+	"WOW_PROJECT_ID",
+	"WOW_PROJECT_CAMELOT",
 
 	"LE_FRAME_TUTORIAL_EQUIP_REAGENT_BAG",
 }

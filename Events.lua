@@ -26,6 +26,8 @@ Events.Fire = LibStub("CallbackHandler-1.0"):New(Events, "Register", "Unregister
 
 local ItemCache = LibStub("LibItemCache-1.1-Inventorian")
 
+local WoWForever = (WOW_PROJECT_ID == WOW_PROJECT_CAMELOT)
+
 local function ToIndex(bag, slot)
 	return (bag < 0 and bag * 100 - slot) or (bag * 100 + slot)
 end
@@ -164,7 +166,7 @@ function Events:UpdateBagSizes()
 	end
 
 	if self.atBank then
-		for bag = Enum.BagIndex.CharacterBankTab_1, Enum.BagIndex.CharacterBankTab_6 do
+		for bag = Enum.BagIndex.CharacterBankTab_1, (WoWForever and Enum.BagIndex.CharacterBankTab_9 or Enum.BagIndex.CharacterBankTab_6) do
 			self:UpdateBagSize(bag)
 		end
 	end
@@ -231,7 +233,7 @@ function Events:BANKFRAME_CLOSED()
 end
 
 function Events:PLAYER_INTERACTION_MANAGER_FRAME_SHOW(event, id)
-	if id == Enum.PlayerInteractionType.Banker then
+	if id == Enum.PlayerInteractionType.Banker or id == Enum.PlayerInteractionType.CharacterBanker then
 		self:BANKFRAME_OPENED()
 	elseif id == Enum.PlayerInteractionType.AccountBanker then
 		self:ACCOUNT_BANKFRAME_OPENED()
@@ -239,7 +241,7 @@ function Events:PLAYER_INTERACTION_MANAGER_FRAME_SHOW(event, id)
 end
 
 function Events:PLAYER_INTERACTION_MANAGER_FRAME_HIDE(event, id)
-	if id == Enum.PlayerInteractionType.Banker or id == Enum.PlayerInteractionType.AccountBanker then
+	if id == Enum.PlayerInteractionType.Banker or id == Enum.PlayerInteractionType.CharacterBanker or id == Enum.PlayerInteractionType.AccountBanker then
 		self:BANKFRAME_CLOSED()
 	end
 end
