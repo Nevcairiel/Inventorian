@@ -3,6 +3,8 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Inventorian")
 
 local ItemCache = LibStub("LibItemCache-1.1-Inventorian")
 
+local WoWForever = (WOW_PROJECT_ID == WOW_PROJECT_CAMELOT)
+
 local FrameMixin = {}
 
 local LibWindow = LibStub("LibWindow-1.1")
@@ -138,7 +140,7 @@ local function OnTabClick(tab)
 	frame:SetCurrentBags()
 
 	-- hack for the warbank and reagent bank to behave properly when right-clicking inventory items
-	if frame:IsBank() and frame:AtBank() then
+	if frame:IsBank() and frame:AtBank() and not WoWForever then
 		BankFrame:Show()
 		BankFrame.BankPanel.bankType = frame:GetActiveBankType()
 	end
@@ -250,7 +252,7 @@ function FrameMixin:OnShow()
 	self.currentConfig = self.config[1]
 	self.selectedBag = {}
 
-	if self:IsBank() and not self:IsCached() then
+	if self:IsBank() and not self:IsCached() and not WoWForever then
 		BankFrame.BankPanel:Show()
 		BankFrame.BankPanel.bankType = self:GetActiveBankType()
 	end
@@ -274,7 +276,9 @@ function FrameMixin:OnHide()
 		if self:AtBank() then
 			C_Bank.CloseBankFrame()
 		end
-		BankFrame.BankPanel:Hide()
+		if not WoWForever then
+			BankFrame.BankPanel:Hide()
+		end
 	else
 		if BackpackTokenFrame then
 			BackpackTokenFrame:Hide()

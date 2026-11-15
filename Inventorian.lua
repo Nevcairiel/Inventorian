@@ -88,10 +88,6 @@ function Inventorian:OnEnable()
 	self:RegisterChatCommand("inventorian", "HandleSlash")
 
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_EQUIP_REAGENT_BAG, true);
-
-	if WoWForever then
-		EventRegistry:UnregisterCallback("BankPanelMixin.ShowOrHideBagCosts", BankFrame)
-	end
 end
 
 function Inventorian:HandleSlash(cmd)
