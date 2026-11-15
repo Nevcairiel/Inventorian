@@ -87,6 +87,7 @@ function InventorianItemMixin:Set(container, bag, slot)
 
 	self:SetParent(self:GetBagContainer(container, bag))
 	self:SetID(slot)
+	self:SetBagID(bag)
 
 	if self:IsVisible() then
 		self:Update()
