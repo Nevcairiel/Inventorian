@@ -34,6 +34,8 @@ end
 
 local BAG_CONFIG =
 {
+	maxSlots = WoWForever and (20 + 4 * 24 + 28) or (28 + 5 * 40), -- forever: 20 backpack + 4 bags of 24 slots + 28 reagent bag, otherwise: 28 backpack (vulpera) + 5 bags of 40 slots
+
 	{
 		title = BAGSLOT,
 		bags = { Enum.BagIndex.Backpack, Enum.BagIndex.Bag_1, Enum.BagIndex.Bag_2, Enum.BagIndex.Bag_3, Enum.BagIndex.Bag_4 }
@@ -46,6 +48,8 @@ local BAG_CONFIG =
 }
 local BANK_CONFIG =
 {
+	maxSlots = 0, -- too many between character and account
+
 	{
 		title = BANK,
 		bags = { Enum.BagIndex.CharacterBankTab_1, Enum.BagIndex.CharacterBankTab_2, Enum.BagIndex.CharacterBankTab_3, Enum.BagIndex.CharacterBankTab_4, Enum.BagIndex.CharacterBankTab_5, Enum.BagIndex.CharacterBankTab_6 },
@@ -69,6 +73,8 @@ local ACCOUNT_BANK_CONFIG =
 }
 local FOREVER_BANK_CONFIG =
 {
+	maxSlots = 64 + 8 * 24, -- main bank + 8 bank bags, 24 slots at most (reagent bags)
+
 	{
 		title = BANK,
 		bags = { Enum.BagIndex.CharacterBankTab_1, Enum.BagIndex.CharacterBankTab_2, Enum.BagIndex.CharacterBankTab_3, Enum.BagIndex.CharacterBankTab_4, Enum.BagIndex.CharacterBankTab_5, Enum.BagIndex.CharacterBankTab_6, Enum.BagIndex.CharacterBankTab_7, Enum.BagIndex.CharacterBankTab_8, Enum.BagIndex.CharacterBankTab_9 },
@@ -84,6 +90,10 @@ function Inventorian:OnEnable()
 		self.accountbank = Inventorian.Frame:Create("InventorianAccountBankFrame", L["%s's Account Bank"], db.bank, ACCOUNT_BANK_CONFIG)
 	end
 	self:SetupBagHooks()
+
+	-- pre-fill item pool
+	local bankSlots = WoWForever and FOREVER_BANK_CONFIG.maxSlots or BANK_CONFIG.maxSlots or 0
+	Inventorian.Item:CreateItemPool(BAG_CONFIG.maxSlots + bankSlots)
 
 	self:RegisterChatCommand("inventorian", "HandleSlash")
 
@@ -163,14 +173,14 @@ function Inventorian:SetupBagHooks()
 
 	local Events = self:GetModule("Events")
 	Events.Register(self, "BANK_OPENED", function()
-		self:AutoShowBank()
 		self:AutoShowInventory()
+		self:AutoShowBank()
 	end)
 
 	if HasAccountBank then
 		Events.Register(self, "ACCOUNT_BANK_OPENED", function()
-			self:AutoShowAccountBank()
 			self:AutoShowInventory()
+			self:AutoShowAccountBank()
 		end)
 	end
 

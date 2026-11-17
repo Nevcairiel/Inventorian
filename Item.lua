@@ -11,7 +11,7 @@ Inventorian.Item.count = 0
 Inventorian.Item.pool = nil
 function Inventorian.Item:Create()
 	if not self.pool then
-		self:CreateItemPool()
+		self.pool = {}
 	end
 
 	local item = next(self.pool)
@@ -49,24 +49,22 @@ function Inventorian.Item:WrapItemButton(item)
 	-- cleanup state
 	item:Reset()
 
+	-- ensure its hidden in the pool
+	item:Hide()
+
 	return item
 end
 
-local MAX_CONTAINER_ITEMS = 36
+local NUM_CONTAINER_FRAMES = 6  -- 5 bags and a reagent bag. This does not account for the bank
+local MAX_CONTAINER_ITEMS = 40  -- 40 is the biggest bag in Midnight
 
-function Inventorian.Item:CreateItemPool()
+function Inventorian.Item:CreateItemPool(slotsToCreate)
 	self.pool = {}
-	for c = 1, NUM_CONTAINER_FRAMES do
-		for i = 1, MAX_CONTAINER_ITEMS do
-			local item = _G[("ContainerFrame%dItem%d"):format(c, i)]
-			if item then
-				item:SetID(0)
-				item:ClearAllPoints()
-
-				item = self:WrapItemButton(item)
-				self.pool[item] = true
-			end
-		end
+	for c = 1, slotsToCreate do
+		self.count = self.count + 1
+		local item = CreateFrame("ItemButton", ("InventorianItemButton%d"):format(self.count), nil, "ContainerFrameItemButtonTemplate")
+		item = self:WrapItemButton(item)
+		self.pool[item] = true
 	end
 end
 
