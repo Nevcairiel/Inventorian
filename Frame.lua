@@ -14,7 +14,7 @@ local ITEM_CONTAINER_OFFSET_W = -22
 local ITEM_CONTAINER_OFFSET_H = -95
 local TOKEN_CONTAINER_HEIGHT = 20
 
-local PLAYER_NAME = string.format("%s - %s", UnitName("player"), GetRealmName())
+local PLAYER_NAME = WoWForever and NameUtil.GetUnmodifiedUnitFullName("player") or string.format("%s - %s", UnitName("player"), GetRealmName())
 
 AddMoneyTypeInfo("INVENTORIAN", {
 		UpdateFunc = function(self)
@@ -695,10 +695,12 @@ end
 function FrameMixin:GetPlayerName()
 	local name = self.playerName or PLAYER_NAME
 
-	-- only return the realm name if its not the current realm
-	local realm, player = ItemCache:GetPlayerAddress(name)
-	if realm == GetRealmName() then
-		name = player
+	if not WoWForever then
+		-- only return the realm name if its not the current realm
+		local realm, player = ItemCache:GetPlayerAddress(name)
+		if realm == GetRealmName() then
+			name = player
+		end
 	end
 	return name
 end

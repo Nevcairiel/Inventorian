@@ -34,9 +34,9 @@ end
 
 --[[ Startup ]]--
 
-Lib.PLAYER = UnitName('player')
+Lib.PLAYER = WoWForever and NameUtil.GetUnmodifiedUnitFullName("player") or UnitNameUnmodified('player')
 Lib.FACTION = UnitFactionGroup('player')
-Lib.REALM = GetRealmName()
+Lib.REALM = WoWForever and "Forever" or GetRealmName()
 Lib.Cache = {}
 
 
@@ -72,6 +72,7 @@ end
 
 function Lib:GetPlayerAddress(address)
 	local player, realm = strmatch(address or '', '(.+) %- (.+)')
+	if WoWForever and player == nil then player = address end
 	return realm or self.REALM, player or address or self.PLAYER
 end
 

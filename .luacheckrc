@@ -85,6 +85,7 @@ read_globals = {
 	"Mixin",
 	"MoneyFrame_SetType",
 	"MoneyFrame_UpdateMoney",
+	"NameUtil",
 	"PanelTemplates_SetNumTabs",
 	"PanelTemplates_SetTab",
 	"SetItemButtonCount",

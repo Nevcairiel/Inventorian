@@ -15,6 +15,7 @@ along with the addon. If not, see <http://www.gnu.org/licenses/gpl-3.0.txt>.
 This file is part of BagBrother.
 --]]
 
+local WoWForever = (WOW_PROJECT_ID == WOW_PROJECT_CAMELOT)
 
 local Brother = CreateFrame('Frame', 'InventorianBagBrother')
 Brother:SetScript('OnEvent', function(self, event, ...) self[event](self, ...) end)
@@ -30,8 +31,8 @@ function Brother:ADDON_LOADED()
 end
 
 function Brother:StartupCache()
-	local Player = UnitName('player')
-	local Realm = GetRealmName()
+	local Player = WoWForever and NameUtil.GetUnmodifiedUnitFullName("player") or UnitNameUnmodified('player')
+	local Realm = WoWForever and "Forever" or GetRealmName()
 
 	Inventorian_BrotherBags = Inventorian_BrotherBags or {}
 	Inventorian_BrotherBags[Realm] = Inventorian_BrotherBags[Realm] or {}
